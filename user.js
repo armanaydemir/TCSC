@@ -36,7 +36,6 @@ module.exports = function(redis) {
                             		callback(true);
                         });
             		});
-
             	});
     		});
     	},
@@ -94,7 +93,6 @@ module.exports = function(redis) {
     		callback = callback || emptyFunction;
     		if(email_regex.test(log)){
     			User.getUser(log, function(user){
-
     				if(user == null){callback(false);return;}
 
     				redis.get('user' + user.id + ':password', function(error, password)){
@@ -106,11 +104,15 @@ module.exports = function(redis) {
     				});
     			});
     		}
+    	},
 
-    	}
-
-
-
+        addToTeam: function(user_id, team_id, callback){
+            callback = callback || emptyFunction;
+            user.setnx("user:" + user_id + "team_id", team_id, function(err, set){
+                if (err) {callback(false);return;}
+                if (set==0) {callback(false);return;} //is already part of team (must leave)
+            });
+        }
     };
     return user;
 };
