@@ -48,3 +48,5 @@ module.exports = function(redis) {
 
     return team;
 };
+
+module.exports()
