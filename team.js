@@ -6,7 +6,7 @@ module.exports = function(redis) {
     var emptyFunction = function() {};
     
     var team = {
-    	createTeam: function(name, school, leader, following, followers, answered, password, callback){
+    	createTeam: function(name, school, leader, password, callback){
     		callback = callback || emptyFunction;
     		redis.incr('global:nextTeamId', function(error, id) {
     			if (error) {callback(false);return;}
@@ -48,5 +48,3 @@ module.exports = function(redis) {
 
     return team;
 };
-
-module.exports()
