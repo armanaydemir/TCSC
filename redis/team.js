@@ -23,12 +23,13 @@ module.exports = function(redis) {
                             .sadd("team:" + id + ":members", leader)
                             .set("team:" + id + ":leader", leader)
                             .set("team:" + id + ":password", computeSHA1(password))
+                            .set("team:" + id + ":message_order", 0)
                             .exec(function(error, results){
                                 if(error){callback(false);return;}
                                 callback(true);
                             });
-                };
-    		}
+                });
+    		});
     	},
 
         addMember: function(team_id, user_id, callback){
@@ -41,7 +42,6 @@ module.exports = function(redis) {
 
         validateTeam: function(team_name, password, callback){
             callback = callback || emptyFunction;
-
 
         }
     };

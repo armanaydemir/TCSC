@@ -26,7 +26,6 @@ module.exports = function(redis) {
             					.set('user:' + id + ':name', name)
             					.set('user:' + id + ':age', age)
             					.set('user:' + id + ':admin', '0')
-            					.set('user:' + id + ':team_id', '')
             					.set('user:' + id + ':password', computeSHA1(password))
             					.exec(function(error, results) {
                             		if (error) {
@@ -56,7 +55,7 @@ module.exports = function(redis) {
                         }
                         callback({
                             id: id,
-                            email: results[0]
+                            email: results[0],
                             username: results[1]
                         });
                     });
@@ -95,7 +94,7 @@ module.exports = function(redis) {
     			User.getUser(log, function(user){
     				if(user == null){callback(false);return;}
 
-    				redis.get('user' + user.id + ':password', function(error, password)){
+    				redis.get('user' + user.id + ':password', function(error, password){
     					if (error) {
                         	callback(false);
                         	return;
