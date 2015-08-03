@@ -6,9 +6,19 @@ module.exports = function(redis) {
 	var emptyFunction = function() {};
 
 	var question = {
-		
-
-
-	}
-
+		answerQuestion: function(user_id, team_id, question_id, answer, callback){
+			redis.get("team:" + team_id + ":questions", function(error, q){
+				if(error){callback(false);return;}
+				if q.contains(question_id){
+					callback(false);return;
+				}else {
+					redis.get("question:" + question_id + ":answer", function(err, ans){
+                    	if (err) {callback(false);return;}
+                    	callback(computeSHA1(answer) == ans);
+                    });
+				}
+			});
+		}
+	};
+	return question;
 };

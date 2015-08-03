@@ -9,6 +9,7 @@ var rClient = redis.createClient();
 const User = require('./redis/user.js')(rClient);
 const Team = require('./redis/team.js')(rClient);
 const Chat = require('./redis/message.js')(rClient);
+const Question = require('./redis/question.js')(rClient);
 
 var session = require('client-sessions');
 app.use(session({
@@ -37,15 +38,36 @@ app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html')
 });
 
+app.post('/login', function(req, res){
+
+
+});
+
 io.on('connection', function(socket){
 
   socket.on('send_message', function(msg){
-    rClient.get("user:" + req.session.user_id + ":", function(error, team_id){
-      Chat.createMessage(msg, req.session.user_id);
-      io.emit('new_message:' + team_id, (msg, req.session.user_id));
+    rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
+      if(!error){
+        Chat.createMessage(msg, req.session.user_id);
+        io.emit('new_message:' + team_id, (msg, req.session.user_id));
+      }
     });
   });
 
+  socket.on('answer_question', function(answer, question){
+    rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
+      Question.answerQuestion(req.session.user_id, team_id, question, answer, function(correct){
+        if(correct){
+          
+
+        }
+        else {
+
+
+        }
+      });
+    });
+  });
 });
 
 app.get('/dashboard', requireLogin, function(req, res) {

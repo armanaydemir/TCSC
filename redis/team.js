@@ -50,6 +50,14 @@ module.exports = function(redis) {
                      callback(computeSHA1(pass) == password);
                 });
             });
+        },
+
+        answeredQuestions: function(team_id, callback){
+            callback = callback || emptyFunction;
+            redis.get("team:" + team_id + ":questions", function(err, q){
+                if (err) {callback(false);return;}
+                callback(q);
+            });
         }
     };
 
