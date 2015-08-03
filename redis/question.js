@@ -5,4 +5,10 @@ module.exports = function(redis) {
 	var computeSHA1 = function(str) { return crypto.createHash(passwordHashAlgorithm).update(str).digest('hex'); };
 	var emptyFunction = function() {};
 
+	var question = {
+		
+
+
+	}
+
 };

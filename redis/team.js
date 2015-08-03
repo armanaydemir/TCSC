@@ -6,7 +6,7 @@ module.exports = function(redis) {
     var emptyFunction = function() {};
     
     var team = {
-    	createTeam: function(name, school, leader, password, callback){
+    	createTeam: function(name, school, leader_id, password, callback){
     		callback = callback || emptyFunction;
     		redis.incr('global:nextTeamId', function(error, id) {
     			if (error) {callback(false);return;}
@@ -20,8 +20,8 @@ module.exports = function(redis) {
 							.set("team:" + id + ":name", name)
                             .set("team:" + id + ":points", 0)
                             .set("team:" + id + ":school", school)
-                            .sadd("team:" + id + ":members", leader)
-                            .set("team:" + id + ":leader", leader)
+                            .sadd("team:" + id + ":members", leader_id)
+                            .set("team:" + id + ":leader", leader_id)
                             .set("team:" + id + ":password", computeSHA1(password))
                             .set("team:" + id + ":message_order", 0)
                             .exec(function(error, results){
@@ -40,9 +40,16 @@ module.exports = function(redis) {
             });
         },
 
-        validateTeam: function(team_name, password, callback){
+        validateTeam: function(team_name, pass, callback){
             callback = callback || emptyFunction;
+            redis.get("team_name:" + team_name + ":id", function(error, team_id){
+                if (error) {callback(false);return;}
 
+                redis.get("team:" + team_id + ":password", function(err, password){
+                     if (err) {callback(false);return;}
+                     callback(computeSHA1(pass) == password);
+                });
+            });
         }
     };
 

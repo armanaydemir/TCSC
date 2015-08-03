@@ -10,15 +10,15 @@ module.exports = function(redis) {
     	createUser: function(name, username, age, email, password, callback){
     		callback = callback || emptyFunction;
     		redis.incr('global:nextUserId', function(error, id) {
-    			if (error) {callback(false);return;}
+    			if (error) {callback("err");return;}
                 id --;
 
             	redis.setnx("email:" + email.toLowerCase() + ":id", id, function(err, set){
-            		if (err) {callback(false);return;}
-            		if (set==0) {callback(false);return;} //means email is already taken
+            		if (err) {callback("err");return;}
+            		if (set==0) {callback("email");return;} //means email is already taken
             		redis.setnx("username:" + username + ":id", id, function(err, set){
-            			if (err) {callback(false);return;}
-            			if (set==0) {callback(false);return;} //means username is already taken
+            			if (err) {callback("err");return;}
+            			if (set==0) {callback("username");return;} //means username is already taken
             				redis
             					.multi()
             					.set('user:' + id + ':email', email)
@@ -29,10 +29,10 @@ module.exports = function(redis) {
             					.set('user:' + id + ':password', computeSHA1(password))
             					.exec(function(error, results) {
                             		if (error) {
-                                		callback(false);
+                                		callback("err");
                                 		return;
                             		}
-                            		callback(true);
+                            		callback();
                         });
             		});
             	});
@@ -99,7 +99,7 @@ module.exports = function(redis) {
                         	callback(false);
                         	return;
                     	}
-                    	callback(computeSHA1(passwordToValidate) == password);
+                    	callback(computeSHA1(pass) == password);
     				});
     			});
     		}

@@ -1,6 +1,3 @@
-const User = require('./user.js')(rClient);
-const Team = require('./team.js')(rClient);s
-
 module.exports = function(redis) {
 
 	var message = {
@@ -17,13 +14,12 @@ module.exports = function(redis) {
 					if (set == 0) {callback(false);return;} //if this goes off, some fucked up shit is going on
 				});
 			});
-				
-
 		},
 
-		getMessages: function(team_id, user_id, callback){
-
-
+		getMessages: function(team_id, callback){
+			callback = callback || emptyFunction;
+			redis.zrevrange("team:" + team_id + "messages", 0, -1, function(error)) 
+			// update this later when the chat UI is up
 		}
 	};
 };
