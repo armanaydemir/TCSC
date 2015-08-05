@@ -11,6 +11,8 @@ const Team = require('./redis/team.js')(rClient);
 const Chat = require('./redis/message.js')(rClient);
 const Question = require('./redis/question.js')(rClient);
 
+var Alert = require('./redis/notification.js')(rClient)(io);
+
 var session = require('client-sessions');
 app.use(session({
   cookieName: 'session',
@@ -67,6 +69,11 @@ io.on('connection', function(socket){
         }
       });
     });
+  });
+
+  socket.on('notification', function(type, data){
+
+
   });
 });
 
