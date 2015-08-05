@@ -71,8 +71,7 @@ io.on('connection', function(socket){
     });
   });
 
-  socket.on('notification', function(type, data){
-
+  socket.on('notification' + user_id, function(type, data){
 
   });
 });

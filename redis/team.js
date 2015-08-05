@@ -40,6 +40,15 @@ module.exports = function(redis) {
             });
         },
 
+        removeMember: function(team_id, user_id, callback){
+            callback = callback || emptyFunction;
+            redis.srem("team:" + team_id + ":members", user_id, function(err, set){
+                if (err) {callback(false);return;}
+                if (set==0){callback(false);return;} //means user was not part of this team, lol
+                callback(true);
+            });
+        },
+
         validateTeam: function(team_name, pass, callback){
             callback = callback || emptyFunction;
             redis.get("team_name:" + team_name + ":id", function(error, team_id){
@@ -48,7 +57,21 @@ module.exports = function(redis) {
                 redis.get("team:" + team_id + ":password", function(err, password){
                      if (err) {callback(false);return;}
                      callback(computeSHA1(pass) == password);
+                     return (computeSHA1(pass) == password);
                 });
+            });
+        },
+
+        leaderboard: function () {
+            // body...
+        },
+
+        getTeamMembers: function (team_id, callback) {
+            callback = callback || emptyFunction;
+            redis.get("team:" + team_id + ":members", (err, mems){
+                if (err) {callback(false);return;}
+                callback(true);
+                return mems;
             });
         },
 
@@ -57,7 +80,14 @@ module.exports = function(redis) {
             redis.get("team:" + team_id + ":questions", function(err, q){
                 if (err) {callback(false);return;}
                 callback(q);
+                return q;
             });
+        },
+
+        attemptedQuestion: function(team_id, user_id, correct, callback) {
+            callback = callback || emptyFunction;
+            redis.set()
+
         }
     };
 

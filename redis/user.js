@@ -111,6 +111,14 @@ module.exports = function(redis) {
                 if (err) {callback(false);return;}
                 if (set==0) {callback(false);return;} //is already part of team (must leave)
             });
+        },
+
+        leaveFromTeam: function(user_id, team_id, callback){
+            callback = callback || emptyFunction;
+            redis.del("user:" + user_id + "team_id", function(err) {
+                if (err) {callback(false);return;}
+                callback(true);
+            })
         }
     };
     return user;
