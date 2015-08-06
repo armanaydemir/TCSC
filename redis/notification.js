@@ -1,6 +1,6 @@
 module.exports = function(redis, io) {
-
 	var emptyFunction = function() {};
+
 	var notification = {
 		onlineAlert: function(user_id, callback){
 			callback = callback || emptyFunction;
@@ -27,6 +27,12 @@ module.exports = function(redis, io) {
 
 				});
 			});
+		},
+
+		newMessage: function(user_id, team_id, callback){
+			callback = callback || emptyFunction;
+			
+
 		}
 
 	};
