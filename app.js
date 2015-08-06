@@ -8,7 +8,7 @@ var redis = require('redis');
 var rClient = redis.createClient();
 const User = require('./redis/user.js')(rClient);
 const Team = require('./redis/team.js')(rClient);
-const Chat = require('./redis/message.js')(rClient);
+const Chat = require('./redis/message.js')(rClient)(io);
 const Question = require('./redis/question.js')(rClient);
 
 var Alert = require('./redis/notification.js')(rClient)(io);
@@ -46,6 +46,7 @@ app.post('/login', function(req, res){
 });
 
 io.on('connection', function(socket){
+  Alert.onlineAlert(req.session.user_id, socket)
 
   socket.on('send_message', function(msg){
     rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
@@ -59,14 +60,7 @@ io.on('connection', function(socket){
   socket.on('answer_question', function(answer, question){
     rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
       Question.answerQuestion(req.session.user_id, team_id, question, answer, function(correct){
-        if(correct){
-          
-
-        }
-        else {
-
-
-        }
+        Team.attemptedQuestion(team_id, req.session.user_id, question, correct);
       });
     });
   });

@@ -32,11 +32,21 @@ module.exports = function(redis) {
     		});
     	},
 
+        getTeamMembers: function (team_id, callback) {
+            callback = callback || emptyFunction;
+            redis.smembers("team:" + team_id + ":members", (err, mems){
+                if (err) {callback(false);return;}
+                callback(true);
+                return mems;
+            });
+        },
+
         addMember: function(team_id, user_id, callback){
             callback = callback || emptyFunction;
             redis.sadd("team:" + team_id + ":members", user_id, function(err, set){
                 if (err) {callback(false);return;}
                 if (set==0){callback(false);return;} //means user was already part of this team
+                callback(true);
             });
         },
 
@@ -62,17 +72,47 @@ module.exports = function(redis) {
             });
         },
 
-        leaderboard: function () {
-            // body...
+        followTeam: function(other_name, team_id, callback){
+            callback = callback || emptyFunction;
+            redis.get("team_name:" + other_name + ":id", function(error, other_id){
+                if (error) {callback(false);return;}
+                redis.sadd("team:" + team_id + ":following", other_id, function(err, set){
+                    if (err) {callback(false);return;}
+                    if (set==0){callback(false);return;} //means team was already following other team
+                    redis.sadd("team:" + other_id + "followers", team_id, function(e){
+                        if (e) {callback(false);return;}
+                        callback(true);
+                    });
+                });
+            });
         },
 
-        getTeamMembers: function (team_id, callback) {
-            callback = callback || emptyFunction;
-            redis.get("team:" + team_id + ":members", (err, mems){
+        followTeam: function(other_id, team_id, callback){
+            callback = callback || emptyFunction;   
+            redis.sadd("team:" + team_id + ":following", other_id, function(err, set){
                 if (err) {callback(false);return;}
-                callback(true);
-                return mems;
+                if (set==0){callback(false);return;} //means team was already following other team
+                redis.sadd("team:" + other_id + "followers", team_id, function(e){
+                    if (e) {callback(false);return;}
+                    callback(true);
+                });    
             });
+        },
+
+        unfollowTeam: function(other_id, team_id, callback){
+            callback = callback || emptyFunction;
+            redis.srem("team:" + team_id + ":following", other_id, function(err, num){
+                if (err) {callback(false);return;}
+                if (num==0){callback(false);return;} //means they weren't following the team already
+                redis.srem("team:" + other_id + "followers", team_id, function(e){
+                    if (e) {callback(false);return;}
+                    callback(true);
+                });
+            });
+        },
+
+        leaderboard: function() {
+            
         },
 
         answeredQuestions: function(team_id, callback){
@@ -84,10 +124,22 @@ module.exports = function(redis) {
             });
         },
 
-        attemptedQuestion: function(team_id, user_id, correct, callback) {
+        attemptedQuestion: function(team_id, user_id, question_id, correct, callback) {
             callback = callback || emptyFunction;
-            redis.set()
+            var d = new Date();
+            var time = d.getTime();
+            if(correct){
+                redis.sadd("team:" + team_id + ":questions", question_id + ":" + user_id + ":" + time, function(err, set){
+                    if (err) {callback(false);return;}
+                    if (set==0){callback(false);return;} //means team already answered question
 
+                });
+            }
+            redis.sadd("team:" + team_id + "attemps", question_id + ":" + user_id + ":" + time, function(err, set){
+                if (err) {callback(false);return;}
+                if (set==0){callback(false);return;} 
+                callback(true);
+            });
         }
     };
 

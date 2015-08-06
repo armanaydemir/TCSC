@@ -118,7 +118,7 @@ module.exports = function(redis) {
             redis.del("user:" + user_id + "team_id", function(err) {
                 if (err) {callback(false);return;}
                 callback(true);
-            })
+            });
         }
     };
     return user;
