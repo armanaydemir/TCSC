@@ -10,7 +10,7 @@ module.exports = function(redis) {
 			redis.get("team:" + team_id + ":questions", function(error, q){
 				if(error){callback(false);return;}
 				if q.contains(question_id){
-					callback(false);return;
+					callback(false);return; //means they already answered the question
 				}else {
 					redis.get("question:" + question_id + ":answer", function(err, ans){
                     	if (err) {callback(false);return;}

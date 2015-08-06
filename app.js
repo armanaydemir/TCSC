@@ -61,6 +61,12 @@ io.on('connection', function(socket){
     rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
       Question.answerQuestion(req.session.user_id, team_id, question, answer, function(correct){
         Team.attemptedQuestion(team_id, req.session.user_id, question, correct);
+        if (correct){
+          Alert.answerQuestion(req.session.user_id, question);
+        }
+        else{
+          
+        }
       });
     });
   });

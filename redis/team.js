@@ -129,13 +129,13 @@ module.exports = function(redis) {
             var d = new Date();
             var time = d.getTime();
             if(correct){
-                redis.sadd("team:" + team_id + ":questions", question_id + ":" + user_id + ":" + time, function(err, set){
+                redis.zadd("team:" + team_id + ":questions", time, question_id + ":" + user_id + ":" + time, function(err, set){
                     if (err) {callback(false);return;}
                     if (set==0){callback(false);return;} //means team already answered question
 
                 });
             }
-            redis.sadd("team:" + team_id + "attemps", question_id + ":" + user_id + ":" + time, function(err, set){
+            redis.zadd("team:" + team_id + "attemps", time, question_id + ":" + user_id + ":" + time, function(err, set){
                 if (err) {callback(false);return;}
                 if (set==0){callback(false);return;} 
                 callback(true);
