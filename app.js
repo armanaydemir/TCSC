@@ -2,6 +2,8 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+//todo
+//make sessions safer by implementing password
 
 
 //ayo remember to turn on the redis server when you run this
@@ -51,6 +53,10 @@ app.post('/login', function(req, res){
 });
 
 io.on('connection', function(socket){
+  var d = new Date();
+  var m = new Math();
+  var time = d.getTime() + (m.random() * 100);
+  req.session.comp_id = time;
   Alert.onlineAlert(req.session.user_id, socket)
 
   socket.on('send_message', function(msg){
@@ -82,11 +88,11 @@ io.on('connection', function(socket){
         req.session.password = pass;
         res.redirect('./dashboard');
       }else if(value == 'invalid_pass'){
-
+        io.emit(req.session.comp_id, 'invalid_pass');33
       }else if(value == 'invalid_log'){
-
+        io.emit(req.session.comp_id, 'invalid_log');
       }else{
-
+        io.emit(req.session.comp_id, 'error');
       }
     });
   });

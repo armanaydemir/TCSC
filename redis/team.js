@@ -1,6 +1,9 @@
 const crypto = require('crypto');
 const passwordHashAlgorithm = 'sha1';
 
+//todo
+//have thing to keep track of questions stats from team point of view (who has been answering and stuff);
+
 module.exports = function(redis) {
     var computeSHA1 = function(str) { return crypto.createHash(passwordHashAlgorithm).update(str).digest('hex'); };
     var emptyFunction = function() {};
