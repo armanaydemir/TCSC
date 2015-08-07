@@ -22,7 +22,7 @@ module.exports = function(redis, io) {
 				redis.smembers("team:" + team_id + ":members", function(error, members){
 					if (error) {callback(false);return;}
 					//for each member
-						//io.emit("notification:" + member, answered_question, (user_id, ))
+						//io.emit("notification:" + member, answered_question, (user_id, question_id))
 					
 
 				});

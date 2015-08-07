@@ -3,6 +3,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
 
+
 //ayo remember to turn on the redis server when you run this
 var redis = require('redis');
 var rClient = redis.createClient();
@@ -36,6 +37,10 @@ app.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
+app.post('/new_user', function(req, res){
+
+});
+
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html')
 });
@@ -63,11 +68,26 @@ io.on('connection', function(socket){
         Team.attemptedQuestion(team_id, req.session.user_id, question, correct);
         if (correct){
           Alert.answerQuestion(req.session.user_id, question);
-        }
-        else{
+        }else{
           
         }
       });
+    });
+  });
+
+  socket.on('login', function(log, pass){
+    User.validateUser(log, pass, callback(value, user_id, pass){
+      if(value == 'true'){
+        req.session.user_id = user_id;
+        req.session.password = pass;
+        res.redirect('./dashboard');
+      }else if(value == 'invalid_pass'){
+
+      }else if(value == 'invalid_log'){
+
+      }else{
+
+      }
     });
   });
 

@@ -92,14 +92,18 @@ module.exports = function(redis) {
     		callback = callback || emptyFunction;
     		if(email_regex.test(log)){
     			User.getUser(log, function(user){
-    				if(user == null){callback(false);return;}
+    				if(user == null){callback("invalid_log");return;}
 
     				redis.get('user' + user.id + ':password', function(error, password){
     					if (error) {
-                        	callback(false);
+                        	callback("false");
                         	return;
                     	}
-                    	callback(computeSHA1(pass) == password);
+                    	if(computeSHA1(pass) == password){
+                            callback("true", user.id, pass);
+                        }else{
+                            callback("invalid_pass");
+                        }
     				});
     			});
     		}
