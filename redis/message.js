@@ -23,7 +23,7 @@ module.exports = function(redis, io) {
 
 		getMessages: function(team_id, callback){
 			callback = callback || emptyFunction;
-			redis.zrevrange("team:" + team_id + ":messages", 0, -1, function(error)) 
+			redis.zrevrange("team:" + team_id + ":messages", 0, -1, function(error){});
 			// update this later when the chat UI is up
 		}
 	};

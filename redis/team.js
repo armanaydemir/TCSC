@@ -37,7 +37,7 @@ module.exports = function(redis) {
 
         getTeamMembers: function (team_id, callback) {
             callback = callback || emptyFunction;
-            redis.smembers("team:" + team_id + ":members", (err, mems){
+            redis.smembers("team:" + team_id + ":members", function(err, mems){
                 if (err) {callback(false);return;}
                 callback(true);
                 return mems;

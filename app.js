@@ -11,10 +11,10 @@ var redis = require('redis');
 var rClient = redis.createClient();
 const User = require('./redis/user.js')(rClient);
 const Team = require('./redis/team.js')(rClient);
-const Chat = require('./redis/message.js')(rClient)(io);
+const Chat = require('./redis/message.js')(rClient,io);
 const Question = require('./redis/question.js')(rClient);
 
-var Alert = require('./redis/notification.js')(rClient)(io);
+var Alert = require('./redis/notification.js')(rClient,io);
 
 var session = require('client-sessions');
 app.use(session({
@@ -82,14 +82,14 @@ io.on('connection', function(socket){
   });
 
   socket.on('login', function(log, pass){
-    User.validateUser(log, pass, callback(value, user_id, pass){
-      if(value == 'true'){
+    User.validateUser(log, pass, function(v, user_id, pass){
+      if(v == 'true'){
         req.session.user_id = user_id;
         req.session.password = pass;
         res.redirect('./dashboard');
-      }else if(value == 'invalid_pass'){
-        io.emit(req.session.comp_id, 'invalid_pass');33
-      }else if(value == 'invalid_log'){
+      }else if(v == 'invalid_pass'){
+        io.emit(req.session.comp_id, 'invalid_pass');
+      }else if(v == 'invalid_log'){
         io.emit(req.session.comp_id, 'invalid_log');
       }else{
         io.emit(req.session.comp_id, 'error');
