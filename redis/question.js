@@ -9,7 +9,6 @@ module.exports = function(redis) {
 	var emptyFunction = function() {};
 
 	var question = {
-
 		answerQuestion: function(user_id, team_id, question_id, answer, callback){
 			callback = callback || emptyFunction;
 			redis.get("team:" + team_id + ":questions", function(error, q){
@@ -31,7 +30,17 @@ module.exports = function(redis) {
 		},
 
 		statsTick: function(){
+            redis.get("global:question_id", function(err, id){
+                if(err){return;}
+                id -= 2;
 
+                var d = new Date();
+                var time = d.getTime();
+
+                for(var x = 0; x <= id; x++){
+                    redis.hset("question:" + x + ":stats", time, "numberofattemps:numberofteamscorrect:numberofteamsattempted");
+                }
+            });
         }
 	};
 	return question;

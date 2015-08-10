@@ -1,4 +1,8 @@
+
+
 module.exports = function(redis, io) {
+	const User = require('./redis/user.js')(redis);
+	const Team = require('./redis/team.js')(redis);
 	var emptyFunction = function() {};
 
 	var notification = {
@@ -6,12 +10,8 @@ module.exports = function(redis, io) {
 			callback = callback || emptyFunction;
 			redis.get("user:" + user_id + ":team", function(err, team_id){
 				if (err) {callback(false);return;}
-				redis.smembers("team:" + team_id + ":members", function(error, members){
-					if (error) {callback(false);return;}
-					
-					//for each member
-						//io.emit("notification:" + member, online, user_id)
-				});
+				Team.notifyTeam(team_id, io, "online", user_id, user_id);
+
 			});
 		},
 
@@ -19,11 +19,11 @@ module.exports = function(redis, io) {
 			callback = callback || emptyFunction;
 			redis.get("user:" + user_id + ":team", function(err, team_id){
 				if (err) {callback(false);return;}
-				redis.smembers("team:" + team_id + ":members", function(error, members){
-					if (error) {callback(false);return;}
-					//for each member
-						//io.emit("notification:" + member, answered_question, (user_id, question_id))
-					
+				Team.notifyTeam(team_id, io, "answered_question", (user_id, question_id));
+				redis.smembers("team:" + team_id + ":followers", function(error, teams){
+					//foreach team in teams
+						//see if some shit happens
+
 
 				});
 			});
@@ -31,8 +31,6 @@ module.exports = function(redis, io) {
 
 		newMessage: function(user_id, team_id, callback){
 			callback = callback || emptyFunction;
-			
-
 		}
 
 	};
