@@ -4,6 +4,7 @@
   "dependencies": {
     "client-sessions": "^0.7.0",
     "connect-mongo": "^0.8.2",
+    "crypto": "0.0.3",
     "express": "^4.10.2",
     "jshelpers": ">=1.0.3",
     "redis": "^0.12.1",

@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const passwordHashAlgorithm = 'sha1';
 
 //todo
-//have thing to keep track of questions stats from team point of view (who has been answering and stuff);
+//have thing to keep track of questions stats from team point of view (who has been answering and stuff)
 
 module.exports = function(redis) {
     var computeSHA1 = function(str) { return crypto.createHash(passwordHashAlgorithm).update(str).digest('hex'); };
@@ -135,10 +135,14 @@ module.exports = function(redis) {
                 redis.zadd("team:" + team_id + ":questions", time, question_id + ":" + user_id + ":" + time, function(err, set){
                     if (err) {callback(false);return;}
                     if (set==0){callback(false);return;} //means team already answered question
-
                 });
+                redis.zadd("team:" + team_id + ":question_order", -2, question_id);
             }
-            redis.zadd("team:" + team_id + "attemps", time, question_id + ":" + user_id + ":" + time, function(err, set){
+            else {
+                redis.zincrby("team:" + team_id + ":question_order", 1, question_id);
+                redis.sadd("team:" + team_id + ":question:" + question_id + ":working_on", user_id);
+            }
+            redis.zadd("team:" + team_id + ":attempts", time, question_id + ":" + user_id + ":" + time, function(err, set){
                 if (err) {callback(false);return;}
                 if (set==0){callback(false);return;} 
                 callback(true);

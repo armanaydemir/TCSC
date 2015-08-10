@@ -75,7 +75,7 @@ io.on('connection', function(socket){
         if (correct){
           Alert.answerQuestion(req.session.user_id, question);
         }else{
-          
+
         }
       });
     });
@@ -97,7 +97,7 @@ io.on('connection', function(socket){
     });
   });
 
-  socket.on('notification' + user_id, function(type, data){
+  socket.on('notification' + req.session.user_id, function(type, data){
 
   });
 });

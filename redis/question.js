@@ -2,11 +2,14 @@ const crypto = require('crypto');
 const passwordHashAlgorithm = 'sha1';
 // todo
 // have some thing to keep track of stats from questions point of view (ya know?);
+// creating questions too
+
 module.exports = function(redis) {
 	var computeSHA1 = function(str) { return crypto.createHash(passwordHashAlgorithm).update(str).digest('hex'); };
 	var emptyFunction = function() {};
 
 	var question = {
+
 		answerQuestion: function(user_id, team_id, question_id, answer, callback){
 			callback = callback || emptyFunction;
 			redis.get("team:" + team_id + ":questions", function(error, q){
@@ -25,7 +28,11 @@ module.exports = function(redis) {
 
 		pushQuestion: function(){
 			//do this for when you make/push a new question out to the competition
-		}
+		},
+
+		statsTick: function(){
+
+        }
 	};
 	return question;
 };

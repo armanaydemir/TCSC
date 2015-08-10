@@ -1,5 +1,5 @@
 module.exports = function(redis, io) {
-	
+	var emptyFunction = function() {};
 	var message = {
 		createMessage: function(message, user_id, callback){
 			callback = callback || emptyFunction;
