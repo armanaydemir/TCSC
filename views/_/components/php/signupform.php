@@ -13,6 +13,7 @@
             <input type="checkbox" value="remember-me"> Remember me
             </label> -->
             <!-- change this into team codes later on -->
+            <!-- when deployed on actual site, include reCAPTCHA-->
         </div>
         <button class="btn btn-lg btn-danger btn-block" type="submit">Sign Up</button>
         <br>
