@@ -1,8 +1,8 @@
 
 
 module.exports = function(redis, io) {
-	const User = require('./redis/user.js')(redis);
-	const Team = require('./redis/team.js')(redis);
+	const User = require('./user.js')(redis);
+	const Team = require('./team.js')(redis);
 	var emptyFunction = function() {};
 
 	var notification = {

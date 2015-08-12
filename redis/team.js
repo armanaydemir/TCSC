@@ -37,6 +37,7 @@ module.exports = function(redis) {
                         .set("team:" + id + ":leader", leader_id)
                         .set("team:" + id + ":password", computeSHA1(password))
                         .set("team:" + id + ":message_order", 0)
+                        .sadd("school:" + school + ":teams", id)
                         .exec(function (error, results) {
                             if (error) {
                                 callback(false);
@@ -109,33 +110,6 @@ module.exports = function(redis) {
             });
         },
 
-        followTeam: function (other_name, team_id, callback) {
-            callback = callback || emptyFunction;
-            redis.get("team_name:" + other_name + ":id", function (error, other_id) {
-                if (error) {
-                    callback(false);
-                    return;
-                }
-                redis.sadd("team:" + team_id + ":following", other_id, function (err, set) {
-                    if (err) {
-                        callback(false);
-                        return;
-                    }
-                    if (set == 0) {
-                        callback(false);
-                        return;
-                    } //means team was already following other team
-                    redis.sadd("team:" + other_id + "followers", team_id, function (e) {
-                        if (e) {
-                            callback(false);
-                            return;
-                        }
-                        callback(true);
-                    });
-                });
-            });
-        },
-
         followTeam: function (other_id, team_id, callback) {
             callback = callback || emptyFunction;
             redis.sadd("team:" + team_id + ":following", other_id, function (err, set) {
@@ -178,8 +152,26 @@ module.exports = function(redis) {
             });
         },
 
-        leaderboard: function () {
+        getLeaderboard: function(callback) {
+            callback = callback || emptyFunction;
+            redis.zrange("global:leaderboard", 0 ,-1, function(err, board){
+                if (err) {
+                    callback(false);
+                    return;
+                }
+                callback(board);
+            });
+        },
 
+        getFollowingLeaderboard: function(team_id, callback) {
+            callback = callback || emptyFunction;
+            redis.zrange("team:" + team_id + ":local_board", 0, -1, function(err, board){
+                if (err) {
+                    callback(false);
+                    return;
+                }
+                callback(board);
+            });
         },
 
         answeredQuestions: function (team_id, callback) {
@@ -199,6 +191,7 @@ module.exports = function(redis) {
             var d = new Date();
             var time = d.getTime();
             if (correct) {
+
                 redis.zadd("team:" + team_id + ":questions", time, question_id + ":" + user_id + ":" + time, function (err, set) {
                     if (err) {
                         callback(false);
@@ -209,7 +202,15 @@ module.exports = function(redis) {
                         return;
                     } //means team already answered question
                 });
-                redis.zadd("team:" + team_id + ":question_order", -2, question_id);
+                redis.zadd("team:" + team_id + ":question_order", -1, question_id);
+                redis.get("question:" + question_id + ":score", function(err, score){
+                    if (err) {
+                        callback(false);
+                        return;
+                    }
+                    redis.incrby("team:" + team_id + ":points", score);
+
+                });
             }
             else {
                 redis.zincrby("team:" + team_id + ":question_order", 1, question_id);

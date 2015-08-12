@@ -6,7 +6,7 @@ var io = require('socket.io')(http);
 //make sessions safer by implementing password
 
 
-//ayo remember to turn on the redis server when you run this
+//ayo remember to turn on the redis-server when you run this
 var redis = require('redis');
 var rClient = redis.createClient();
 const User = require('./redis/user.js')(rClient);
@@ -23,7 +23,7 @@ app.use(session({
   duration: 14 * 24 * 60 * 60 * 1000, //2 weeks ... i think
   activeDuration: 3 * 24 * 60 * 60 * 1000, //3 days ... i think
   httpOnly: true,
-  secure: true,
+  secure: true
 }));
 
 function requireLogin (req, res, next) {
@@ -32,7 +32,7 @@ function requireLogin (req, res, next) {
   } else {
     next();
   }
-};
+}
 
 app.get('/logout', function(req, res) {
   req.session.reset();
@@ -97,9 +97,6 @@ io.on('connection', function(socket){
     });
   });
 
-  socket.on('notification' + req.session.user_id, function(type, data){
-
-  });
 });
 
 app.get('/dashboard', requireLogin, function(req, res) {

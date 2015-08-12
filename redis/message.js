@@ -15,7 +15,7 @@ module.exports = function(redis, io) {
 	                //remember to parse messages backwards
 					redis.zadd("team:" + team_id + ":messages", time, message +":"+ user_id +":"+ time, function(err, set){ 
 						if (error) {callback(false);return;}
-						if (set == 0) {callback(false);return;} //if this goes off, some fucked up shit is going on
+						if (set == 0) {callback(false);} //if this goes off, some fucked up shit is going on
 					});
 				});
 			});
