@@ -11,7 +11,7 @@
     <link href="_/css/indexstyles.css" rel="stylesheet">
       
   </head>
-  <body id="index">
+  <body id="privacypolicy">
     <div class="site-wrapper">
         <div class="site-wrapper-inner">
             <div class="cover-container">
