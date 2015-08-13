@@ -7,7 +7,11 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button><!-- button -->
-            <a class="navbar-brand" href="#">TCSC</a>
+            <a href="#" class="pull-left logo">
+                <img style="max-width:40px;max-height: 40px;margin-top: 5px"src="images/emblem.png" id="logodiv">
+            </a>
+            <a href="#" class="navbar-brand hidden-xs hidden-sm">Triangle Computer Science Competition</a>
+            
         </div> <!--/.nav-collapse -->
         <div id="navbar" class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">

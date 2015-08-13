@@ -1800,6 +1800,17 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
+	"\/images\/emblem.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 3296,
+		"inputAbbreviatedPath": "\/images\/emblem.png",
+		"outputAbbreviatedPath": "\/images\/emblem.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
 	"\/images\/tcsclogo.png": {
 		"fileType": 32768,
 		"ignore": 0,

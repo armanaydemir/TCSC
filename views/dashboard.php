@@ -8,7 +8,7 @@
         <title>TCSC - FAQ</title>
 
         <link href="_/css/bootstrap.css" rel="stylesheet">
-        <link href="_/css/indexstyles.css" rel="stylesheet">
+        <link href="_/css/compstyles.css" rel="stylesheet">
 
     </head>
     <body id="dashboard">
