@@ -21,7 +21,7 @@
                 <content>
                     <?php include "_/components/php/loginform.php"; ?>
                 </content>
-                <footer style="text-align: center">
+                <footer style="text-align: center;">
                     <?php include "_/components/php/indexfooterforms.php"; ?>
                     <!-- fix rogue footer! -->
                     <!-- fix mobile page-height problem -->

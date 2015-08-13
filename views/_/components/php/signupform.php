@@ -1,4 +1,4 @@
-<div class="container" id="signup">
+<div class="container" id="signup" style="position: fixed; margin-top:0.5em">
 
     <form class="form-signin signup">
         <img src="images/tcsclogo.png">

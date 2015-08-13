@@ -22,12 +22,15 @@
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-cog"></span><span class="caret"></span></a>
                     <ul class="dropdown-menu">
+                        <li class="dropdown-header">Signed in as "username"</li>
+                        <li role="separator" class="divider"></li>
                         <li><a href="#">Your Profile</a></li>
                         <li><a href="#">Team Profile</a></li>
+                        <li><a href="#">Help</a></li>
                         <li role="separator" class="divider"></li>
                         <li><a href="#">Settings</a></li>
                         <li role="separator" class="divider"></li>
-                        <li><a href="#">Log Out</a></li>
+                        <li><a href="#">Sign Out</a></li>
                     </ul> <!-- dropdown-menu -->
                 </li> <!-- dropdown -->
             </ul> <!-- navbar links -->

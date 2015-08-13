@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>TCSC - Sponsors</title>
+    <title>TCSC - For Sponsors</title>
       
     <link href="_/css/bootstrap.css" rel="stylesheet">
     <link href="_/css/indexstyles.css" rel="stylesheet">
