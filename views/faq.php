@@ -5,13 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>TCSC - Homepage</title>
+    <title>TCSC - FAQ</title>
       
     <link href="_/css/bootstrap.css" rel="stylesheet">
     <link href="_/css/indexstyles.css" rel="stylesheet">
       
   </head>
-  <body id="index">
+  <body id="faq" class="col-lg-12">
     <div class="site-wrapper">
         <div class="site-wrapper-inner">
             <div class="cover-container">
@@ -22,7 +22,9 @@
                     <?php include "_/components/php/article-faq.php"; ?>
                 </content>
                 <footer>
-                    <?php include "_/components/php/indexfooter.php"; ?>
+                    <div style="position: fixed; text-align:center">
+                        <?php include "_/components/php/indexfooter.php"; ?>
+                    </div>
                 </footer>
             </div> <!-- cover container -->
       </div> <!-- site wrapper inner -->

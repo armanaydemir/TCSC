@@ -11,7 +11,7 @@
     <link href="_/css/indexstyles.css" rel="stylesheet">
       
   </head>
-  <body id="index">
+  <body id="login" class="col-lg-12">
     <div class="site-wrapper">
         <div class="site-wrapper-inner">
             <div class="cover-container">
@@ -21,8 +21,8 @@
                 <content>
                     <?php include "_/components/php/loginform.php"; ?>
                 </content>
-                <footer style="text-align: center">
-                    <?php include "_/components/php/indexfooter.php"; ?>
+                <footer style="text-align: center;">
+                    <?php include "_/components/php/indexfooterforms.php"; ?>
                     <!-- fix rogue footer! -->
                     <!-- fix mobile page-height problem -->
                 </footer>

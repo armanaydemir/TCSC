@@ -11,7 +11,7 @@
     <link href="_/css/indexstyles.css" rel="stylesheet">
       
   </head>
-  <body id="index">
+  <body id="signup" class="col-lg-12">
     <div class="site-wrapper">
         <div class="site-wrapper-inner">
             <div class="cover-container">
@@ -22,7 +22,7 @@
                     <?php include "_/components/php/signupform.php"; ?>
                 </content>
                 <footer style="text-align:center">
-                    <?php include "_/components/php/indexfooter.php"; ?>
+                    <?php include "_/components/php/indexfooterforms.php"; ?>
                 </footer>
             </div> <!-- cover container -->
       </div> <!-- site wrapper inner -->
