@@ -11,7 +11,7 @@
     <link href="_/css/indexstyles.css" rel="stylesheet">
       
   </head>
-  <body id="about">
+  <body id="about" class="col-lg-12">
     <div class="site-wrapper">
         <div class="site-wrapper-inner">
             <div class="cover-container">
@@ -22,7 +22,9 @@
                     <?php include "_/components/php/article-about.php"; ?>
                 </content>
                 <footer>
-                    <?php include "_/components/php/indexfooter.php"; ?>
+                    <div style="position: fixed; text-align:center">
+                        <?php include "_/components/php/indexfooter.php"; ?>
+                    </div>
                 </footer>
             </div> <!-- cover container -->
       </div> <!-- site wrapper inner -->

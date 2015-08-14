@@ -11,7 +11,7 @@
     <link href="_/css/indexstyles.css" rel="stylesheet">
       
   </head>
-  <body id="index" style="text-align:center">
+  <body id="index" style="text-align:center" class="col-lg-12">
     <div class="site-wrapper">
         <div class="site-wrapper-inner">
             <div class="cover-container">

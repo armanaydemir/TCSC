@@ -22,7 +22,9 @@
                     <?php include "_/components/php/article-contactus.php"; ?>
                 </content>
                 <footer>
-                    <?php include "_/components/php/indexfooter.php"; ?>
+                    <div style="position: fixed; text-align:center">
+                        <?php include "_/components/php/indexfooter.php"; ?>
+                    </div>
                 </footer>
             </div> <!-- cover container -->
       </div> <!-- site wrapper inner -->

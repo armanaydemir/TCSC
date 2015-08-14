@@ -1,5 +1,5 @@
 <article>
-    <h2>Contact Us</h2>
+    <h2 style="text-align: center;">Contact Us</h2>
     <ul>
         <li>Contact 1</li>
         <li>Contact 2</li>

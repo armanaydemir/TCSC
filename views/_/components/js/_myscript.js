@@ -1,13 +1,5 @@
 $(function() {
-    
-    //resize logo inside logodiv
-    var logoHeight=$('#logodiv img').height();
-        if(logoHeight < 104) {
-            var margintop = (104 - logoHeight) / 2;
-            $('#logodiv a img').css('margin-top', margintop);   
-        }
-    
-    
+
 	//make menus drop automatically
 	$('ul.nav li.dropdown').hover(function() {
 		$('.dropdown-menu', this).fadeIn();

@@ -11,12 +11,13 @@
         <link href="_/css/compstyles.css" rel="stylesheet">
 
     </head>
-    <body id="dashboard">
+    <body id="dashboard" style="overflow:hidden;">
         <header>
             <?php include "_/components/php/comp-navbar.php"; ?>
         </header>
         <content>
-            
+            <?php include "_/components/php/aside-dashboardstats.php"; ?>
+            <?php include "_/components/php/article-questions.php"; ?>
         </content>
         <footer>
             

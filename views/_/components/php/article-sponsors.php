@@ -1,5 +1,5 @@
 <article id="sponsors" class="col-lg-12">
-    <h2>For Sponsors</h2>
+    <h2 style="text-align: center;">For Sponsors</h2>
     <br>
     <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The Triangle Computer Science Competition (TCSC) is an initiative that promotes computer science education in secondary schools across the Triangle, an area in central North Carolina boasting approximately 2.5 million people. Drawing inspiration from well-known coding competitions such as “High School Capture the Flag” (HSCTF) and Carnegie Mellon’s picoCTF, the TCSC utilizes intuitive features such as team-oriented virtual classrooms and video-game themed achievement badges to make learning abstract computer science principles enjoyable for students. Participating teams compete for a variety of high tech prizes, such as Apple Developer packages, electronics, and tours of major Triangle tech companies. Winning schools (i.e. those with students who have earned the most points) receive classroom kits that may include new computers, teaching aids, and Raspberry-Pis. Although prizes are exclusive to residents of the Research Triangle, any educator or student across the country is eligible to register.</p>
     <br>
