@@ -44,7 +44,7 @@ app.post('/new_user', function(req, res){
 });
 
 app.get('/', function(req, res){
-	res.sendFile(__dirname + '/index.html')
+	res.sendFile(__dirname + '/views/signup.html')
 });
 
 app.post('/login', function(req, res){
