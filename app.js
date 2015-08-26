@@ -1,5 +1,7 @@
 var app = require('express')();
 var http = require('http').Server(app);
+var php = require("php"); 
+var walk = require('walk');
 var io = require('socket.io')(http);
 
 //todo
@@ -34,6 +36,7 @@ function requireLogin (req, res, next) {
   }
 }
 
+
 app.get('/logout', function(req, res) {
   req.session.reset();
   res.redirect('/');
@@ -43,13 +46,24 @@ app.post('/new_user', function(req, res){
 
 });
 
-app.get('/', function(req, res){
-	res.sendFile(__dirname + '/views/signup.html')
+app.use('/', function(req, res){
+  //res.sendFile('');
 });
 
 app.post('/login', function(req, res){
-
-
+  User.get({ email: req.body.email }, function(err, user) {
+    if (!user) {
+      res.render('login.jade', { error: 'Invalid email or password.' });
+    } else {
+      if (req.body.password === user.password) {
+        // sets a cookie with the user's info
+        req.session.user = user;
+        res.redirect('/dashboard');
+      } else {
+        res.render('login.jade', { error: 'Invalid email or password.' });
+      }
+    }
+  });
 });
 
 io.on('connection', function(socket){

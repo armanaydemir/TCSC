@@ -18,6 +18,7 @@ module.exports = function(redis) {
 				}else {
 					redis.get("question:" + question_id + ":answer", function(err, ans){
                     	if (err) {callback(false);return;}
+                    	redis.incr("question:" + question_id + ":temp_attempts")
                     	callback(computeSHA1(answer) == ans);
                     });
 				}
