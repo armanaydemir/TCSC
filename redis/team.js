@@ -191,7 +191,7 @@ module.exports = function(redis) {
             var d = new Date();
             var time = d.getTime();
             if (correct) {
-
+                redis.sadd("team:")
                 redis.zadd("team:" + team_id + ":questions", time, question_id + ":" + user_id + ":" + time, function (err, set) {
                     if (err) {
                         callback(false);
@@ -208,8 +208,8 @@ module.exports = function(redis) {
                         callback(false);
                         return;
                     }
+                    redis.incrby("question:" + question_id + ":teams_answered", 1);
                     redis.incrby("team:" + team_id + ":points", score);
-
                 });
             }
             else {

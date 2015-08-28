@@ -64,7 +64,7 @@ io.on('connection', function(socket){
 
   socket.on('answer_question', function(answer, question){
     omg_you_got_the_banner_question = false;
-    if(question == 4 && answer[0] == "-" && answer[answer.length-1] == "-" && answer.length-2 == redis.get("team:" + redis.get("user:" + req.session.user_id + ":team_id") + ":name"){
+    if(question == id_of_banner_question && answer[0] == "-" && answer[answer.length-1] == "-"){
       omg_you_got_the_banner_question = true;
     }
     rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
@@ -74,7 +74,7 @@ io.on('connection', function(socket){
           Alert.answerQuestion(req.session.user_id, question);
         }else if(omg_you_got_the_banner_question){
           Alert.answerQuestion(req.session.user_id, id_of_banner_question); //update this variable later
-          
+          Banner.updateBanner(redis.get("team:" + team_id + ":name"), 2);
         }else{
           io.emit("incorrect" + req.session.user_id, (question));
         }

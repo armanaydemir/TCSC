@@ -1,5 +1,3 @@
-
-
 module.exports = function(redis, io) {
 	const User = require('./user.js')(redis);
 	const Team = require('./team.js')(redis);

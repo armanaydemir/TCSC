@@ -26,7 +26,7 @@ module.exports = function(redis) {
 		},
 
 
-		pushQuestion: function(){
+		pushQuestion: function(user_id, name, category, file, description){
 			//do this for when you make/push a new question out to the competition
 		},
 
@@ -39,7 +39,7 @@ module.exports = function(redis) {
                 var time = d.getTime();
 
                 for(var x = 0; x <= id; x++){
-                    redis.hset("question:" + x + ":stats", time, "numberofattemps:numberofteamscorrect:numberofteamsattempted");
+                    redis.hset("question:" + x + ":stats", time, "numberofteamscorrect:numberofteamsattempted");
                 }
             });
         }
