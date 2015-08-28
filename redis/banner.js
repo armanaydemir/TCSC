@@ -4,8 +4,6 @@ module.exports = function(redis){
 	var banner = {
 		
 
-
-
 	};
 
 

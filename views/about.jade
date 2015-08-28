@@ -1,0 +1,27 @@
+doctype html
+head
+  meta(charset='utf-8')
+  meta(http-equiv='X-UA-Compatible', content='IE=edge')
+  meta(name='viewport', content='width=device-width, initial-scale=1')
+  title TCSC - About Us
+  style
+    include _/css/bootstrap.css
+    include _/css/indexstyles.css
+.site-wrapper
+  .site-wrapper-inner
+    .cover-container
+      header 
+        include  ./_/components/php/indexnavbar.jade
+      content
+        include ./_/components/php/article-about.jade
+      footer
+        include ./_/components/php/indexfooter.jade
+    // cover container
+  // site wrapper inner
+// site wrapper
+// jQuery (necessary for Bootstrap's JavaScript plugins)
+script(src='_/components/js/jquery.js')
+// Include all compiled plugins (below), or include individual files as needed
+script(src='_/js/bootstrap.js')
+script(src='_/js/myscript.js')
+

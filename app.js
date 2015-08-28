@@ -1,11 +1,6 @@
 var app = require('express')();
 var http = require('http').Server(app);
-var php = require("php"); 
-var walk = require('walk');
 var io = require('socket.io')(http);
-
-//todo
-//make sessions safer by implementing password
 
 
 //ayo remember to turn on the redis-server when you run this
@@ -15,6 +10,7 @@ const User = require('./redis/user.js')(rClient);
 const Team = require('./redis/team.js')(rClient);
 const Chat = require('./redis/message.js')(rClient,io);
 const Question = require('./redis/question.js')(rClient);
+const Banner = require('./redis/banner.js')(rClient);
 
 var Alert = require('./redis/notification.js')(rClient,io);
 
@@ -46,24 +42,8 @@ app.post('/new_user', function(req, res){
 
 });
 
-app.use('/', function(req, res){
-  //res.sendFile('');
-});
-
-app.post('/login', function(req, res){
-  User.get({ email: req.body.email }, function(err, user) {
-    if (!user) {
-      res.render('login.jade', { error: 'Invalid email or password.' });
-    } else {
-      if (req.body.password === user.password) {
-        // sets a cookie with the user's info
-        req.session.user = user;
-        res.redirect('/dashboard');
-      } else {
-        res.render('login.jade', { error: 'Invalid email or password.' });
-      }
-    }
-  });
+app.get('/', function(req, res){
+  res.render(__dirname + "/views/about.jade");
 });
 
 io.on('connection', function(socket){
@@ -83,13 +63,20 @@ io.on('connection', function(socket){
   });
 
   socket.on('answer_question', function(answer, question){
+    omg_you_got_the_banner_question = false;
+    if(question == 4 && answer[0] == "-" && answer[answer.length-1] == "-" && answer.length-2 == redis.get("team:" + redis.get("user:" + req.session.user_id + ":team_id") + ":name"){
+      omg_you_got_the_banner_question = true;
+    }
     rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
       Question.answerQuestion(req.session.user_id, team_id, question, answer, function(correct){
         Team.attemptedQuestion(team_id, req.session.user_id, question, correct);
         if (correct){
           Alert.answerQuestion(req.session.user_id, question);
+        }else if(omg_you_got_the_banner_question){
+          Alert.answerQuestion(req.session.user_id, id_of_banner_question); //update this variable later
+          
         }else{
-
+          io.emit("incorrect" + req.session.user_id, (question));
         }
       });
     });
@@ -99,8 +86,7 @@ io.on('connection', function(socket){
     User.validateUser(log, pass, function(v, user_id, pass){
       if(v == 'true'){
         req.session.user_id = user_id;
-        req.session.password = pass;
-        res.redirect('./dashboard');
+        res.redirect('/dashboard');
       }else if(v == 'invalid_pass'){
         io.emit(req.session.comp_id, 'invalid_pass');
       }else if(v == 'invalid_log'){
@@ -114,7 +100,7 @@ io.on('connection', function(socket){
 });
 
 app.get('/dashboard', requireLogin, function(req, res) {
-
+  
 });
 
 http.listen(3000, function(){

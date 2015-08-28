@@ -27,7 +27,7 @@ module.exports = function(redis) {
                     if (set == 0) {
                         callback(false);
                         return;
-                    } //means team name is already taken)
+                    } //means team name is already taken
                     redis
                         .multi()
                         .set("team:" + id + ":name", name)
