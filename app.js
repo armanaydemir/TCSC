@@ -32,26 +32,52 @@ function requireLogin (req, res, next) {
   }
 }
 
+app.get('/', function(req, res){
+  res.render(__dirname + "/views/index.jade");
+});
+
 
 app.get('/logout', function(req, res) {
   req.session.reset();
   res.redirect('/');
 });
 
-app.post('/new_user', function(req, res){
+app.get('/login', function(req, res){
 
 });
 
-app.get('/', function(req, res){
-  res.render(__dirname + "/views/about.jade");
+app.post('/login', function(req, res){
+
 });
+
+app.get('/signup', function(req, res){
+  res.render(__dirname + "/views/signup.jade");
+});
+
+app.post('/signup', function(req, res){
+  console.log('asdfadsf');
+});
+
+app.get('/dashboard', function(req, res) {
+  res.render(__dirname + "/views/dashboard.jade");
+});
+
+app.use('/_/js/bootstrap.js', function(req, res){
+  res.sendFile(__dirname + '/views/_/js/bootstrap.js');
+});
+
+app.get('/_/js/jquery.js', function(req, res){
+  res.sendFile(__dirname + '/views/_/js/jquery.js');
+});
+
+app.get('/_/js/myscript.js', function(req, res){
+  res.sendFile(__dirname + '/views/_/js/myscript.js');
+});
+
 
 io.on('connection', function(socket){
-  var d = new Date();
-  var m = new Math();
-  var time = d.getTime() + (m.random() * 100);
-  req.session.comp_id = time;
-  Alert.onlineAlert(req.session.user_id, socket)
+  console.log(socket.handshake.headers.cookie);
+  console.log("omg we did something");
 
   socket.on('send_message', function(msg){
     rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
@@ -82,6 +108,11 @@ io.on('connection', function(socket){
     });
   });
 
+  socket.on('signup', function(name, username, age, email, password){
+    console.log("asdfasdf");
+
+  });
+
   socket.on('login', function(log, pass){
     User.validateUser(log, pass, function(v, user_id, pass){
       if(v == 'true'){
@@ -99,11 +130,7 @@ io.on('connection', function(socket){
 
 });
 
-app.get('/dashboard', requireLogin, function(req, res) {
-  
-});
-
-app.listen(3000, function(){
+http.listen(3000, function(){
   console.log('listening on *:3000');
 });
 

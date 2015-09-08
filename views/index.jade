@@ -5,20 +5,21 @@ html(lang='en')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1')
     title TCSC - Homepage
-    link(href='_/css/bootstrap.css', rel='stylesheet')
-    link(href='_/css/indexstyles.css', rel='stylesheet')
+    style
+      include _/css/bootstrap.css
+      include _/css/indexstyles.css
   body#index.col-lg-12(style='text-align:center')
     .site-wrapper
       .site-wrapper-inner
         .cover-container
           header
-            include '_/components/jade/indexnavbar.jade'
+            include _/components/jade/indexnavbar.jade
           content
-            include '_/components/jade/indexmain.jade'
+            include _/components/jade/indexmain.jade
             h3
               a.alert(href='dashboard.jade') Remove me later. Click here to go to the main competition site
           footer
-            include '_/components/jade/indexfooter.jade'
+            include _/components/jade/indexfooter.jade
         // cover container
       // site wrapper inner
     // site wrapper

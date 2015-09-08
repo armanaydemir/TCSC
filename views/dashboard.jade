@@ -5,17 +5,21 @@ html(lang='en')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1')
     title TCSC - Triangle Computer Science Competition
-    link(href='_/css/bootstrap.css', rel='stylesheet')
-    link(href='_/css/compstyles.css', rel='stylesheet')
+    style
+        include _/css/bootstrap.css
+        include _/css/compstyles.css
   body#dashboard(style='overflow:hidden;')
     header
-        include '_/components/jade/comp-navbar.jade'
+        include _/components/jade/comp-navbar.jade
     content
-        include '_/components/jade/aside-dashboardstats.jade'
-        include '_/components/jade/article-questions.jade'
+        include _/components/jade/aside-dashboardstats.jade
+        //include _/components/jade/article-questions.jade
+        include _/components/jade/article-questions-alternate.jade
+
     footer
     // jQuery (necessary for Bootstrap's JavaScript plugins)
-    script(src='_/components/js/jquery.js')
-    // Include all compiled plugins (below), or include individual files as needed
-    script(src='_/js/bootstrap.js')
-    script(src='_/js/myscript.js')
+    script
+        include _/components/js/jquery.js
+        include _/js/bootstrap.js
+        include _/js/myscript.js
+

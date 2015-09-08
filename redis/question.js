@@ -28,7 +28,7 @@ module.exports = function(redis) {
 
 
 		pushQuestion: function(user_id, name, category, file, description, expire, callback){
-			redis.get("user:" + user_id ":admin", function(error, admin){
+			redis.get("user:" + user_id + ":admin", function(error, admin){
 				if(error){callback(0); return;}
 				if(admin == 1){
 					redis.incr("global:question_id", function(err, id){
