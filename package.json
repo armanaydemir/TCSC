@@ -6,6 +6,7 @@
     "connect-mongo": "^0.8.2",
     "crypto": "0.0.3",
     "express": "^4.10.2",
+    "fs": "0.0.2",
     "jade": "^1.11.0",
     "jshelpers": ">=1.0.3",
     "redis": "^0.12.1",

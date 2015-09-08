@@ -1,6 +1,7 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var fs = require('fs');
 
 
 //ayo remember to turn on the redis-server when you run this
@@ -51,7 +52,7 @@ app.post('/login', function(req, res){
 });
 
 app.get('/signup', function(req, res){
-  res.render(__dirname + "/views/signup.jade");
+  res.render(__dirname + "/views/signup.jade/");
 });
 
 app.post('/signup', function(req, res){
@@ -108,8 +109,8 @@ io.on('connection', function(socket){
     });
   });
 
-  socket.on('signup', function(name, username, age, email, password){
-    console.log("asdfasdf");
+  socket.on('signup', function(name, username, age, email, password, callback){
+    console.log(name);
 
   });
 

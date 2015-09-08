@@ -1,16 +1,16 @@
 #signup.container(style='position: fixed; margin-top:0.5em')
-      form.form-signin.signup()
+      form.form-signin.signup(action="")
         img(src='images/tcsclogo.png')
         label.sr-only(for='inputName') Name
-        input#inputEmail.form-control(type='email', placeholder='Name', required='', autofocus='')
-        label.sr-only(for='inputEmailVerification') Email address verification
-        input#inputEmail.form-control(type='email', placeholder='Re-enter your email address', required='', autofocus='')
-        label.sr-only(for='inputPassword') Password
-        input#inputPassword.form-control(type='password', placeholder='Password', required='')
+        input#inputName.form-control(type='name', placeholder='Name', required='', autofocus='')
+        label.sr-only(for='inputUsername') Username
+        input#inputUsername.form-control(type='username', placeholder='Username', required='', autofocus='')
+        label.sr-only(for='inputAge') Age
+        input#inputAge.form-control(type='age', placeholder='Age', required='', autofocus='')
+        
         label.sr-only(for='inputEmail') Email address
         input#inputEmail.form-control(type='email', placeholder='Email address', required='', autofocus='')
-        label.sr-only(for='inputEmailVerification') Email address verification
-        input#inputEmail.form-control(type='email', placeholder='Re-enter your email address', required='', autofocus='')
+        
         label.sr-only(for='inputPassword') Password
         input#inputPassword.form-control(type='password', placeholder='Password', required='')
         .checkbox
@@ -35,7 +35,7 @@
 script.
   console.log(document.cookie);
   var socket = io();
-  $('form.form-signin.signup').submit(function(){
+  $('form').click(function(){
     socket.emit('signup', $('#inputName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
       $('#inputEmail').val(), $('#inputPassword').val(), 
       function(info){
