@@ -62,7 +62,7 @@ io.on('connection', function(socket){
     });
   });
 
-  socket.on('answer_question', function(answer, question){
+  socket.on('answer_question', function(answer, question, type){
     omg_you_got_the_banner_question = false;
     if(question == id_of_banner_question && answer[0] == "-" && answer[answer.length-1] == "-"){
       omg_you_got_the_banner_question = true;
@@ -103,6 +103,10 @@ app.get('/dashboard', requireLogin, function(req, res) {
   
 });
 
-http.listen(3000, function(){
+app.listen(3000, function(){
   console.log('listening on *:3000');
 });
+
+setInterval(function() {
+  Question.statsTick();
+}, 1000);

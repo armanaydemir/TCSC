@@ -4,19 +4,22 @@ html(lang='en')
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1')
-    title TCSC - About Us
+    title TCSC - Contact Us
     link(href='_/css/bootstrap.css', rel='stylesheet')
     link(href='_/css/indexstyles.css', rel='stylesheet')
-  body#about.col-lg-12
+  body#contactus
     .site-wrapper
       .site-wrapper-inner
         .cover-container
           header
+            //indexnavbar.jade
             include '_/components/jade/indexnavbar.jade'
           content
-            include '_/components/jade/article-about.jade'
+            //article-contactus.jade
+            include '_/components/jade/article-contactus.jade'
           footer
             div(style='position: fixed; text-align:center')
+                //indexfooter.jade
                 include '_/components/jade/indexfooter.jade'
         // cover container
       // site wrapper inner

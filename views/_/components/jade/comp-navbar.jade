@@ -1,0 +1,44 @@
+nav.navbar.navbar-default.navbar-fixed-top.navbar-inverse(role='navigation')
+      .container
+        .navbar-header
+          button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          // button
+        // /.nav-collapse
+        #navbar.navbar-collapse.collapse
+          ul.nav.navbar-nav.navbar-right
+            a.pull-left.logo(href='#', style='padding-right:3em;')
+              img#logodiv(style='max-width:40px;max-height: 40px;margin-top: 5px', src='images/emblem.png')
+            li.active
+              a(href='#') Dashboard
+            li
+              a(href='#') Stats
+            li
+              a(href='#') Team
+            // perhaps we should move the rules to the settings
+            li.dropdown
+              a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
+                img.img-rounded(src='images/useridenticon.png', alt='id', width='20px', height='20px')
+                span.caret
+              ul.dropdown-menu
+                li.dropdown-header Signed in as "username"
+                li.divider(role='separator')
+                li
+                  a(href='#') Your Profile
+                li
+                  a(href='#') Help
+                li.divider(role='separator')
+                li
+                  a(href='#') Settings
+                li.divider(role='separator')
+                li
+                  a(href='#') Sign Out
+              // dropdown-menu
+            // dropdown
+          // navbar links
+        // code for collapsable navbar
+      // container
+    // navbar

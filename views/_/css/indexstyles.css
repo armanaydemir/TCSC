@@ -38,8 +38,8 @@ body {
   width: 100%;
   height: 100%; /* For at least Firefox */
   min-height: 100%;
-  -webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.2);
-          box-shadow: inset 0 0 100px rgba(0,0,0,.2);
+  /*-webkit-box-shadow: inset 0 0 100px rgba(0,0,0,.2);
+          box-shadow: inset 0 0 100px rgba(0,0,0,.2);*/
 }
 .site-wrapper-inner {
   display: table-cell;
@@ -210,15 +210,14 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+s
+}
 
 /** Throw Aways **/
 .alert {
     color: red;
 }
 
-p[about] {
-    text-align: left;
-}
 
 
 
