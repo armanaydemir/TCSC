@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "client-sessions": "^0.7.0",
+    "connect": "^3.4.0",
     "connect-mongo": "^0.8.2",
+    "cookie": "^0.2.0",
     "crypto": "0.0.3",
     "express": "^4.10.2",
     "fs": "0.0.2",

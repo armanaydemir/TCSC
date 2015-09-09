@@ -1,6 +1,9 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var cookie = require('cookie');
+var encode = require('client-sessions').util.encode,
+    decode = require('client-sessions').util.decode;
 var fs = require('fs');
 
 
@@ -14,16 +17,16 @@ const Question = require('./redis/question.js')(rClient);
 const Banner = require('./redis/banner.js')(rClient);
 
 var Alert = require('./redis/notification.js')(rClient,io);
-
-var session = require('client-sessions');
-app.use(session({
+var session_opts = {
   cookieName: 'session',
   secret: 'iWonderIfAnyoneWouldGuessThis...',
   duration: 14 * 24 * 60 * 60 * 1000, //2 weeks ... i think
   activeDuration: 3 * 24 * 60 * 60 * 1000, //3 days ... i think
   httpOnly: true,
   secure: true
-}));
+};
+var session = require('client-sessions');
+app.use(session(session_opts));
 
 function requireLogin (req, res, next) {
   if (!req.user_id) {
@@ -52,6 +55,7 @@ app.post('/login', function(req, res){
 });
 
 app.get('/signup', function(req, res){
+  req.session.reset();
   res.render(__dirname + "/views/signup.jade/");
 });
 
@@ -77,8 +81,12 @@ app.get('/_/js/myscript.js', function(req, res){
 
 
 io.on('connection', function(socket){
-  console.log(socket.handshake.headers.cookie);
-  console.log("omg we did something");
+  //console.log(socket.handshake.headers.cookie);
+  var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+  console.log(session_data);
+
+
+  //console.log("omg we did something");
 
   socket.on('send_message', function(msg){
     rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
@@ -110,8 +118,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('signup', function(name, username, age, email, password, callback){
-    console.log(name);
-
+    
   });
 
   socket.on('login', function(log, pass){
