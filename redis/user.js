@@ -17,10 +17,10 @@ module.exports = function(redis) {
                 id --;
 
             	redis.setnx("email:" + email.toLowerCase() + ":id", id, function(err, set){
-            		if (err) {callback("err");return;}
+            		if (err) {callback(null);return;}
             		if (set==0) {callback("email");return;} //means email is already taken
             		redis.setnx("username:" + username + ":id", id, function(err, set){
-            			if (err) {callback("err");return;}
+            			if (err) {callback(null);return;}
             			if (set==0) {callback("username");return;} //means username is already taken
             				redis
             					.multi()
@@ -32,10 +32,10 @@ module.exports = function(redis) {
             					.set('user:' + id + ':password', computeSHA1(password))
             					.exec(function(error, results) {
                             		if (error) {
-                                		callback("err");
+                                		callback(null);
                                 		return;
                             		}
-                            		callback();
+                            		callback(id);
                         });
             		});
             	});

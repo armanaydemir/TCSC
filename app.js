@@ -1,3 +1,6 @@
+// todo
+// add server side stats for us
+
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -53,6 +56,7 @@ app.get('/logout', function(req, res) {
 
 app.get('/login', function(req, res){
   req.session.comp_id = makeCompID();
+  res.render(__dirname + "/views/login.jade/");
 });
 
 app.get('/signup', function(req, res){ 
@@ -81,7 +85,7 @@ app.get('/_/js/myscript.js', function(req, res){
 io.on('connection', function(socket){
   //console.log(socket.handshake.headers.cookie);
   var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
-  console.log(session_data);
+  console.log(session_data["comp_id"]);
 
 
   //console.log("omg we did something");
@@ -115,8 +119,15 @@ io.on('connection', function(socket){
     });
   });
 
-  socket.on('signup', function(name, username, age, email, password, callback){
-    
+  socket.on('signup', function(name, username, age, email, password){
+    User.createUser(name, username, age, email, password, function(v){
+      if(!v){
+        //we got some fucked up error shit, check it out biatch 
+        //(put some debug prints in here so we can attempts to fix it if it ever actually comes up)
+      }else if(v.equals("email")){
+        io.emit('sign_up_error[email]');
+      }
+    });
   });
 
   socket.on('login', function(log, pass){
