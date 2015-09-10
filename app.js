@@ -28,6 +28,11 @@ var session_opts = {
 var session = require('client-sessions');
 app.use(session(session_opts));
 
+function makeCompID(){
+  var d = new Date();
+  return d.getTime() + (Math.random() * 9900000) + (Math.random() * 99000300);
+}
+
 function requireLogin (req, res, next) {
   if (!req.user_id) {
     res.redirect('/login');
@@ -47,23 +52,16 @@ app.get('/logout', function(req, res) {
 });
 
 app.get('/login', function(req, res){
-
+  req.session.comp_id = makeCompID();
 });
 
-app.post('/login', function(req, res){
-
-});
-
-app.get('/signup', function(req, res){
-  req.session.reset();
+app.get('/signup', function(req, res){ 
+  req.session.comp_id = makeCompID();
   res.render(__dirname + "/views/signup.jade/");
 });
 
-app.post('/signup', function(req, res){
-  console.log('asdfadsf');
-});
-
 app.get('/dashboard', function(req, res) {
+  req.session.comp_id = makeCompID();
   res.render(__dirname + "/views/dashboard.jade");
 });
 
