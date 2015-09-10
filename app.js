@@ -1,5 +1,6 @@
 // todo
 // add server side stats for us
+// make sure rielle makes shit happen for the shit under this
 
 var app = require('express')();
 var http = require('http').Server(app);
@@ -48,6 +49,12 @@ app.get('/', function(req, res){
   res.render(__dirname + "/views/index.jade");
 });
 
+app.get('/')
+
+app.get('/images/tcsclogo.png', function(req, res){
+  res.sendFile(__dirname + "/views/images/tcsclogo.png")
+
+});
 
 app.get('/logout', function(req, res) {
   req.session.reset();

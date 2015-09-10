@@ -36,7 +36,7 @@ script.
   console.log(document.cookie);
   var socket = io();
   $('button').click(function(){
-    console.log( $('#inputName').val());
+    
     socket.emit('signup', $('#inputName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
       $('#inputEmail').val(), $('#inputPassword').val());
     return false;
