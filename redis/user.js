@@ -12,6 +12,7 @@ module.exports = function(redis) {
     var user = {
     	createUser: function(name, username, age, email, password, callback){
     		callback = callback || emptyFunction;
+
     		redis.incr('global:nextUserId', function(error, id) {
     			if (error) {callback("err");return;}
                 id --;
@@ -22,21 +23,22 @@ module.exports = function(redis) {
             		redis.setnx("username:" + username + ":id", id, function(err, set){
             			if (err) {callback(null);return;}
             			if (set==0) {callback("username");return;} //means username is already taken
-            				redis
-            					.multi()
-            					.set('user:' + id + ':email', email)
-            					.set('user:' + id + ':username', username)
-            					.set('user:' + id + ':name', name)
-            					.set('user:' + id + ':age', age)
-            					.set('user:' + id + ':admin', '0')
-            					.set('user:' + id + ':password', computeSHA1(password))
-            					.exec(function(error, results) {
-                            		if (error) {
-                                		callback(null);
-                                		return;
-                            		}
-                            		callback(id);
-                        });
+        				redis
+        					.multi()
+        					.set('user:' + id + ':email', email)
+        					.set('user:' + id + ':username', username)
+        					.set('user:' + id + ':name', name)
+        					.set('user:' + id + ':age', age)
+        					.set('user:' + id + ':admin', '0')
+        					.set('user:' + id + ':password', computeSHA1(password))
+        					.exec(function(error, results) {
+                        		if (error) {
+                            		callback(null);
+                            		return;
+                        		}
+                            });
+                        callback(id);
+                        return;
             		});
             	});
     		});

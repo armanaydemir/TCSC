@@ -84,11 +84,15 @@ app.get('/_/js/myscript.js', function(req, res){
 
 io.on('connection', function(socket){
   //console.log(socket.handshake.headers.cookie);
+
+  //check to see how the shit here works with multiple connections... its fishy ===============
   var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
-  console.log(session_data["comp_id"]);
+  session_id = session_data["comp_id"];
+  console.log(session_id);
+  //===================
 
 
-  //console.log("omg we did something");
+  //console.log("omg i did something... for once in my goddamn life...");
 
   socket.on('send_message', function(msg){
     rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
@@ -124,8 +128,16 @@ io.on('connection', function(socket){
       if(!v){
         //we got some fucked up error shit, check it out biatch 
         //(put some debug prints in here so we can attempts to fix it if it ever actually comes up)
-      }else if(v.equals("email")){
-        io.emit('sign_up_error[email]');
+
+      //make sure rielle makes shit happen for the shit under this
+      }else if(v === "email"){
+        io.emit(session_id, 'sign_up_error[email]'); //means email is taken 
+
+      }else if(v === "username"){
+        io.emit(session_id, 'sign_up_error[username]'); //means username is taken ... get the pattern with this ish yet?
+
+      }else{
+        io.emit(session_id, 'success_sign_up');
       }
     });
   });
@@ -144,7 +156,6 @@ io.on('connection', function(socket){
       }
     });
   });
-
 });
 
 http.listen(3000, function(){

@@ -35,12 +35,10 @@
 script.
   console.log(document.cookie);
   var socket = io();
-  $('form').click(function(){
+  $('button').click(function(){
+    console.log( $('#inputName').val());
     socket.emit('signup', $('#inputName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
-      $('#inputEmail').val(), $('#inputPassword').val(), 
-      function(info){
-
-    });
+      $('#inputEmail').val(), $('#inputPassword').val());
     return false;
   });
 
