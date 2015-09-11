@@ -46,6 +46,26 @@ function requireLogin (req, res, next) {
   }
 }
 
+function dashboard_check(req, res){
+  if(!req.session.comp_id && req.session.user_id){
+    req.session.comp_id = makeCompID();
+    return {comp_id: req.session.comp_id}
+  }
+  else if(req.session.comp_id){
+    rClient.get("login_key:" + req.session.comp_id, function(err, user_id){
+      if(!err){
+        req.session.user_id = user_id;
+        return {user_id: req.session.user_id}
+      }
+      else{
+        return null;
+      }
+    });
+  }else{
+    return null;
+  }
+}
+
 app.get('/', function(req, res){
   res.render(__dirname + "/views/index.jade");
 });
@@ -75,14 +95,9 @@ app.get('/signup', function(req, res){
 });
 
 app.get('/dashboard', function(req, res) {
-  if(!req.session.comp_id){
-    req.session.comp_id = makeCompID();
-  }
-  else{
-    redis.get("login_key:" + req.session.comp_id, function(err, user_id){
-      if(!err){req.session.user_id = user_id;}
-    });
-  }
+  var check = dashboard_check(req,res);
+
+  console.log(check);
 
   app.locals.config = {comp_id: req.session.comp_id};
   res.render(__dirname + "/views/dashboard.jade");
@@ -104,11 +119,7 @@ app.get('/_/js/myscript.js', function(req, res){
 io.on('connection', function(socket){
   //console.log(socket.handshake.headers.cookie);
 
-  //check to see how the shit here works with multiple connections... its fishy ===============
-  var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
-  session_id = session_data["comp_id"];
-  //console.log(session_id);
-  //===================
+  
 
 
   //console.log("omg i did something... for once in my goddamn life...");
@@ -144,6 +155,12 @@ io.on('connection', function(socket){
 
   socket.on('signup', function(name, username, age, email, password){
     User.createUser(name, username, age, email, password, function(v){
+
+      //check to see how the shit here works with multiple connections... its fishy ===============
+      var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+      session_id = session_data["comp_id"];
+      //console.log(session_id);
+      //===================
       if(!v){
         //we got some fucked up error shit, check it out biatch 
         //(put some debug prints in here so we can attempts to fix it if it ever actually comes up)
@@ -157,12 +174,11 @@ io.on('connection', function(socket){
 
       }else{
         //console.log("hey");
-        redis.setnx("login_key:" + session_id, v, function(err, set){
+        rClient.setnx("login_key:" + session_id, v, function(err, set){
           if (err) {return;}
           if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
           io.emit(session_id, 'success_sign_up');
         });
-        
       }
     });
   });
