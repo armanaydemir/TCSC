@@ -1,6 +1,7 @@
 // todo
 // add server side stats for us
 // make sure rielle makes shit happen for the shit under this
+// make an invite to team thing and a you have no team dumbass thing
 
 var app = require('express')();
 var http = require('http').Server(app);
@@ -63,16 +64,27 @@ app.get('/logout', function(req, res) {
 
 app.get('/login', function(req, res){
   req.session.comp_id = makeCompID();
+  app.locals.config = {comp_id: req.session.comp_id};
   res.render(__dirname + "/views/login.jade/");
 });
 
 app.get('/signup', function(req, res){ 
   req.session.comp_id = makeCompID();
+  app.locals.config = {comp_id: req.session.comp_id};
   res.render(__dirname + "/views/signup.jade/");
 });
 
 app.get('/dashboard', function(req, res) {
-  req.session.comp_id = makeCompID();
+  if(!req.session.comp_id){
+    req.session.comp_id = makeCompID();
+  }
+  else{
+    redis.get("login_key:" + req.session.comp_id, function(err, user_id){
+      if(!err){req.session.user_id = user_id;}
+    });
+  }
+
+  app.locals.config = {comp_id: req.session.comp_id};
   res.render(__dirname + "/views/dashboard.jade");
 });
 
@@ -95,7 +107,7 @@ io.on('connection', function(socket){
   //check to see how the shit here works with multiple connections... its fishy ===============
   var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
   session_id = session_data["comp_id"];
-  console.log(session_id);
+  //console.log(session_id);
   //===================
 
 
@@ -144,7 +156,13 @@ io.on('connection', function(socket){
         io.emit(session_id, 'sign_up_error[username]'); //means username is taken ... get the pattern with this ish yet?
 
       }else{
-        io.emit(session_id, 'success_sign_up');
+        //console.log("hey");
+        redis.setnx("login_key:" + session_id, v, function(err, set){
+          if (err) {return;}
+          if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
+          io.emit(session_id, 'success_sign_up');
+        });
+        
       }
     });
   });

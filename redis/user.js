@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const passwordHashAlgorithm = 'sha1';
 
 //todo
-//return
+//get the user image thing set up
 
 module.exports = function(redis) {
     var computeSHA1 = function(str) { return crypto.createHash(passwordHashAlgorithm).update(str).digest('hex'); };

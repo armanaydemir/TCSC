@@ -33,14 +33,25 @@
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 script.
-  console.log(document.cookie);
+  console.log(#{config.comp_id})
   var socket = io();
-  $('button').click(function(){
-    
+  $(function(){
+    $('button').click(function(){
     socket.emit('signup', $('#inputName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
       $('#inputEmail').val(), $('#inputPassword').val());
     return false;
+    });
   });
+  
+  socket.on(#{config.comp_id}, function(data){
+    if(data==='success_sign_up'){
+      console.log("we good");
+      location.href = '/dashboard';
+     }
+  });
+      
+
+
 
 
 
