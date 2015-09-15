@@ -47,23 +47,31 @@ function requireLogin (req, res, next) {
 }
 
 function dashboard_check(req, res){
-  if(!req.session.comp_id && req.session.user_id){
-    req.session.comp_id = makeCompID();
-    return {value:"comp_id", comp_id:req.session.comp_id};
-  }
-  else if(req.session.comp_id){
-    rClient.get("login_key:" + req.session.comp_id, function(err, user_id){
+  if(req.session.signup_id) {
+    rClient.get("signup_key:" + req.session.signup_id, function(err, user_id){
       if(!err){
-        console.log(user_id);
+        //console.log(user_id);
         req.session.user_id = user_id;
+
         return {value:"user_id", user_id:user_id};
       }
       else{
         return null;
       }
     });
-  }else{
-    return null;
+  }
+  else if(req.session.login_id) {
+    rClient.get("login_key:" + req.session.login_id, function(err, user_id){
+      if(!err){
+        //console.log(user_id);
+        req.session.user_id = user_id;
+
+        return {value:"user_id", user_id:user_id};
+      }
+      else{
+        return null;
+      }
+    });
   }
 }
 
@@ -82,14 +90,14 @@ app.get('/logout', function(req, res) {
 });
 
 app.get('/login', function(req, res){
-  req.session.comp_id = makeCompID(); //change name to log in key
-  app.locals.config = {comp_id: req.session.comp_id};
+  req.session.login_id = makeCompID(); //change name to log in key
+  app.locals.config = {comp_id: req.session.login_id};
   res.render(__dirname + "/views/login.jade/");
 });
 
 app.get('/signup', function(req, res){ 
-  req.session.comp_id = makeCompID(); //change name to sign up key ... have comp_id be seperate thing from signups... (more secure)
-  app.locals.config = {comp_id: req.session.comp_id};
+  req.session.signup_id = makeCompID(); //change name to sign up key ... have comp_id be seperate thing from signups... (more secure)
+  app.locals.config = {comp_id: req.session.signup_id};
   res.render(__dirname + "/views/signup.jade/");
 });
 
@@ -165,7 +173,7 @@ io.on('connection', function(socket){
 
       //check to see how the shit here works with multiple connections... its fishy ===============
       var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
-      session_id = session_data["comp_id"];
+      session_id = session_data["sign_up_id"];
       //console.log(session_id);
       //===================
       if(!v){
@@ -192,7 +200,7 @@ io.on('connection', function(socket){
 
   socket.on('login', function(log, pass){
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
-    session_id = session_data["comp_id"];
+    session_id = session_data["login_id"];
     User.validateUser(log, pass, function(v, user_id, pass){
       if(v === 'true'){
         rClient.setnx("login_key:" + session_id, v, function(err, set){
