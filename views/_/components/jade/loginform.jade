@@ -1,15 +1,15 @@
 #login.container(style='position: fixed; margin-top:0.5em')
       form.form-signin
         img(src='images/tcsclogo.png')
-        label.sr-only(for='inputEmail') Email address
-        input#inputEmail.form-control(type='email', placeholder='Email address', required='', autofocus='')
+        label.sr-only(for='inputEmail') Email Address or Username
+        input#inputEmail.form-control(type='email', placeholder='Email address or Username', required='', autofocus='')
         label.sr-only(for='inputPassword') Password
         input#inputPassword.form-control(type='password', placeholder='Password', required='')
         .checkbox
           label
             input(type='checkbox', value='remember-me')
             |  Remember me
-        button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign In
+        button.btn.btn-lg.btn-primary.btn-block(type='button' autocomplete='off') Sign In
         br
         p(style='text-align:center')
           | Don't have an account? 
@@ -21,3 +21,21 @@
             b Click here.
         // modify a modal for a forgotten password
     // /container
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+script.
+  console.log(#{config.comp_id})
+  var socket = io();
+  $(function(){
+    $('button').click(function(){
+    socket.emit('login', $('#inputEmail').val(), $('#inputPassword').val());
+    return false;
+    });
+  });
+  
+  socket.on(#{config.comp_id}, function(data){
+    if(data==='success_sign_up'){
+      console.log("we good");
+      location.href = '/dashboard';
+     }
+  });

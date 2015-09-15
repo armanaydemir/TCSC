@@ -49,13 +49,14 @@ function requireLogin (req, res, next) {
 function dashboard_check(req, res){
   if(!req.session.comp_id && req.session.user_id){
     req.session.comp_id = makeCompID();
-    return {comp_id: req.session.comp_id}
+    return {value:"comp_id", comp_id:req.session.comp_id};
   }
   else if(req.session.comp_id){
     rClient.get("login_key:" + req.session.comp_id, function(err, user_id){
       if(!err){
+        console.log(user_id);
         req.session.user_id = user_id;
-        return {user_id: req.session.user_id}
+        return {value:"user_id", user_id:user_id};
       }
       else{
         return null;
@@ -70,8 +71,6 @@ app.get('/', function(req, res){
   res.render(__dirname + "/views/index.jade");
 });
 
-app.get('/')
-
 app.get('/images/tcsclogo.png', function(req, res){
   res.sendFile(__dirname + "/views/images/tcsclogo.png")
 
@@ -83,24 +82,37 @@ app.get('/logout', function(req, res) {
 });
 
 app.get('/login', function(req, res){
-  req.session.comp_id = makeCompID();
+  req.session.comp_id = makeCompID(); //change name to log in key
   app.locals.config = {comp_id: req.session.comp_id};
   res.render(__dirname + "/views/login.jade/");
 });
 
 app.get('/signup', function(req, res){ 
-  req.session.comp_id = makeCompID();
+  req.session.comp_id = makeCompID(); //change name to sign up key ... have comp_id be seperate thing from signups... (more secure)
   app.locals.config = {comp_id: req.session.comp_id};
   res.render(__dirname + "/views/signup.jade/");
 });
 
 app.get('/dashboard', function(req, res) {
-  var check = dashboard_check(req,res);
+  var data = dashboard_check(req,res); 
+  if(data.value === "comp_id"){
+    req.session.comp_id = data.comp_id;
+  }else if(data.value === "user_id"){
+    req.session.user_id = data.user_id;
+  }
+  rClient.get("user:" + req.session.user_id + ":team_id", function(err, val){
+    if(err){
+      app.locals.config = {comp_id: req.session.comp_id, };
+      res.render(__dirname + "/views/dashboard_no_team.jade")
+    }
+    else{
+      app.locals.config = {comp_id: req.session.comp_id};
+      res.render(__dirname + "/views/dashboard.jade");
+    }
+  });
 
-  console.log(check);
-
-  app.locals.config = {comp_id: req.session.comp_id};
-  res.render(__dirname + "/views/dashboard.jade");
+  //console.log(check);
+  
 });
 
 app.use('/_/js/bootstrap.js', function(req, res){
@@ -117,11 +129,6 @@ app.get('/_/js/myscript.js', function(req, res){
 
 
 io.on('connection', function(socket){
-  //console.log(socket.handshake.headers.cookie);
-
-  
-
-
   //console.log("omg i did something... for once in my goddamn life...");
 
   socket.on('send_message', function(msg){
@@ -174,7 +181,7 @@ io.on('connection', function(socket){
 
       }else{
         //console.log("hey");
-        rClient.setnx("login_key:" + session_id, v, function(err, set){
+        rClient.setnx("signup_key:" + session_id, v, function(err, set){
           if (err) {return;}
           if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
           io.emit(session_id, 'success_sign_up');
@@ -184,16 +191,22 @@ io.on('connection', function(socket){
   });
 
   socket.on('login', function(log, pass){
+    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+    session_id = session_data["comp_id"];
     User.validateUser(log, pass, function(v, user_id, pass){
-      if(v == 'true'){
-        req.session.user_id = user_id;
-        res.redirect('/dashboard');
+      if(v === 'true'){
+        rClient.setnx("login_key:" + session_id, v, function(err, set){
+          if (err) {return;}
+          if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
+          io.emit(session_id, 'success_log_in');
+        });
       }else if(v == 'invalid_pass'){
-        io.emit(req.session.comp_id, 'invalid_pass');
+        io.emit(session_id, 'invalid_pass');
       }else if(v == 'invalid_log'){
-        io.emit(req.session.comp_id, 'invalid_log');
+        io.emit(session_id, 'invalid_log');
       }else{
-        io.emit(req.session.comp_id, 'error');
+        //console.log("jjj");
+        io.emit(session_id, 'error');
       }
     });
   });

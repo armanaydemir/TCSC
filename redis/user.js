@@ -1,6 +1,7 @@
 const Overload = require('jshelpers').Overload;
 const crypto = require('crypto');
 const passwordHashAlgorithm = 'sha1';
+const email_regex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
 
 //todo
 //get the user image thing set up
@@ -67,7 +68,7 @@ module.exports = function(redis) {
             })
             .add([String, Function], function(log, callback) {
             	if(email_regex.test(log)){
-	                redis.get('email:' + email.toLowerCase() + ':id', function(error, id) {
+	                redis.get('email:' + log.toLowerCase() + ':id', function(error, id) {
 	                    if (error) {
 	                        callback(null);
 	                        return;
@@ -79,7 +80,7 @@ module.exports = function(redis) {
 	                    user.getUser(parseInt(id), callback);
 	                });
 	            }else{
-	            	redis.get('username:' + username + ':id', function(error, id) {
+	            	redis.get('username:' + log + ':id', function(error, id) {
 	                    if (error) {
 	                        callback(null);
 	                        return;
@@ -96,7 +97,7 @@ module.exports = function(redis) {
     	validateUser: function(log, pass, callback){
     		callback = callback || emptyFunction;
     		if(email_regex.test(log)){
-    			User.getUser(log, function(user){
+    			this.getUser(log, function(user){
     				if(user == null){callback("invalid_log");return;}
 
     				redis.get('user' + user.id + ':password', function(error, password){
