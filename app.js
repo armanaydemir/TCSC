@@ -15,6 +15,7 @@ var fs = require('fs');
 //ayo remember to turn on the redis-server when you run this
 var redis = require('redis');
 var rClient = redis.createClient();
+const Overload = require('jshelpers').Overload;
 const User = require('./redis/user.js')(rClient);
 const Team = require('./redis/team.js')(rClient);
 const Chat = require('./redis/message.js')(rClient,io);
@@ -39,7 +40,7 @@ function makeCompID(){
 }
 
 function requireLogin (req, res, next) {
-  if (!req.user_id) {
+  if (!req.session.user_id) {
     res.redirect('/login');
   } else {
     next();
@@ -52,8 +53,9 @@ function dashboard_check(req, res){
       if(!err){
         //console.log(user_id);
         req.session.user_id = user_id;
-
-        return {value:"user_id", user_id:user_id};
+        var comp_id = req.session.signup_id;
+        delete req.session.signup_id;
+        return {value:"user_id", user_id:user_id, comp_id:comp_id};
       }
       else{
         return null;
@@ -65,15 +67,39 @@ function dashboard_check(req, res){
       if(!err){
         //console.log(user_id);
         req.session.user_id = user_id;
-
-        return {value:"user_id", user_id:user_id};
+        var comp_id = req.session.signup_id;
+        delete req.session.login_id;
+        return {value:"user_id", user_id:user_id, comp_id:comp_id};
       }
       else{
         return null;
       }
     });
+  }else if(req.session.comp_id && req.session.user_id) {
+    return {value:"comp_id", comp_id:req.session.comp_id};
+  }else if(req.session.user_id){
+    return {value:"comp_id", comp_id:makeCompID()}
+  }else{
+    return null;
   }
 }
+
+// app.use(function(req, res, next) {
+//   if (req.session && req.session.user) {
+//     User.findOne({ email: req.session.user.email }, function(err, user) {
+//       if (user) {
+//         req.user = user;
+//         delete req.user.password; // delete the password from the session
+//         req.session.user = user;  //refresh the session value
+//         res.locals.user = user;
+//       }
+//       // finishing processing the middleware and run the route
+//       next();
+//     });
+//   } else {
+//     next();
+//   }
+// });
 
 app.get('/', function(req, res){
   res.render(__dirname + "/views/index.jade");
@@ -97,30 +123,36 @@ app.get('/login', function(req, res){
 
 app.get('/signup', function(req, res){ 
   req.session.signup_id = makeCompID(); //change name to sign up key ... have comp_id be seperate thing from signups... (more secure)
-  app.locals.config = {comp_id: req.session.signup_id};
+  console.log(req.session.signup_id);
+  app.locals.config = {signup_id: req.session.signup_id};
   res.render(__dirname + "/views/signup.jade/");
 });
 
 app.get('/dashboard', function(req, res) {
   var data = dashboard_check(req,res); 
-  if(data.value === "comp_id"){
-    req.session.comp_id = data.comp_id;
+  if(!data){
+    //errorrrrrrrrrr (or not signed in)
   }else if(data.value === "user_id"){
     req.session.user_id = data.user_id;
+    req.session.comp_id = data.comp_id;
+    delete req.session.signup_id;
+    delete req.session.login_id;
+  }else{
+    req.session.comp_id = data.comp_id;
+    delete req.session.signup_id;
+    delete req.session.login_id;
   }
-  rClient.get("user:" + req.session.user_id + ":team_id", function(err, val){
-    if(err){
-      app.locals.config = {comp_id: req.session.comp_id, };
+  User.getUser(req.session.user_id, function(user){
+    if(!user.team){
+      app.locals.config = {comp_id: req.session.comp_id, user:user};
       res.render(__dirname + "/views/dashboard_no_team.jade")
     }
     else{
-      app.locals.config = {comp_id: req.session.comp_id};
+      app.locals.config = {comp_id: req.session.comp_id, user:user};
+      console.log(user);
       res.render(__dirname + "/views/dashboard.jade");
     }
   });
-
-  //console.log(check);
-  
 });
 
 app.use('/_/js/bootstrap.js', function(req, res){
@@ -169,14 +201,19 @@ io.on('connection', function(socket){
   });
 
   socket.on('signup', function(name, username, age, email, password){
+    console.log("signup_server_socket")
     User.createUser(name, username, age, email, password, function(v){
 
       //check to see how the shit here works with multiple connections... its fishy ===============
       var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
-      session_id = session_data["sign_up_id"];
-      //console.log(session_id);
+      session_id = session_data["signup_id"];
+      console.log(session_id);
+      console.log();
+      console.log(v);
+      console.log();
       //===================
       if(!v){
+        console.log("woah");
         //we got some fucked up error shit, check it out biatch 
         //(put some debug prints in here so we can attempts to fix it if it ever actually comes up)
 

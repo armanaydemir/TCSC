@@ -16,7 +16,6 @@ module.exports = function(redis) {
 
     		redis.incr('global:nextUserId', function(error, id) {
     			if (error) {callback("err");return;}
-                id --;
 
             	redis.setnx("email:" + email.toLowerCase() + ":id", id, function(err, set){
             		if (err) {callback(null);return;}
@@ -46,53 +45,29 @@ module.exports = function(redis) {
     	},
 
     	//returns all identifiers of user [id, email, username]
-    	getUser: Overload
-    		.add([Number], function(id) { user.getUser(id, emptyFunction); })
-            .add([String], function(log) { user.getUser(log, emptyFunction); })
-            .add([Number, Function], function(id, callback) {
-                redis
-                    .multi()
-                    .get('user:' + id + ':email')
-                    .get('user:' + id + 'username')
-                    .exec(function(error, results) {
-                        if (error) {
-                            callback(null);
-                            return;
-                        }
-                        callback({
-                            id: id,
-                            email: results[0],
-                            username: results[1]
-                        });
+    	getUser: function(id, callback) {
+            redis
+                .multi()
+                .get('user:' + id + ':email')
+                .get('user:' + id + ':username')
+                .get('user:' + id + ':age')
+                .get('user:' + id + ':name')
+                .get('user:' + id + ':team')
+                .exec(function(error, results) {
+                    if (error) {
+                        callback(null);
+                        return;
+                    }
+                    callback({
+                        id: id,
+                        email: results[0],
+                        username: results[1],
+                        age: results[2],
+                        name: results[3],
+                        team: results[4]
                     });
-            })
-            .add([String, Function], function(log, callback) {
-            	if(email_regex.test(log)){
-	                redis.get('email:' + log.toLowerCase() + ':id', function(error, id) {
-	                    if (error) {
-	                        callback(null);
-	                        return;
-	                    }
-	                    if (id == null) {
-	                        callback(null);
-	                        return;
-	                    }
-	                    user.getUser(parseInt(id), callback);
-	                });
-	            }else{
-	            	redis.get('username:' + log + ':id', function(error, id) {
-	                    if (error) {
-	                        callback(null);
-	                        return;
-	                    }
-	                    if (id == null) {
-	                        callback(null);
-	                        return;
-	                    }
-	                    user.getUser(parseInt(id), callback);
-	                });
-	            }
-            }),
+                });
+        },
 
     	validateUser: function(log, pass, callback){
     		callback = callback || emptyFunction;
