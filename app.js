@@ -50,10 +50,11 @@ function requireLogin (req, res, next) {
 function dashboard_check(req, res){
   if(req.session.signup_id) {
     rClient.get("signup_key:" + req.session.signup_id, function(err, user_id){
-      if(!err){
+      if(!err && user_id){
         //console.log(user_id);
         req.session.user_id = user_id;
         var comp_id = req.session.signup_id;
+        rClient.del("signup_key:" + req.session.signup_id);
         delete req.session.signup_id;
         return {value:"user_id", user_id:user_id, comp_id:comp_id};
       }
@@ -61,13 +62,15 @@ function dashboard_check(req, res){
         return null;
       }
     });
+
   }
   else if(req.session.login_id) {
     rClient.get("login_key:" + req.session.login_id, function(err, user_id){
-      if(!err){
+      if(!err && user_id){
         //console.log(user_id);
         req.session.user_id = user_id;
-        var comp_id = req.session.signup_id;
+        var comp_id = req.session.login_id;
+        rClient.del("login_key:" + req.session.login_id);
         delete req.session.login_id;
         return {value:"user_id", user_id:user_id, comp_id:comp_id};
       }
@@ -84,30 +87,16 @@ function dashboard_check(req, res){
   }
 }
 
-// app.use(function(req, res, next) {
-//   if (req.session && req.session.user) {
-//     User.findOne({ email: req.session.user.email }, function(err, user) {
-//       if (user) {
-//         req.user = user;
-//         delete req.user.password; // delete the password from the session
-//         req.session.user = user;  //refresh the session value
-//         res.locals.user = user;
-//       }
-//       // finishing processing the middleware and run the route
-//       next();
-//     });
-//   } else {
-//     next();
-//   }
-// });
-
 app.get('/', function(req, res){
   res.render(__dirname + "/views/index.jade");
 });
 
+app.get('images/emblem.png', function(req, res){
+  res.sendFile(__dirname + "/views/images/emblem.png")
+});
+
 app.get('/images/tcsclogo.png', function(req, res){
   res.sendFile(__dirname + "/views/images/tcsclogo.png")
-
 });
 
 app.get('/logout', function(req, res) {
@@ -117,7 +106,7 @@ app.get('/logout', function(req, res) {
 
 app.get('/login', function(req, res){
   req.session.login_id = makeCompID(); //change name to log in key
-  app.locals.config = {comp_id: req.session.login_id};
+  app.locals.config = {login_id: req.session.login_id};
   res.render(__dirname + "/views/login.jade/");
 });
 
@@ -145,6 +134,7 @@ app.get('/dashboard', function(req, res) {
   User.getUser(req.session.user_id, function(user){
     if(!user.team){
       app.locals.config = {comp_id: req.session.comp_id, user:user};
+      console.log(user);
       res.render(__dirname + "/views/dashboard_no_team.jade")
     }
     else{
@@ -243,7 +233,7 @@ io.on('connection', function(socket){
         rClient.setnx("login_key:" + session_id, v, function(err, set){
           if (err) {return;}
           if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
-          io.emit(session_id, 'success_log_in');
+          io.emit(session_id, 'success_login');
         });
       }else if(v == 'invalid_pass'){
         io.emit(session_id, 'invalid_pass');
@@ -252,6 +242,22 @@ io.on('connection', function(socket){
       }else{
         //console.log("jjj");
         io.emit(session_id, 'error');
+      }
+    });
+  });
+
+  socket.on('register_team', function(team_name, school, pass){
+    //have a check to make sure team name is not innapropro
+    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+    var user = session_data["user"];
+    Team.createTeam(team_name, school, user.id, pass, function(data){
+      if(!data){
+        //error
+      }else if(data === "name"){
+        io.emit(session_data["comp_id"], "register_name");
+      }
+      else{
+        io.emit(session_data["comp_id"], "success_register");
       }
     });
   });

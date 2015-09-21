@@ -7,7 +7,6 @@ module.exports = function(redis, io) {
 				if (er) {callback(false);return;}
 				redis.incr("team:" + team_id + ":message_order", function(error, id){
 					if (error) {callback(false);return;}
-	                id --;
 
 
 	                var d = new Date();

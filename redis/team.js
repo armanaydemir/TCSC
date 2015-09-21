@@ -17,7 +17,6 @@ module.exports = function(redis) {
                     callback(false);
                     return;
                 }
-                id--;
 
                 redis.setnx("team_name:" + name + ":id", id, function (err, set) {
                     if (err) {
@@ -25,11 +24,12 @@ module.exports = function(redis) {
                         return;
                     }
                     if (set == 0) {
-                        callback(false);
+                        callback("name");
                         return;
                     } //means team name is already taken
                     redis
                         .multi()
+                        .set("user:" + leader_id + ":team", id)
                         .set("team:" + id + ":name", name)
                         .set("team:" + id + ":points", 0)
                         .set("team:" + id + ":school", school)

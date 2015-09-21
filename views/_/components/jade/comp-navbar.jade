@@ -24,7 +24,7 @@ nav.navbar.navbar-default.navbar-fixed-top.navbar-inverse(role='navigation')
                 img.img-rounded(src='images/useridenticon.png', alt='id', width='20px', height='20px')
                 span.caret
               ul.dropdown-menu
-                li.dropdown-header Signed in as "username"
+                li.dropdown-header Signed in as #{config.user.username}
                 li.divider(role='separator')
                 li
                   a(href='#') Your Profile

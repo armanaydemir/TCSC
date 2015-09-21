@@ -33,7 +33,6 @@ module.exports = function(redis) {
 				if(admin == 1){
 					redis.incr("global:question_id", function(err, id){
 						if(err){callback(0); return;}
-						id --;
 						redis.setnx("question_name:" + name + ":id", id, function(e, set){
 							if(err){callback(0); return;}
 							if (set == 0) {

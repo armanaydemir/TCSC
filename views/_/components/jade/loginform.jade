@@ -13,7 +13,7 @@
         br
         p(style='text-align:center')
           | Don't have an account? 
-          a(href='signup.php', style='color: #3CB371')
+          a(href='signup', style='color: #3CB371')
             b Sign up here.
         p(style='text-align:center')
           | Forgot your password? 
@@ -33,8 +33,8 @@ script.
     });
   });
   
-  socket.on(#{config.comp_id}, function(data){
-    if(data==='success_sign_up'){
+  socket.on(#{config.login_id}, function(data){
+    if(data==='success_login'){
       console.log("we good");
       location.href = '/dashboard';
      }

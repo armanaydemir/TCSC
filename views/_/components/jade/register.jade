@@ -1,15 +1,10 @@
 #signup.container(style='position: fixed; margin-top:0.5em')
       form.form-signin.signup(action="")
         img(src='images/tcsclogo.png')
-        label.sr-only(for='inputName') Name
-        input#inputName.form-control(type='name', placeholder='Name', required='', autofocus='')
-        label.sr-only(for='inputUsername') Username
-        input#inputUsername.form-control(type='username', placeholder='Username', required='', autofocus='')
-        label.sr-only(for='inputAge') Age
-        input#inputAge.form-control(type='age', placeholder='Age', required='', autofocus='')
-        
-        label.sr-only(for='inputEmail') Email address
-        input#inputEmail.form-control(type='email', placeholder='Email address', required='', autofocus='')
+        label.sr-only(for='inputName') Team Name
+        input#inputName.form-control(type='name', placeholder='Team Name', required='', autofocus='')
+        label.sr-only(for='inputSchool') School (Optional)
+        input#inputSchool.form-control(type='school', placeholder='School (Optional', required='', autofocus='')
         
         label.sr-only(for='inputPassword') Password
         input#inputPassword.form-control(type='password', placeholder='Password', required='')
@@ -33,20 +28,19 @@
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 script.
-  console.log(#{config.signup_id})
+  //console.log(#{config._id})
   var socket = io();
   $(function(){
     $('button').click(function(){
-    socket.emit('signup', $('#inputName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
-      $('#inputEmail').val(), $('#inputPassword').val());
+    socket.emit('register_team', $('#inputName').val(),  $('#inputSchool').val(),$('#inputPassword').val());
     return false;
     });
   });
   
-  socket.on(#{config.signup_id}, function(data){
-    if(data==='success_sign_up'){
-      console.log("we good");
-      location.href = '/dashboard';
+  socket.on(#{config.comp_id}, function(data){
+    if(data==='success_register'){
+      //console.log("we good");
+      location.href = '/team'; //follow teams and invite people to team
      }
   });
       
