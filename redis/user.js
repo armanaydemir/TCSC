@@ -94,7 +94,9 @@ module.exports = function(redis) {
             callback = callback || emptyFunction;
             user.setnx("user:" + user_id + "team_id", team_id, function(err, set){
                 if (err) {callback(false);return;}
-                if (set==0) {callback(false);return;} //is already part of team (must leave)
+                if (set==0) {callback("over_team");return;} //is already part of team (must leave)
+                callback(true);
+                return(true);
             });
         },
 

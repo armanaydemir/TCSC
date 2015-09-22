@@ -63,6 +63,7 @@ module.exports = function(redis) {
 
         addMember: function (team_id, user_id, callback) {
             callback = callback || emptyFunction;
+            //add a test to make sure not too many people in team
             redis.sadd("team:" + team_id + ":members", user_id, function (err, set) {
                 if (err) {
                     callback(false);
@@ -73,6 +74,7 @@ module.exports = function(redis) {
                     return;
                 } //means user was already part of this team
                 callback(true);
+                return(true);
             });
         },
 
@@ -104,8 +106,13 @@ module.exports = function(redis) {
                         callback(false);
                         return;
                     }
-                    callback(computeSHA1(pass) == password);
-                    return (computeSHA1(pass) == password);
+                    if(computeSHA1(pass) == password){
+                        callback(true);
+                        return(true);
+                    }else{
+                        callback("invalid_pass");
+                        return("invalid_pass");
+                    }
                 });
             });
         },

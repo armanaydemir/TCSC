@@ -107,13 +107,15 @@ app.get('/logout', function(req, res) {
 app.get('/login', function(req, res){
   req.session.login_id = makeCompID(); //change name to log in key
   app.locals.config = {login_id: req.session.login_id};
+  req.session.user_id = 0;
   res.render(__dirname + "/views/login.jade/");
 });
 
 app.get('/signup', function(req, res){ 
   req.session.signup_id = makeCompID(); //change name to sign up key ... have comp_id be seperate thing from signups... (more secure)
-  console.log(req.session.signup_id);
+  console.log(req.session.signup_id); 
   app.locals.config = {signup_id: req.session.signup_id};
+  req.session.user_id = 0;
   res.render(__dirname + "/views/signup.jade/");
 });
 
@@ -249,7 +251,11 @@ io.on('connection', function(socket){
   socket.on('register_team', function(team_name, school, pass){
     //have a check to make sure team name is not innapropro
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
-    var user = session_data["user"];
+    console.log(session_data);
+    user = session_data["user"];
+    console.log(user);
+    u = session_data["comp_id"];
+    console.log(u);
     Team.createTeam(team_name, school, user.id, pass, function(data){
       if(!data){
         //error
@@ -258,6 +264,43 @@ io.on('connection', function(socket){
       }
       else{
         io.emit(session_data["comp_id"], "success_register");
+      }
+    });
+  });
+
+  socket.on('join_team', function(team_name, pass){
+    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+    console.log(session_data);
+    user = session_data["user"];
+    console.log(user);
+    u = session_data["comp_id"];
+    console.log(u);
+    Team.validateTeam(team_name, pass, function(data){
+      if(!data){
+        //error
+      }else if(data === "invalid_pass"){
+        io.emit(session_data["comp_id"], "join_pass");
+      }
+      else{
+        var team_id = rClient.get("team_name:" + team_name + ":id")
+        User.addToTeam(user.id, team_id, function(val){
+          if(!val){
+            //err
+          }else if("over_team"){
+            //already part of team
+          }else{
+            Team.addMember(team_id, user.id, function(ill){
+              if(!ill){
+                //still err
+              }else if(ill === "member_overload"){
+                //to many peeeeeps
+                User.leaveFromTeam(user.id, team_id);
+              }else{
+                io.emit(session_data["comp_id"], "success_join");
+              }
+            });
+          }
+        });
       }
     });
   });

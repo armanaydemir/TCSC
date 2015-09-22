@@ -1,17 +1,15 @@
-#signup.container(style='position: fixed; margin-top:0.5em')
-      form.form-signin.signup(action="")
+#join.container(style='position: fixed; margin-top:0.5em')
+      form.form-signin.join(action="")
         br
         br 
         br
         br
         label.sr-only(for='inputName') Team Name
         input#inputName.form-control(type='name', placeholder='Team Name', required='', autofocus='')
-        label.sr-only(for='inputSchool') School (Optional)
-        input#inputSchool.form-control(type='school', placeholder='School (Optional', required='', autofocus='')
         
         label.sr-only(for='inputPassword') Password
         input#inputPassword.form-control(type='password', placeholder='Password', required='')
-        button.btn.btn-lg.btn-danger.btn-block(type='button' autocomplete='off') Sign Up
+        button.btn.btn-lg.btn-danger.btn-block(type='button' autocomplete='off') Join
         br
         
     // /container
@@ -23,21 +21,14 @@ script.
   var socket = io();
   $(function(){
     $('button').click(function(){
-    socket.emit('register_team', $('#inputName').val(),  $('#inputSchool').val(),$('#inputPassword').val());
+    socket.emit('join_team', $('#inputName').val(), $('#inputPassword').val());
     return false;
     });
   });
   
   socket.on(#{config.comp_id}, function(data){
-    if(data==='success_register'){
+    if(data==='success_joing_team'){
       //console.log("we good");
       location.href = '/team'; //follow teams and invite people to team
      }
   });
-      
-
-
-
-
-
-
