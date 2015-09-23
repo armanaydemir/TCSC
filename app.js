@@ -39,27 +39,22 @@ function makeCompID(){
   return d.getTime() + (Math.random() * 9900000) + (Math.random() * 99000300);
 }
 
-function requireLogin (req, res, next) {
-  if (!req.session.user_id) {
-    res.redirect('/login');
-  } else {
-    next();
-  }
-}
-
-function dashboard_check(req, res){
+function dashboard_check(req, res, next){
   if(req.session.signup_id) {
     rClient.get("signup_key:" + req.session.signup_id, function(err, user_id){
       if(!err && user_id){
         //console.log(user_id);
         req.session.user_id = user_id;
         var comp_id = req.session.signup_id;
+        console.log("debug: " + comp_id);
         rClient.del("signup_key:" + req.session.signup_id);
         delete req.session.signup_id;
-        return {value:"user_id", user_id:user_id, comp_id:comp_id};
+        req.session.comp_id = comp_id;
+        next();
       }
       else{
-        return null;
+        console.log("debug1");
+        res.redirect('login');
       }
     });
 
@@ -70,20 +65,25 @@ function dashboard_check(req, res){
         //console.log(user_id);
         req.session.user_id = user_id;
         var comp_id = req.session.login_id;
+        console.log("debug: " + comp_id);
         rClient.del("login_key:" + req.session.login_id);
-        delete req.session.login_id;
-        return {value:"user_id", user_id:user_id, comp_id:comp_id};
+        delete req.session.login_id
+        req.session.comp_id = comp_id;
+        next();
       }
       else{
-        return null;
+        console.log("debug2");
+        res.redirect('login');
       }
     });
   }else if(req.session.comp_id && req.session.user_id) {
-    return {value:"comp_id", comp_id:req.session.comp_id};
+    next();
   }else if(req.session.user_id){
-    return {value:"comp_id", comp_id:makeCompID()}
+    req.session.comp_id = makeCompID();
+    next();
   }else{
-    return null;
+    console.log("debug3");
+    res.redirect('login');
   }
 }
 
@@ -119,20 +119,8 @@ app.get('/signup', function(req, res){
   res.render(__dirname + "/views/signup.jade/");
 });
 
-app.get('/dashboard', function(req, res) {
-  var data = dashboard_check(req,res); 
-  if(!data){
-    //errorrrrrrrrrr (or not signed in)
-  }else if(data.value === "user_id"){
-    req.session.user_id = data.user_id;
-    req.session.comp_id = data.comp_id;
-    delete req.session.signup_id;
-    delete req.session.login_id;
-  }else{
-    req.session.comp_id = data.comp_id;
-    delete req.session.signup_id;
-    delete req.session.login_id;
-  }
+app.get('/dashboard', dashboard_check, function(req, res){
+  console.log(req.session);
   User.getUser(req.session.user_id, function(user){
     if(!user.team){
       app.locals.config = {comp_id: req.session.comp_id, user:user};
