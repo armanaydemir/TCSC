@@ -33,5 +33,4 @@ module.exports = function(redis, io) {
 
 	};
 	return notification;
-
 };

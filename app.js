@@ -182,6 +182,7 @@ io.on('connection', function(socket){
 
   socket.on('signup', function(name, username, age, email, password){
     console.log("signup_server_socket")
+    //Team.searchTeam("a", function(){});
     User.createUser(name, username, age, email, password, function(v){
 
       //check to see how the shit here works with multiple connections... its fishy ===============
@@ -291,6 +292,10 @@ io.on('connection', function(socket){
         });
       }
     });
+  });
+  
+  socket.on('search_team', function(team_id){
+    
   });
 });
 

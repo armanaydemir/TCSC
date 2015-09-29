@@ -8,6 +8,17 @@ module.exports = function(redis) {
     var computeSHA1 = function(str) { return crypto.createHash(passwordHashAlgorithm).update(str).digest('hex'); };
     var emptyFunction = function() {};
 
+    function nextLetter(s){
+        return s.replace(/([a-zA-Z])[^a-zA-Z]*$/, function(a){
+            var c= a.charCodeAt(0);
+            switch(c){
+                case 90: return 'A';
+                case 122: return 'a';
+                default: return String.fromCharCode(++c);
+            }
+        });
+    }
+
 
     var team = {
         createTeam: function (name, school, leader_id, password, callback) {
@@ -18,7 +29,7 @@ module.exports = function(redis) {
                     return;
                 }
 
-                redis.setnx("team_name:" + name + ":id", id, function (err, set) {
+                redis.setnx("team_name:" + name.toLowerCase() + ":id", id, function (err, set) {
                     if (err) {
                         callback(false);
                         return;
@@ -30,7 +41,7 @@ module.exports = function(redis) {
                     redis
                         .multi()
                         .set("user:" + leader_id + ":team", id)
-                        .set("team:" + id + ":name", name)
+                        .set("team:" + id + ":name", + name.toLowerCase() + ":" + name)
                         .set("team:" + id + ":points", 0)
                         .set("team:" + id + ":school", school)
                         .sadd("team:" + id + ":members", leader_id)
@@ -117,6 +128,15 @@ module.exports = function(redis) {
             });
         },
 
+        searchTeam: function (input, callback) {
+            console.log("woaj");
+            redis.zrangebylex("global:leaderboard", "[" + input, "(" + input.substring(0, input.length -1) + nextLetter(input.slice(-1)), function(err, array){
+                console.log(array.toString());
+                callback(array);
+            });
+            //console.log(query.toString());
+        },
+
         followTeam: function (other_id, team_id, callback) {
             callback = callback || emptyFunction;
             redis.sadd("team:" + team_id + ":following", other_id, function (err, set) {
@@ -137,6 +157,7 @@ module.exports = function(redis) {
                 });
             });
         },
+
 
         unfollowTeam: function (other_id, team_id, callback) {
             callback = callback || emptyFunction;
