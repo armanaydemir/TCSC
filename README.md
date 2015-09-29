@@ -1,5 +1,8 @@
 # TCSC
-##Get it running: 
+###Get it running: 
      - first run command 'redis-server' in separate terminal window  
      - then run command 'node app.js' (make sure you have node installed) to run on localhost:3000
-http://stackoverflow.com/questions/8988855/include-another-html-file-in-a-html-file
+
+###Access Redis:
+     - run command 'redis-cli' to open 'portal'
+     - you can see all the commands and stuff for redis at www.redis.io
