@@ -46,14 +46,12 @@ function dashboard_check(req, res, next){
         //console.log(user_id);
         req.session.user_id = user_id;
         var comp_id = req.session.signup_id;
-        console.log("debug: " + comp_id);
         rClient.del("signup_key:" + req.session.signup_id);
         delete req.session.signup_id;
         req.session.comp_id = comp_id;
         next();
       }
       else{
-        console.log("debug1");
         res.redirect('login');
       }
     });
@@ -65,14 +63,12 @@ function dashboard_check(req, res, next){
         //console.log(user_id);
         req.session.user_id = user_id;
         var comp_id = req.session.login_id;
-        console.log("debug: " + comp_id);
         rClient.del("login_key:" + req.session.login_id);
         delete req.session.login_id
         req.session.comp_id = comp_id;
         next();
       }
       else{
-        console.log("debug2");
         res.redirect('login');
       }
     });
@@ -82,27 +78,21 @@ function dashboard_check(req, res, next){
     req.session.comp_id = makeCompID();
     next();
   }else{
-    console.log("debug3");
     res.redirect('login');
   }
 }
 
-app.get('/', function(req, res){
-  res.render(__dirname + "/views/index.jade");
-});
+//simple routes ---------------------
+app.get('images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png")});
+app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png")});
+app.get('/_/js/bootstrap.js', function(req, res){res.sendFile(__dirname + '/views/_/js/bootstrap.js');});
+app.get('/_/js/jquery.js', function(req, res){res.sendFile(__dirname + '/views/_/js/jquery.js');});
+app.get('/_/js/myscript.js', function(req, res){res.sendFile(__dirname + '/views/_/js/myscript.js');});
 
-app.get('images/emblem.png', function(req, res){
-  res.sendFile(__dirname + "/views/images/emblem.png")
-});
-
-app.get('/images/tcsclogo.png', function(req, res){
-  res.sendFile(__dirname + "/views/images/tcsclogo.png")
-});
-
-app.get('/logout', function(req, res) {
-  req.session.reset();
-  res.redirect('/');
-});
+app.get('new_question', function(req, res){res.render(__dirname + "/views/new_question.jade")});
+app.get('/', function(req, res){res.render(__dirname + "/views/index.jade");});
+app.get('/logout', function(req, res) {req.session.reset();res.redirect('/');});
+//-----------------------
 
 app.get('/login', function(req, res){
   req.session.login_id = makeCompID(); //change name to log in key
@@ -134,19 +124,6 @@ app.get('/dashboard', dashboard_check, function(req, res){
     }
   });
 });
-
-app.use('/_/js/bootstrap.js', function(req, res){
-  res.sendFile(__dirname + '/views/_/js/bootstrap.js');
-});
-
-app.get('/_/js/jquery.js', function(req, res){
-  res.sendFile(__dirname + '/views/_/js/jquery.js');
-});
-
-app.get('/_/js/myscript.js', function(req, res){
-  res.sendFile(__dirname + '/views/_/js/myscript.js');
-});
-
 
 io.on('connection', function(socket){
   //console.log("omg i did something... for once in my goddamn life...");

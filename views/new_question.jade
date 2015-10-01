@@ -4,27 +4,25 @@ html(lang='en')
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1')
-    title TCSC - About Us
-    link(href='_/css/bootstrap.css', rel='stylesheet')
-    link(href='_/css/indexstyles.css', rel='stylesheet')
-  body#about.col-lg-12
+    title TCSC - New Question
+    style
+      include _/css/bootstrap.css
+      include _/css/indexstyles.css
+  body#signup.col-lg-12
     .site-wrapper
       .site-wrapper-inner
         .cover-container
           header
-            include '_/components/jade/indexnavbar.jade'
-
+            // n/a
           content
-            include '_/components/jade/article-about.jade'
-          footer
-            div(style='position: fixed; text-align:center')
-              include '_/components/jade/indexfooter.jade'
+            include _/components/jade/question_form.jade
+          footer(style='text-align:center')
+            include _/components/jade/indexfooterforms.jade
         // cover container
       // site wrapper inner
     // site wrapper
     // jQuery (necessary for Bootstrap's JavaScript plugins)
-    script(src='/siofu/client.js')
-    script(src='_/components/js/jquery.js')
+    script(src='_/js/jquery.js')
     // Include all compiled plugins (below), or include individual files as needed
     script(src='_/js/bootstrap.js')
-    script(src='_/js/myscript.js')q
+    script(src='_/js/myscript.js')
