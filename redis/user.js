@@ -69,6 +69,17 @@ module.exports = function(redis) {
                 });
         },
 
+        getUserSync: function(id){
+            return(redis
+                .multi()
+                .get('user:' + id + ':email')
+                .get('user:' + id + ':username')
+                .get('user:' + id + ':age')
+                .get('user:' + id + ':name')
+                .get('user:' + id + ':team')
+                .exec());
+        },
+
     	validateUser: function(log, pass, callback){
     		callback = callback || emptyFunction;
     		if(email_regex.test(log)){

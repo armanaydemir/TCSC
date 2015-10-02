@@ -45,6 +45,8 @@ function dashboard_check(req, res, next){
       if(!err && user_id){
         //console.log(user_id);
         req.session.user_id = user_id;
+        var user = User.getUserSync(user_id);
+        if(user){console.log(user);req.session.user = user;}
         var comp_id = req.session.signup_id;
         rClient.del("signup_key:" + req.session.signup_id);
         delete req.session.signup_id;
@@ -83,7 +85,7 @@ function dashboard_check(req, res, next){
 }
 
 //simple routes ---------------------
-app.get('images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png")});
+app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png")});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png")});
 app.get('/_/js/bootstrap.js', function(req, res){res.sendFile(__dirname + '/views/_/js/bootstrap.js');});
 app.get('/_/js/jquery.js', function(req, res){res.sendFile(__dirname + '/views/_/js/jquery.js');});
@@ -111,18 +113,18 @@ app.get('/signup', function(req, res){
 
 app.get('/dashboard', dashboard_check, function(req, res){
   console.log(req.session);
-  User.getUser(req.session.user_id, function(user){
-    if(!user.team){
-      app.locals.config = {comp_id: req.session.comp_id, user:user};
-      console.log(user);
-      res.render(__dirname + "/views/dashboard_no_team.jade")
+  var user = req.session.user;
+  if(!user.team){
+    app.locals.config = {comp_id: req.session.comp_id, user:user};
+    console.log(user);
+    //res.render(__dirname + "/views/dashboard_no_team.jade")
+    res.render(__dirname + "/views/dashboard.jade");
+  }
+  else{
+    app.locals.config = {comp_id: req.session.comp_id, user:user};
+    console.log(user);
+    res.render(__dirname + "/views/dashboard.jade");
     }
-    else{
-      app.locals.config = {comp_id: req.session.comp_id, user:user};
-      console.log(user);
-      res.render(__dirname + "/views/dashboard.jade");
-    }
-  });
 });
 
 io.on('connection', function(socket){
