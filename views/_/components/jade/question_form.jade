@@ -8,9 +8,12 @@
         input#inputName.form-control(type='name', placeholder='Name', required='', autofocus='')
         label.sr-only(for='inputCategory') Category
         input#inputCategory.form-control(type='category', placeholder='Category', required='', autofocus='')
+
+        label.sr-only(for='inputDescription') Description
+        input#inputDescription.form-control(type='description', placeholder='Description', required='', autofocus='')
         
-        label.sr-only(for='inputPassword') Password
-        input#inputPassword.form-control(type='password', placeholder='Password', required='')
+        label.sr-only(for='inputAnswer') Answer
+        input#inputAnswer.form-control(type='answer', placeholder='Answer', required='')
         
         button.btn.btn-lg.btn-danger.btn-block(type='button' autocomplete='off') Register
         br
@@ -20,22 +23,20 @@
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 script.
-  //console.log(#{config._id})
   var socket = io();
   $(function(){
     $('button').click(function(){
     //make sure to change this later (especially the 69 thing)
-    socket.emit('register_question', 69, $('#inputName').val(),  $('#inputSchool').val(),$('#inputPassword').val()); 
+    socket.emit('register_question', $('#inputName').val(),  $('#inputCategory').val(), 
+    $('#inputDescription').val(),$('#inputAnswer').val()); 
     return false;
     });
   });
-  
-  socket.on(#{config.comp_id}, function(data){
-    if(data==='success_register'){
-      //console.log("we good");
-      location.href = '/team'; //follow teams and invite people to team
-     }
+  socket.on("woah", function(data){
+    if(data ==='success'){
+      console.log("we good");
+      location.href = '/';
+    }else{console.log("check_it_out");
+      location.href = '/about';
+    }
   });
-      
-
-

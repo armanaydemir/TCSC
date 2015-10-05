@@ -43,15 +43,15 @@ function dashboard_check(req, res, next){
   if(req.session.signup_id) {
     rClient.get("signup_key:" + req.session.signup_id, function(err, user_id){
       if(!err && user_id){
-        //console.log(user_id);
         req.session.user_id = user_id;
-        var user = User.getUserSync(user_id);
-        if(user){console.log(user);req.session.user = user;}
-        var comp_id = req.session.signup_id;
-        rClient.del("signup_key:" + req.session.signup_id);
-        delete req.session.signup_id;
-        req.session.comp_id = comp_id;
-        next();
+        User.getUser(user_id, function(user){
+          if(user){req.session.user = user;}
+          var comp_id = req.session.signup_id;
+          rClient.del("signup_key:" + req.session.signup_id);
+          delete req.session.signup_id;
+          req.session.comp_id = comp_id;
+          next();
+        });
       }
       else{
         res.redirect('login');
@@ -91,7 +91,7 @@ app.get('/_/js/bootstrap.js', function(req, res){res.sendFile(__dirname + '/view
 app.get('/_/js/jquery.js', function(req, res){res.sendFile(__dirname + '/views/_/js/jquery.js');});
 app.get('/_/js/myscript.js', function(req, res){res.sendFile(__dirname + '/views/_/js/myscript.js');});
 
-app.get('new_question', function(req, res){res.render(__dirname + "/views/new_question.jade")});
+app.get('/new_question', function(req, res){res.render(__dirname + "/views/new_question.jade")});
 app.get('/', function(req, res){res.render(__dirname + "/views/index.jade");});
 app.get('/logout', function(req, res) {req.session.reset();res.redirect('/');});
 //-----------------------
@@ -116,15 +116,15 @@ app.get('/dashboard', dashboard_check, function(req, res){
   var user = req.session.user;
   if(!user.team){
     app.locals.config = {comp_id: req.session.comp_id, user:user};
-    console.log(user);
-    //res.render(__dirname + "/views/dashboard_no_team.jade")
-    res.render(__dirname + "/views/dashboard.jade");
+    //console.log(user);
+    res.render(__dirname + "/views/dashboard_no_team.jade")
+    //res.render(__dirname + "/views/dashboard.jade");
   }
   else{
     app.locals.config = {comp_id: req.session.comp_id, user:user};
-    console.log(user);
+    //console.log(user);
     res.render(__dirname + "/views/dashboard.jade");
-    }
+  }
 });
 
 io.on('connection', function(socket){
@@ -199,15 +199,15 @@ io.on('connection', function(socket){
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
     session_id = session_data["login_id"];
     User.validateUser(log, pass, function(v, user_id, pass){
-      if(v === 'true'){
+      if(v === "true"){
         rClient.setnx("login_key:" + session_id, v, function(err, set){
           if (err) {return;}
           if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
           io.emit(session_id, 'success_login');
         });
-      }else if(v == 'invalid_pass'){
+      }else if(v === "invalid_pass"){
         io.emit(session_id, 'invalid_pass');
-      }else if(v == 'invalid_log'){
+      }else if(v === "invalid_log"){
         io.emit(session_id, 'invalid_log');
       }else{
         //console.log("jjj");
@@ -275,6 +275,18 @@ io.on('connection', function(socket){
   
   socket.on('search_team', function(team_id){
     
+  });
+
+  socket.on('register_question', function(name, category, description, flag){
+    Question.pushQuestion(1, name, category, null,  description, 0, flag, function(success){
+      if(!success){
+        console.log("uhoh.debug");
+        io.emit("woah", "nope");
+      }else{
+        console.log("goodgood.debug");
+        io.emit("woah", "sucess");
+      }
+    });
   });
 });
 

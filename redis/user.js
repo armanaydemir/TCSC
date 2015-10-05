@@ -70,14 +70,22 @@ module.exports = function(redis) {
         },
 
         getUserSync: function(id){
-            return(redis
-                .multi()
-                .get('user:' + id + ':email')
-                .get('user:' + id + ':username')
-                .get('user:' + id + ':age')
-                .get('user:' + id + ':name')
-                .get('user:' + id + ':team')
-                .exec());
+            redis.get('user:' + id + ':email', function(e, email){if(e){return null;}
+            redis.get('user:' + id + ':username', function(er, username){if(er){return null;}
+            redis.get('user:' + id + ':age', function(err, age){if(err){return null;}
+            redis.get('user:' + id + ':name', function(erro, name){if(erro){return null;}
+            redis.get('user:' + id + ':team', function(error, team){if(error){return null;}
+            if(email && username && age && name){
+                return({
+                    id: id,
+                    email: email,
+                    username: username,
+                    age: age,
+                    name: name,
+                    team: team
+                });
+            }return null;
+            });});});});});
         },
 
     	validateUser: function(log, pass, callback){
