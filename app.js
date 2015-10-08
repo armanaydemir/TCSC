@@ -2,6 +2,7 @@
 // add server side stats for us
 // make sure rielle makes shit happen for the shit under this
 // make an invite to team thing and a you have no team dumbass thing
+//fix this dumb not loading all the way shit, i hate it
 
 var app = require('express')();
 var http = require('http').Server(app);
@@ -10,6 +11,9 @@ var cookie = require('cookie');
 var encode = require('client-sessions').util.encode,
     decode = require('client-sessions').util.decode;
 var fs = require('fs');
+var util = require('util');
+var exec = require('child_process').exec;
+var Files = {};
 
 
 //ayo remember to turn on the redis-server when you run this
@@ -59,6 +63,7 @@ function dashboard_check(req, res, next){
     });
 
   }
+  //update this with how I updated signup
   else if(req.session.login_id) {
     rClient.get("login_key:" + req.session.login_id, function(err, user_id){
       if(!err && user_id){
@@ -74,24 +79,39 @@ function dashboard_check(req, res, next){
         res.redirect('login');
       }
     });
-  }else if(req.session.comp_id && req.session.user_id) {
-    next();
-  }else if(req.session.user_id){
+  }else if(req.session.comp_id && req.session.user.id) {
+    User.getUser(req.session.user.id, function(user){
+      if(user){req.session.user = user;}
+      var comp_id = req.session.signup_id;
+      rClient.del("signup_key:" + req.session.signup_id);
+      delete req.session.signup_id;
+      req.session.comp_id = comp_id;
+      next();
+    });
+  }else if(req.session.user.id){
     req.session.comp_id = makeCompID();
-    next();
+    User.getUser(req.session.user.id, function(user){
+      if(user){req.session.user = user;}
+      var comp_id = req.session.signup_id;
+      rClient.del("signup_key:" + req.session.signup_id);
+      delete req.session.signup_id;
+      req.session.comp_id = comp_id;
+      next();
+    });
   }else{
     res.redirect('login');
   }
 }
 
 //simple routes ---------------------
-app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png")});
-app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png")});
+app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
+app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
 app.get('/_/js/bootstrap.js', function(req, res){res.sendFile(__dirname + '/views/_/js/bootstrap.js');});
 app.get('/_/js/jquery.js', function(req, res){res.sendFile(__dirname + '/views/_/js/jquery.js');});
 app.get('/_/js/myscript.js', function(req, res){res.sendFile(__dirname + '/views/_/js/myscript.js');});
 
-app.get('/new_question', function(req, res){res.render(__dirname + "/views/new_question.jade")});
+app.get('/new_question', function(req, res){res.render(__dirname + "/views/new_question.jade");});
+app.get('/about', function(req, res){res.render(__dirname + "/views/about.jade");});
 app.get('/', function(req, res){res.render(__dirname + "/views/index.jade");});
 app.get('/logout', function(req, res) {req.session.reset();res.redirect('/');});
 //-----------------------
@@ -114,16 +134,17 @@ app.get('/signup', function(req, res){
 app.get('/dashboard', dashboard_check, function(req, res){
   console.log(req.session);
   var user = req.session.user;
+  console.log(user.team);
   if(!user.team){
     app.locals.config = {comp_id: req.session.comp_id, user:user};
     //console.log(user);
-    res.render(__dirname + "/views/dashboard_no_team.jade")
+    res.render(__dirname + "/views/dashboard_no_team.jade/")
     //res.render(__dirname + "/views/dashboard.jade");
   }
   else{
     app.locals.config = {comp_id: req.session.comp_id, user:user};
     //console.log(user);
-    res.render(__dirname + "/views/dashboard.jade");
+    res.render(__dirname + "/views/dashboard.jade/");
   }
 });
 
@@ -228,10 +249,10 @@ io.on('connection', function(socket){
       if(!data){
         //error
       }else if(data === "name"){
-        io.emit(session_data["comp_id"], "register_name");
+        io.emit(user.id, "register_name");
       }
       else{
-        io.emit(session_data["comp_id"], "success_register");
+        io.emit(user.id, "success_register");
       }
     });
   });
@@ -244,14 +265,17 @@ io.on('connection', function(socket){
     u = session_data["comp_id"];
     console.log(u);
     Team.validateTeam(team_name, pass, function(data){
+      console.log("woah dbug jwow");
       if(!data){
         //error
       }else if(data === "invalid_pass"){
-        io.emit(session_data["comp_id"], "join_pass");
+        console.log("oh no pass");
+        io.emit(user.id, "join_pass");
       }
       else{
         var team_id = rClient.get("team_name:" + team_name + ":id")
         User.addToTeam(user.id, team_id, function(val){
+          console.log("we good good man?");
           if(!val){
             //err
           }else if("over_team"){
@@ -264,7 +288,7 @@ io.on('connection', function(socket){
                 //to many peeeeeps
                 User.leaveFromTeam(user.id, team_id);
               }else{
-                io.emit(session_data["comp_id"], "success_join");
+                io.emit(user.id, "success_join");
               }
             });
           }
@@ -288,12 +312,69 @@ io.on('connection', function(socket){
       }
     });
   });
+  socket.on('Start', function (data) { //data contains the variables that we passed through in the html file
+    var Name = data['Name'];
+    Files[Name] = {  //Create a new Entry in The Files Variable
+        FileSize : data['Size'],
+        Data     : "",
+        Downloaded : 0
+    }
+    var Place = 0;
+    try{
+        var Stat = fs.statSync('Temp/' +  Name);
+        if(Stat.isFile())
+        {
+            Files[Name]['Downloaded'] = Stat.size;
+            Place = Stat.size / 524288;
+        }
+    }
+    catch(er){} //It's a New File
+    fs.open("Temp/" + Name, "a", 0755, function(err, fd){
+        if(err)
+        {
+            console.log(err);
+        }
+        else
+        {
+            Files[Name]['Handler'] = fd; //We store the file handler so we can write to it later
+            io.emit('MoreData', { 'Place' : Place, 'Percent' :  0});
+        }
+    });
+  });
+        
+  socket.on('Upload', function (data){
+    var Name = data['Name'];
+    Files[Name]['Downloaded'] += data['Data'].length;
+    Files[Name]['Data'] += data['Data'];
+    if(Files[Name]['Downloaded'] == Files[Name]['FileSize']) //If File is Fully Uploaded
+    { console.log("some stuff");
+      fs.write(Files[Name]['Handler'], Files[Name]['Data'], null, 'Binary', function(err, Writen){
+          var inp = fs.createReadStream("Temp/" + Name);
+          var out = fs.createWriteStream("Video/" + Name);
+          util.pump(inp, out, function(){
+            fs.unlink("Temp/" + Name, function () { //This Deletes The Temporary File
+          //Moving File Completed
+    });
+});
+      });
+    }
+    else if(Files[Name]['Data'].length > 10485760){ //If the Data Buffer reaches 10MB
+      fs.write(Files[Name]['Handler'], Files[Name]['Data'], null, 'Binary', function(err, Writen){
+        Files[Name]['Data'] = ""; //Reset The Buffer
+        var Place = Files[Name]['Downloaded'] / 524288;
+        var Percent = (Files[Name]['Downloaded'] / Files[Name]['FileSize']) * 100;
+        io.emit('MoreData', { 'Place' : Place, 'Percent' :  Percent});
+      });
+    }
+    else
+    {
+      var Place = Files[Name]['Downloaded'] / 524288;
+      var Percent = (Files[Name]['Downloaded'] / Files[Name]['FileSize']) * 100;
+      io.emit('MoreData', { 'Place' : Place, 'Percent' :  Percent});
+    }
+  });
 });
 
 http.listen(3000, function(){
   console.log('listening on *:3000');
 });
-
-setInterval(function() {
-  Question.statsTick();
-}, 1000);

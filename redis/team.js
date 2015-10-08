@@ -41,7 +41,7 @@ module.exports = function(redis) {
                     redis
                         .multi()
                         .set("user:" + leader_id + ":team", id)
-                        .set("team:" + id + ":name", + name.toLowerCase() + ":" + name)
+                        .set("team:" + id + ":name", name)
                         .set("team:" + id + ":points", 0)
                         .set("team:" + id + ":school", school)
                         .sadd("team:" + id + ":members", leader_id)
@@ -106,18 +106,22 @@ module.exports = function(redis) {
 
         validateTeam: function (team_name, pass, callback) {
             callback = callback || emptyFunction;
-            redis.get("team_name:" + team_name + ":id", function (error, team_id) {
+            redis.get("team_name:" + team_name.toLowerCase() + ":id", function (error, team_id) {
                 if (error) {
                     callback(false);
                     return;
                 }
-
+                console.log(team_name);
+                console.log(error);
+                console.log(team_id);
                 redis.get("team:" + team_id + ":password", function (err, password) {
                     if (err) {
                         callback(false);
                         return;
                     }
-                    if(computeSHA1(pass) == password){
+                    console.log(password);
+                    console.log(computeSHA1(pass));
+                    if(computeSHA1(pass) === password){
                         callback(true);
                         return(true);
                     }else{
@@ -199,6 +203,13 @@ module.exports = function(redis) {
                     return;
                 }
                 callback(board);
+            });
+        },
+
+        getQuestions: function(team_id, callback){
+            redis.zrange("team:" + team_id + ":questions", 0, -1, function(err, questions){
+                console.log(questions);
+
             });
         },
 
