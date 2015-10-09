@@ -55,52 +55,37 @@ function dashboard_check(req, res, next){
           delete req.session.signup_id;
           req.session.comp_id = comp_id;
           next();
-        });
-      }
-      else{
-        res.redirect('login');
-      }
+        });}
+      else{res.redirect('login');}
     });
-
   }
-  //update this with how I updated signup
+
   else if(req.session.login_id) {
     rClient.get("login_key:" + req.session.login_id, function(err, user_id){
       if(!err && user_id){
-        //console.log(user_id);
         req.session.user_id = user_id;
-        var comp_id = req.session.login_id;
-        rClient.del("login_key:" + req.session.login_id);
-        delete req.session.login_id
-        req.session.comp_id = comp_id;
-        next();
-      }
-      else{
-        res.redirect('login');
-      }
+        User.getUser(user_id, function(user){
+          if(user){req.session.user = user;}
+          var comp_id = req.session.login_id;
+          rClient.del("login_key:" + req.session.login_id);
+          delete req.session.login_id
+          req.session.comp_id = comp_id;
+          next();
+        });}
+      else{res.redirect('login');}
     });
   }else if(req.session.comp_id && req.session.user.id) {
     User.getUser(req.session.user.id, function(user){
       if(user){req.session.user = user;}
-      var comp_id = req.session.signup_id;
-      rClient.del("signup_key:" + req.session.signup_id);
-      delete req.session.signup_id;
-      req.session.comp_id = comp_id;
       next();
     });
   }else if(req.session.user.id){
     req.session.comp_id = makeCompID();
     User.getUser(req.session.user.id, function(user){
       if(user){req.session.user = user;}
-      var comp_id = req.session.signup_id;
-      rClient.del("signup_key:" + req.session.signup_id);
-      delete req.session.signup_id;
-      req.session.comp_id = comp_id;
       next();
     });
-  }else{
-    res.redirect('login');
-  }
+  }else{res.redirect('login');}
 }
 
 //simple routes ---------------------
@@ -138,8 +123,8 @@ app.get('/dashboard', dashboard_check, function(req, res){
   if(!user.team){
     app.locals.config = {comp_id: req.session.comp_id, user:user};
     //console.log(user);
-    res.render(__dirname + "/views/dashboard_no_team.jade/")
-    //res.render(__dirname + "/views/dashboard.jade");
+    //res.render(__dirname + "/views/dashboard_no_team.jade/")
+    res.render(__dirname + "/views/dashboard.jade");
   }
   else{
     app.locals.config = {comp_id: req.session.comp_id, user:user};
@@ -149,15 +134,13 @@ app.get('/dashboard', dashboard_check, function(req, res){
 });
 
 io.on('connection', function(socket){
-  //console.log("omg i did something... for once in my goddamn life...");
-
   socket.on('send_message', function(msg){
-    rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
-      if(!error){
-        Chat.createMessage(msg, req.session.user_id);
-        io.emit('new_message:' + team_id, (msg, req.session.user_id));
-      }
-    });
+    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+    var user = session_data['user'];
+    if(user.team){
+      Chat.createMessage(msg, user.id);
+      io.emit('new_message:' + user.team, (msg, user.id));
+    }
   });
 
   socket.on('answer_question', function(answer, question, type){
@@ -181,8 +164,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('signup', function(name, username, age, email, password){
-    console.log("signup_server_socket")
-    //Team.searchTeam("a", function(){});
+    console.log("signup_server_socket");
     User.createUser(name, username, age, email, password, function(v){
 
       //check to see how the shit here works with multiple connections... its fishy ===============

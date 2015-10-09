@@ -23,5 +23,21 @@ html
         .panel-heading
           h3.panel-title  Team Name Chat 
         .panel-body
-          p Messages should go here.
-    // /.col-sm-4
+          ul#messages
+            form(action='')
+              input#m(autocomplete='off')
+              button Send
+script.
+  var socket = io();
+  $(function(){
+    $('button').click(function(){
+      socket.emit('register_team', $('#m').val());
+      $('#messages').append($('<li>').text(msg));
+      $('#m').val('');
+      return false;
+    });
+  });
+  
+  socket.on('new_message' + #{config.user.team}, function(data){
+    $('#messages').append($('<li>').text(msg));
+  });

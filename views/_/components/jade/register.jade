@@ -23,7 +23,7 @@ script.
   var socket = io();
   $(function(){
     $('button').click(function(){
-    socket.emit('register_team', $('#inputName').val(),  $('#inputSchool').val(),$('#inputPassword').val());
+    socket.emit('send_message', $('#inputName').val(),  $('#inputSchool').val(),$('#inputPassword').val());
     return false;
     });
   });
