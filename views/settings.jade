@@ -1,0 +1,94 @@
+body
+.site-wrapper
+  .site-wrapper-inner
+    .cover-container
+      header 
+        include _/components/jade/indexnavbar.jade
+      content
+        #UploadBox
+      h2 Upload a Profile Picture
+      span#UploadArea
+        label(for='FileBox') Choose A File: 
+        input#FileBox(type='file')
+        br
+        button#UploadButton.Button(type='button') Upload
+      footer
+        include _/components/jade/indexfooter.jade
+script
+  include _/js/jquery.js
+  include _/js/bootstrap.js
+  //include _/js/myscript.js
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+script.
+  window.addEventListener("load", Ready); 
+  var socket = io();
+  
+  function Ready(){ 
+    if(window.File && window.FileReader){ //These are the relevant HTML5 objects that we are going to use 
+        document.getElementById('UploadButton').addEventListener('click', StartUpload);  
+        document.getElementById('FileBox').addEventListener('change', FileChosen);
+    }
+    else
+    {
+        document.getElementById('UploadArea').innerHTML = "Your Browser Doesn't Support The File API Please Update Your Browser";
+    }
+  }
+  var SelectedFile;
+  function FileChosen(evnt) {
+    SelectedFile = evnt.target.files[0];
+  }
+  var FReader;
+  var Name;
+  function StartUpload(){
+    if(document.getElementById('FileBox').value != "")
+    {
+        FReader = new FileReader();
+        Name = "prof_pic_" + #{config.user.id}
+        var Content = "<span id='NameArea'>Uploading " + SelectedFile.name + " as " + Name + "</span>";
+        Content += '<div id="ProgressContainer"><div id="ProgressBar"></div></div><span id="percent">0%</span>';
+        Content += "<span id='Uploaded'> - <span id='MB'>0</span>/" + Math.round(SelectedFile.size / 1048576) + "MB</span>";
+        document.getElementById('UploadArea').innerHTML = Content;
+        FReader.onload = function(evnt){
+            socket.emit('Upload', { 'Name' : Name, Data : evnt.target.result });
+        }
+        socket.emit('Start', { 'Name' : Name, 'Size' : SelectedFile.size });
+    }
+    else
+    {
+        alert("Please Select A File");
+    }
+  }
+  socket.on('MoreData', function (data){
+        UpdateBar(data['Percent']);
+        console.log("perhaps");
+        var Place = data['Place'] * 524288; //The Next Blocks Starting Position
+        var NewFile; //The Variable that will hold the new Block of Data
+        if(SelectedFile.slice()) 
+          NewFile = SelectedFile.slice(Place, Place + Math.min(524288, (SelectedFile.size-Place)));
+        else
+          NewFile = SelectedFile.slice(Place, Place + Math.min(524288, (SelectedFile.size-Place)));
+        FReader.readAsBinaryString(NewFile);
+      });
+      function UpdateBar(percent){
+        document.getElementById('ProgressBar').style.width = percent + '%';
+        document.getElementById('percent').innerHTML = (Math.round(percent*100)/100) + '%';
+        var MBDone = Math.round(((percent/100.0) * SelectedFile.size) / 1048576);
+        document.getElementById('MB').innerHTML = MBDone;
+      }
+      
+      var Path = "http://localhost/";
+      
+      socket.on('Done', function (data){
+        var Content = "Video Successfully Uploaded !!"
+        Content += "<img id='Thumb' src='" + Path + data['Image'] + "' alt='" + Name + "'><br>";
+        Content += "<button type='button' name='Upload' value='' id='Restart' class='Button'>Upload Another</button>";
+        document.getElementById('UploadArea').innerHTML = Content;
+        document.getElementById('Restart').addEventListener('click', Refresh);
+        document.getElementById('UploadBox').style.width = '270px';
+        document.getElementById('UploadBox').style.height = '270px';
+        document.getElementById('UploadBox').style.textAlign = 'center';
+        document.getElementById('Restart').style.left = '20px';
+      });
+      function Refresh(){
+        location.reload(true);
+      }
