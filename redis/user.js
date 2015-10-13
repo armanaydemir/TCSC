@@ -114,7 +114,29 @@ module.exports = function(redis) {
     				});
                 });
     		}else{
-
+                redis.get("username:" + log + ":id", function(err, id){
+                    if (err) {
+                        callback("false", null, null);
+                        return;
+                    }
+                    if (id==null ){
+                        callback("invalid_log", null, null);
+                        return;
+                    }
+                    redis.get("user:" + id + ":password", function(error, password){
+                        if(error) {
+                            callback("false", null, null);
+                            return;
+                        }
+                        console.log(password);
+                        console.log(computeSHA1(pass));
+                        if(computeSHA1(pass)==password){
+                            callback("true", id, pass);
+                        }else{
+                            callback("invalid_pass", null, null);
+                        }
+                    });
+                });    
             }
     	},
 

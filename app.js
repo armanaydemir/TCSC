@@ -207,7 +207,7 @@ io.on('connection', function(socket){
       console.log("check");
       if(v === "true"){
         console.log('true');
-        rClient.setnx("login_key:" + session_id, v, function(err, set){
+        rClient.setnx("login_key:" + session_id, user_id, function(err, set){
           if (err) {return;}
           if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
           io.emit(session_id, 'success_login');
