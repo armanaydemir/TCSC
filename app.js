@@ -2,7 +2,7 @@
 // add server side stats for us
 // make sure rielle makes shit happen for the shit under this
 // make an invite to team thing and a you have no team dumbass thing
-//fix this dumb not loading all the way shit, i hate it
+// fix this dumb not loading all the way shit, i hate it
 
 var app = require('express')();
 var http = require('http').Server(app);
@@ -29,7 +29,7 @@ const Banner = require('./redis/banner.js')(rClient);
 var Alert = require('./redis/notification.js')(rClient,io);
 var session_opts = {
   cookieName: 'session',
-  secret: 'iWonderIfAnyoneWouldGuessThis...',
+  secret: 'iWonderIfAnyoneWouldn\'GuessThis...',
   duration: 14 * 24 * 60 * 60 * 1000, //2 weeks ... i think
   activeDuration: 3 * 24 * 60 * 60 * 1000, //3 days ... i think
   httpOnly: true,
@@ -122,13 +122,11 @@ app.get('/dashboard', dashboard_check, function(req, res){
   console.log(user.team);
   if(!user.team){
     app.locals.config = {comp_id: req.session.comp_id, user:user};
-    //console.log(user);
-    //res.render(__dirname + "/views/dashboard_no_team.jade/")
-    res.render(__dirname + "/views/dashboard.jade");
+    res.render(__dirname + "/views/dashboard_no_team.jade/")
+    //res.render(__dirname + "/views/dashboard.jade");
   }
   else{
     app.locals.config = {comp_id: req.session.comp_id, user:user};
-    //console.log(user);
     res.render(__dirname + "/views/dashboard.jade/");
   }
 });
@@ -199,10 +197,13 @@ io.on('connection', function(socket){
   });
 
   socket.on('login', function(log, pass){
+    console.log("logogogogog");
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
     session_id = session_data["login_id"];
     User.validateUser(log, pass, function(v, user_id, pass){
+      console.log("check");
       if(v === "true"){
+        console.log('true');
         rClient.setnx("login_key:" + session_id, v, function(err, set){
           if (err) {return;}
           if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
@@ -210,13 +211,16 @@ io.on('connection', function(socket){
         });
       }else if(v === "invalid_pass"){
         io.emit(session_id, 'invalid_pass');
+        console.log("invalid_pass");
       }else if(v === "invalid_log"){
         io.emit(session_id, 'invalid_log');
+        console.log("invalid_log");
       }else{
-        //console.log("jjj");
+        console.log("jjj");
         io.emit(session_id, 'error');
       }
     });
+    console.log("pastpast");
   });
 
   socket.on('register_team', function(team_name, school, pass){
@@ -256,14 +260,14 @@ io.on('connection', function(socket){
       }
       else{
         var team_id = rClient.get("team_name:" + team_name + ":id")
-        User.addToTeam(user.id, team_id, function(val){
+        User.addToTeam(user.id, team_id, function (val){
           console.log("we good good man?");
           if(!val){
             //err
           }else if("over_team"){
             //already part of team
           }else{
-            Team.addMember(team_id, user.id, function(ill){
+            Team.addMember(team_id, user.id, function (ill){
               if(!ill){
                 //still err
               }else if(ill === "member_overload"){
@@ -279,7 +283,7 @@ io.on('connection', function(socket){
     });
   });
   
-  socket.on('search_team', function(team_id){
+  socket.on('search_team', function (team_id){
     
   });
 

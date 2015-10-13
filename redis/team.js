@@ -133,7 +133,7 @@ module.exports = function(redis) {
         },
 
         searchTeam: function (input, callback) {
-            console.log("woaj");
+            //console.log("woaj");
             redis.zrangebylex("global:leaderboard", "[" + input, "(" + input.substring(0, input.length -1) + nextLetter(input.slice(-1)), function(err, array){
                 console.log(array.toString());
                 callback(array);

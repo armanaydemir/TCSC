@@ -1,5 +1,5 @@
 #login.container(style='position: fixed; margin-top:0.5em')
-      form.form-signin
+      form.form-signin.signup(action="")
         img(src='images/tcsclogo.png')
         label.sr-only(for='inputEmail') Email Address or Username
         input#inputEmail.form-control(type='email', placeholder='Email address or Username', required='', autofocus='')
@@ -24,10 +24,11 @@
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 script.
-  console.log(#{config.comp_id});
+  console.log("ajsdfadsf");
   var socket = io();
   $(function(){
     $('button').click(function(){
+    console.log("butttttttt");
     socket.emit('login', $('#inputEmail').val(), $('#inputPassword').val());
     return false;
     });

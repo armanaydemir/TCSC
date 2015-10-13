@@ -38,6 +38,6 @@ script.
     });
   });
   
-  socket.on('new_message' + #{config.user.team}, function(data){
-    $('#messages').append($('<li>').text(msg));
+  socket.on('new_message' + #{config.user.team}, function(msg, usr){
+    if(usr != #{config.user.id){$('#messages').append($('<li>').text(msg));}
   });

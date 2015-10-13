@@ -82,7 +82,7 @@ script.
   }
   socket.on('MoreData', function (data){
         UpdateBar(data['Percent']);
-        console.log("perhaps");
+        //console.log("perhaps");
         var Place = data['Place'] * 524288; //The Next Blocks Starting Position
         var NewFile; //The Variable that will hold the new Block of Data
         if(SelectedFile.slice()) 

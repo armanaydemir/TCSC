@@ -91,22 +91,31 @@ module.exports = function(redis) {
     	validateUser: function(log, pass, callback){
     		callback = callback || emptyFunction;
     		if(email_regex.test(log)){
-    			this.getUser(log, function(user){
-    				if(user == null){callback("invalid_log");return;}
+                redis.get("email:" + log + ":id", function(err, id){
+                    if (err) {
+                        callback("false", null, null);
+                        return;
+                    }
+        			
+    				if(id == null){callback("invalid_log", null, null);return;}
 
-    				redis.get('user' + user.id + ':password', function(error, password){
+    				redis.get('user:' + id + ':password', function(error, password){
     					if (error) {
-                        	callback("false");
+                        	callback("false", null, null);
                         	return;
                     	}
+                        console.log(password);
+                        console.log(computeSHA1(pass));
                     	if(computeSHA1(pass) == password){
-                            callback("true", user.id, pass);
+                            callback("true", id, pass);
                         }else{
-                            callback("invalid_pass");
+                            callback("invalid_pass", null, null);
                         }
     				});
-    			});
-    		}
+                });
+    		}else{
+
+            }
     	},
 
         addToTeam: function(user_id, team_id, callback){
