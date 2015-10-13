@@ -79,7 +79,7 @@ function dashboard_check(req, res, next){
       if(user){req.session.user = user;}
       next();
     });
-  }else if(req.session.user.id){
+  }else if(req.session.user && req.session.user.id){
     req.session.comp_id = makeCompID();
     User.getUser(req.session.user.id, function(user){
       if(user){req.session.user = user;}
@@ -100,6 +100,9 @@ app.get('/about', function(req, res){res.render(__dirname + "/views/about.jade")
 app.get('/', function(req, res){res.render(__dirname + "/views/index.jade");});
 app.get('/logout', function(req, res) {req.session.reset();res.redirect('/');});
 //-----------------------
+
+//complicated routes----------------
+app.get('/settings', dashboard_check, function(req, res){res.render(__dirname + "/views/settings.jade");});
 
 app.get('/login', function(req, res){
   req.session.login_id = makeCompID(); //change name to log in key
@@ -336,7 +339,7 @@ io.on('connection', function(socket){
     { console.log("some stuff");
       fs.write(Files[Name]['Handler'], Files[Name]['Data'], null, 'Binary', function(err, Writen){
           var inp = fs.createReadStream("Temp/" + Name);
-          var out = fs.createWriteStream("Video/" + Name);
+          var out = fs.createWriteStream("upload/" + Name);
           util.pump(inp, out, function(){
             fs.unlink("Temp/" + Name, function () { //This Deletes The Temporary File
           //Moving File Completed
