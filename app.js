@@ -49,6 +49,7 @@ function dashboard_check(req, res, next){
       if(!err && user_id){
         req.session.user_id = user_id;
         User.getUser(user_id, function(user){
+          console.log("sign: " + user);
           if(user){req.session.user = user;}
           var comp_id = req.session.signup_id;
           rClient.del("signup_key:" + req.session.signup_id);
@@ -65,6 +66,7 @@ function dashboard_check(req, res, next){
       if(!err && user_id){
         req.session.user_id = user_id;
         User.getUser(user_id, function(user){
+          console.log("used: " + user);
           if(user){req.session.user = user;}
           var comp_id = req.session.login_id;
           rClient.del("login_key:" + req.session.login_id);
@@ -210,7 +212,7 @@ io.on('connection', function(socket){
         rClient.setnx("login_key:" + session_id, v, function(err, set){
           if (err) {return;}
           if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
-          io.emit(session_id, 'success_login');
+          //io.emit(session_id, 'success_login');
         });
       }else if(v === "invalid_pass"){
         io.emit(session_id, 'invalid_pass');

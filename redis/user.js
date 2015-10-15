@@ -105,7 +105,6 @@ module.exports = function(redis) {
                         	return;
                     	}
                         console.log(password);
-                        console.log(computeSHA1(pass));
                     	if(computeSHA1(pass) == password){
                             callback("true", id, pass);
                         }else{
