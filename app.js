@@ -26,6 +26,12 @@ const Chat = require('./redis/message.js')(rClient,io);
 const Question = require('./redis/question.js')(rClient);
 const Banner = require('./redis/banner.js')(rClient);
 
+//this is for debug only ___________________
+const Test = require('./test.js')(rClient);
+Test.setUp();
+//____________________
+
+
 var Alert = require('./redis/notification.js')(rClient,io);
 var session_opts = {
   cookieName: 'session',

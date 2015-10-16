@@ -54,7 +54,7 @@ module.exports = function(redis) {
                                 callback(false);
                                 return;
                             }
-                            callback(true);
+                            callback(id);
                         });
                 });
             });
