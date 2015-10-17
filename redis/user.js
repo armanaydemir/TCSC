@@ -141,7 +141,7 @@ module.exports = function(redis) {
 
         addToTeam: function(user_id, team_id, callback){
             callback = callback || emptyFunction;
-            redis.setnx("user:" + user_id + ":team_id", team_id, function(err, set){
+            redis.setnx("user:" + user_id + ":team", team_id, function(err, set){
                 if (err) {callback(false);return;}
                 if (set==0) {callback("over_team");return;} //is already part of team (must leave)
                 callback(true);
@@ -151,7 +151,7 @@ module.exports = function(redis) {
 
         leaveFromTeam: function(user_id, team_id, callback){
             callback = callback || emptyFunction;
-            redis.del("user:" + user_id + ":team_id", function(err) {
+            redis.del("user:" + user_id + ":team", function(err) {
                 if (err) {callback(false);return;}
                 callback(true);
             });

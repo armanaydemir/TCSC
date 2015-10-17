@@ -22,15 +22,20 @@ module.exports = function(redis, io) {
 
 		getMessages: function(user_id, callback){
 			callback = callback || emptyFunction;
-			User.getUser(user_id, function(err, user){
-				if(!err && user.team){
-					redis.zscan("team:" + user.team + ":messages", 0, -1, function(error){
-						
+			User.getUser(user_id, function(user){
+				if(user.team){
+					// change this so it only gets the last 10
+					redis.zrange("team:" + user.team + ":messages", 0, -1, function(err, tool){
+						console.log(tool);
 					});
 				}else{
 					callback(false);
 				}
 			});
+		},
+
+		getMessagesPage:function(user_id, num, callback){
+			//fill this so it gets the next 10 or so
 		}
 	};
 	return message;

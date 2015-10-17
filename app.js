@@ -29,6 +29,7 @@ const Banner = require('./redis/banner.js')(rClient);
 //this is for debug only ___________________
 const Test = require('./test.js')(rClient);
 Test.setUp();
+
 //____________________
 
 
@@ -96,6 +97,8 @@ function dashboard_check(req, res, next){
   }else{res.redirect('login');}
 }
 
+
+app.get('/jake', function(req, res){Chat.getMessages(1, function(){}); res.render(__dirname + "/views/new_question.jade");});
 //simple routes ---------------------
 app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
@@ -159,7 +162,7 @@ io.on('connection', function(socket){
     if(question == id_of_banner_question && answer[0] == "-" && answer[answer.length-1] == "-"){
       omg_you_got_the_banner_question = true;
     }
-    rClient.get("user:" + req.session.user_id + ":team_id", function(error, team_id){
+    rClient.get("user:" + req.session.user_id + ":team", function(error, team_id){
       Question.answerQuestion(req.session.user_id, team_id, question, answer, function(correct){
         Team.attemptedQuestion(team_id, req.session.user_id, question, correct);
         if (correct){
