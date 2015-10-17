@@ -29,7 +29,6 @@ const Banner = require('./redis/banner.js')(rClient);
 //this is for debug only ___________________
 const Test = require('./test.js')(rClient);
 Test.setUp();
-
 //____________________
 
 
@@ -63,8 +62,19 @@ function dashboard_check(req, res, next){
           delete req.session.signup_id;
           req.session.comp_id = comp_id;
           next();
-        });}
-      else{res.redirect('login');}
+        });
+      }else if(req.session.comp_id && req.session.user.id) {
+        User.getUser(req.session.user.id, function(user){
+          if(user){req.session.user = user;}
+          next();
+        });
+      }else if(req.session.user && req.session.user.id){
+        req.session.comp_id = makeCompID();
+        User.getUser(req.session.user.id, function(user){
+          if(user){req.session.user = user;}
+          next();
+        });
+      }else{res.redirect('login');}
     });
   }
 
@@ -81,7 +91,18 @@ function dashboard_check(req, res, next){
           req.session.comp_id = comp_id;
           next();
         });}
-      else{res.redirect('login');}
+      else if(req.session.comp_id && req.session.user.id) {
+        User.getUser(req.session.user.id, function(user){
+          if(user){req.session.user = user;}
+          next();
+        });
+      }else if(req.session.user && req.session.user.id){
+        req.session.comp_id = makeCompID();
+        User.getUser(req.session.user.id, function(user){
+          if(user){req.session.user = user;}
+          next();
+        });
+      }else{res.redirect('login');}
     });
   }else if(req.session.comp_id && req.session.user.id) {
     User.getUser(req.session.user.id, function(user){
@@ -140,8 +161,10 @@ app.get('/dashboard', dashboard_check, function(req, res){
     //res.render(__dirname + "/views/dashboard.jade");
   }
   else{
-    app.locals.config = {comp_id: req.session.comp_id, user:user};
-    res.render(__dirname + "/views/dashboard.jade/");
+    Chat.getMessages(user.id, function(chat){
+      app.locals.config = {comp_id: req.session.comp_id, user:user, chat_log:chat};
+      res.render(__dirname + "/views/dashboard.jade/");
+    });
   }
 });
 

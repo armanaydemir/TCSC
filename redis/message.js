@@ -11,9 +11,9 @@ module.exports = function(redis, io) {
 	                var d = new Date();
 	                var time = d.getTime();
 	                //remember to parse messages backwards
-					redis.zadd("team:" + team_id + ":messages", time, message +":"+ user_id, function(err, set){ 
+					redis.zadd("team:" + team_id + ":messages", time, message + ":" + time + ":" + user_id, function(err, set){ 
 						if (error) {callback(false);return;}
-						if (set == 0) {callback(false);} //if this goes off, some fucked up shit is going on
+						if (set == 0) {callback(false); console.log("red_alert... get to yo laptop now");} //if this goes off, some fucked up shit is going on
 						callback(true); return;
 					});
 				});
@@ -26,10 +26,13 @@ module.exports = function(redis, io) {
 				if(user.team){
 					// change this so it only gets the last 10
 					redis.zrange("team:" + user.team + ":messages", 0, -1, function(err, tool){
-						console.log(tool);
+						if(!err && tool){
+							callback(tool);return;
+						}
+						callback(false);return;
 					});
 				}else{
-					callback(false);
+					callback(false);return;
 				}
 			});
 		},
