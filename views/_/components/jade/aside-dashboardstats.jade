@@ -31,6 +31,7 @@ html
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 script.
   var socket = io();
+  var chat_ready = false;
   $(function(){
     $('button').click(function(){
       console.log("comeonnnnn");
@@ -40,7 +41,19 @@ script.
       return false;
     });
   });
+
+  socket.on('chat_log:' + #{config.user.id}, function(chat_log){
+    console.log("woahss");
+    for (var i = 0; i < chat_log.length; i++) {
+      console.log("hey");
+      $('#messages').append($('<li>').text(chat_log[i]));
+    }
+  });
   
-  socket.on('new_message' + #{config.user.team}, function(msg, usr){
+  socket.on('new_message:' + #{config.user.team}, function(usr, msg){
+    console.log('catcatcat');
+    console.log(usr);
+    console.log(msg);
+    console.log('dogdogdog');
     if(usr != #{config.user.id}){$('#messages').append($('<li>').text(msg));}
   });

@@ -119,7 +119,7 @@ function dashboard_check(req, res, next){
 }
 
 
-app.get('/jake', function(req, res){Chat.getMessages(1, function(){}); res.render(__dirname + "/views/new_question.jade");});
+//app.get('/jake', function(req, res){Chat.getMessages(1, function(){}); res.render(__dirname + "/views/new_question.jade");});
 //simple routes ---------------------
 app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
@@ -162,20 +162,24 @@ app.get('/dashboard', dashboard_check, function(req, res){
   }
   else{
     Chat.getMessages(user.id, function(chat){
-      app.locals.config = {comp_id: req.session.comp_id, user:user, chat_log:chat};
-      res.render(__dirname + "/views/dashboard.jade/");
+      console.log(chat);
+      io.emit('chat_log:' + user.id, chat);
+      console.log(user.id);
     });
+    app.locals.config = {comp_id: req.session.comp_id, user:user};
+    res.render(__dirname + "/views/dashboard.jade/");
   }
 });
 
 io.on('connection', function(socket){
   socket.on('send_message', function(msg){
+    console.log(msg);
     console.log("jklolwoah");
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
     var user = session_data['user'];
     if(user.team){
       Chat.createMessage(msg, user.id, function(data){
-        io.emit('new_message:' + user.team, (msg, user.id));
+        io.emit('new_message:' + user.team, user.id, msg);
       });
     }
   });
