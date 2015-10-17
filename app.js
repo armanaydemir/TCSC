@@ -144,11 +144,13 @@ app.get('/dashboard', dashboard_check, function(req, res){
 
 io.on('connection', function(socket){
   socket.on('send_message', function(msg){
+    console.log("jklolwoah");
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
     var user = session_data['user'];
     if(user.team){
-      Chat.createMessage(msg, user.id);
-      io.emit('new_message:' + user.team, (msg, user.id));
+      Chat.createMessage(msg, user.id, function(data){
+        io.emit('new_message:' + user.team, (msg, user.id));
+      });
     }
   });
 

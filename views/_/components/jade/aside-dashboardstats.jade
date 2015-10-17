@@ -25,19 +25,22 @@ html
         .panel-body
           ul#messages
             form(action='')
-              input#m(autocomplete='off')
-              button Send
+              input#m
+              button(type='button', autocomplete='off') Send
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 script.
   var socket = io();
   $(function(){
     $('button').click(function(){
-      socket.emit('register_team', $('#m').val());
-      $('#messages').append($('<li>').text(msg));
+      console.log("comeonnnnn");
+      socket.emit('send_message', $('#m').val());
+      $('#messages').append($('<li>').text($('#m').val()));
       $('#m').val('');
       return false;
     });
   });
   
   socket.on('new_message' + #{config.user.team}, function(msg, usr){
-    if(usr != #{config.user.id){$('#messages').append($('<li>').text(msg));}
+    if(usr != #{config.user.id}){$('#messages').append($('<li>').text(msg));}
   });
