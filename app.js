@@ -174,6 +174,7 @@ io.on('connection', function(socket){
     Chat.getMessages(user_id, function(chat){
       io.emit('chat_log:' + user_id, chat);
     });
+    //also put question getting in here
   });
 
 
