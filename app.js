@@ -2,7 +2,8 @@
 // add server side stats for us
 // make sure rielle makes shit happen for the shit under this
 // make an invite to team thing and a you have no team dumbass thing
-// fix this dumb not loading all the way shit, i hate it
+// make sure we scrub and clean any input, especially chat lol, cant even do a fucking apostraphe
+
 
 var app = require('express')();
 var http = require('http').Server(app);
@@ -13,6 +14,7 @@ var encode = require('client-sessions').util.encode,
 var fs = require('fs');
 var util = require('util');
 var exec = require('child_process').exec;
+var async = require("async");
 var Files = {};
 
 
@@ -161,17 +163,20 @@ app.get('/dashboard', dashboard_check, function(req, res){
     //res.render(__dirname + "/views/dashboard.jade");
   }
   else{
-    Chat.getMessages(user.id, function(chat){
-      console.log(chat);
-      io.emit('chat_log:' + user.id, chat);
-      console.log(user.id);
-    });
     app.locals.config = {comp_id: req.session.comp_id, user:user};
     res.render(__dirname + "/views/dashboard.jade/");
   }
 });
 
 io.on('connection', function(socket){
+
+  socket.on('dashboard_connect', function(user_id){
+    Chat.getMessages(user_id, function(chat){
+      io.emit('chat_log:' + user_id, chat);
+    });
+  });
+
+
   socket.on('send_message', function(msg){
     console.log(msg);
     console.log("jklolwoah");
