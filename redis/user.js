@@ -12,6 +12,7 @@ module.exports = function(redis) {
     
     var user = {
     	createUser: function(name, username, age, email, password, callback){
+            //age should actually be birthdate bruh
     		callback = callback || emptyFunction;
 
     		redis.incr('global:nextUserId', function(error, id) {

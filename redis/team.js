@@ -211,7 +211,6 @@ module.exports = function(redis) {
                 
 
             });
-            redis.
         },
 
         answeredQuestions: function (team_id, callback) {
