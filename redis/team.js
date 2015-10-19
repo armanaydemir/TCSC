@@ -207,10 +207,11 @@ module.exports = function(redis) {
         },
 
         getQuestions: function(team_id, callback){
-            redis.zrange("team:" + team_id + ":questions", 0, -1, function(err, questions){
-                console.log(questions);
+            redis.zrange("team:" + team_id + ":question_order", 0, -1, function(err, questions){
+                
 
             });
+            redis.
         },
 
         answeredQuestions: function (team_id, callback) {

@@ -28,9 +28,9 @@ module.exports = function(redis) {
 
 
 		pushQuestion: function(user_id, name, category, file, description, expire, flag, callback){
-			//redis.get("user:" + user_id + ":admin", function(error, admin){
-				//if(error){callback(0); return;}
-				//if(admin == 1){
+			redis.get("user:" + user_id + ":admin", function(error, admin){
+				if(error){callback(0); return;}
+				if(admin == 1){
 					redis.incr("global:question_id", function(err, id){
 						if(err){callback(false); return;}
 						redis.setnx("question_name:" + name + ":id", id, function(e, set){
@@ -58,10 +58,10 @@ module.exports = function(redis) {
 						});
 					});
 
-				//}else{
-				//	callback(0); return;
-				//}
-			//});
+				}else{
+					callback(0); return;
+				}
+			});
 			//do this for when you make/push a new question out to the competition
 		},
 

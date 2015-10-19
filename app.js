@@ -121,7 +121,6 @@ function dashboard_check(req, res, next){
 }
 
 
-//app.get('/jake', function(req, res){Chat.getMessages(1, function(){}); res.render(__dirname + "/views/new_question.jade");});
 //simple routes ---------------------
 app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
@@ -167,6 +166,8 @@ app.get('/dashboard', dashboard_check, function(req, res){
     res.render(__dirname + "/views/dashboard.jade/");
   }
 });
+//--------------
+
 
 io.on('connection', function(socket){
 
@@ -389,8 +390,8 @@ io.on('connection', function(socket){
           util.pump(inp, out, function(){
             fs.unlink("Temp/" + Name, function () { //This Deletes The Temporary File
           //Moving File Completed
-    });
-});
+            });
+          });
       });
     }
     else if(Files[Name]['Data'].length > 10485760){ //If the Data Buffer reaches 10MB
