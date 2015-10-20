@@ -417,5 +417,5 @@ http.listen(3000, function(){
 
 setInterval(function ()
 {
-	console.log("waaaaait");
+  //put stats tick in here
 }, 1500);

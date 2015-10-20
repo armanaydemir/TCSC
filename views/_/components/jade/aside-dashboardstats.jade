@@ -34,19 +34,33 @@ script.
 
   $(function(){
     $('button').click(function(){
-      console.log("comeonnnnn");
+      //console.log("comeonnnnn");
       socket.emit('send_message', $('#m').val());
+      console.log($('#m').val());
       $('#messages').append($('<li>').text($('#m').val()));
       $('#m').val('');
       return false;
     });
   });
+
+  function parseLog(log){
+    $('#messages').append($('<li>').text(log.slice(0,log.indexOf(':'))));
+    return log.slice(log.lastIndexOf(':') + 1, log.length);
+  };
+
+  socket.on('log_pic' + #{config.user.id}, function(usr, pic){
+
+  });
   
   socket.on('chat_log:'+ #{config.user.id}, function(chat){
+    var pic_requested = [#{config.user.id}];
     for (var i = 0; i < chat.length; i++) {
-      console.log("hey");
-      $('#messages').append($('<li>').text(chat[i]));
+      if(pic_requested.includes(parseInt(parseLog(chat[i])))){
+        pic_requested.push(parseInt(parseLog(chat[i])));
+        //request the pic here
+      }
     }
+    console.log(pic_requested);
   });
   
   socket.on('new_message:' + #{config.user.team}, function(usr, msg){
@@ -57,4 +71,3 @@ script.
     if(usr != #{config.user.id}){$('#messages').append($('<li>').text(msg));}
   });
   socket.emit('dashboard_connect', #{config.user.id});
-  console.log('okayokayokay');

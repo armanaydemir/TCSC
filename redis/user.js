@@ -11,7 +11,7 @@ module.exports = function(redis) {
     var emptyFunction = function() {};
     
     var user = {
-    	createUser: function(name, username, age, email, password, callback){
+    	createUser: function(fname, lname, username, age, email, password, callback){
             //age should actually be birthdate bruh
     		callback = callback || emptyFunction;
 
@@ -28,7 +28,8 @@ module.exports = function(redis) {
         					.multi()
         					.set('user:' + id + ':email', email)
         					.set('user:' + id + ':username', username)
-        					.set('user:' + id + ':name', name)
+        					.set('user:' + id + ':fname', fname)
+                            .set('user:' + id + ':lname', lname)
         					.set('user:' + id + ':age', age)
         					.set('user:' + id + ':admin', '0')
         					.set('user:' + id + ':password', computeSHA1(password))
@@ -52,7 +53,8 @@ module.exports = function(redis) {
                 .get('user:' + id + ':email')
                 .get('user:' + id + ':username')
                 .get('user:' + id + ':age')
-                .get('user:' + id + ':name')
+                .get('user:' + id + ':fname')
+                .get('user:' + id + ':lname')
                 .get('user:' + id + ':team')
                 .exec(function(error, results) {
                     if (error) {
@@ -68,25 +70,6 @@ module.exports = function(redis) {
                         team: results[4]
                     });
                 });
-        },
-
-        getUserSync: function(id){
-            redis.get('user:' + id + ':email', function(e, email){if(e){return null;}
-            redis.get('user:' + id + ':username', function(er, username){if(er){return null;}
-            redis.get('user:' + id + ':age', function(err, age){if(err){return null;}
-            redis.get('user:' + id + ':name', function(erro, name){if(erro){return null;}
-            redis.get('user:' + id + ':team', function(error, team){if(error){return null;}
-            if(email && username && age && name){
-                return({
-                    id: id,
-                    email: email,
-                    username: username,
-                    age: age,
-                    name: name,
-                    team: team
-                });
-            }return null;
-            });});});});});
         },
 
     	validateUser: function(log, pass, callback){
