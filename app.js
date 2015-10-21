@@ -127,11 +127,13 @@ app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/vi
 app.get('/_/js/bootstrap.js', function(req, res){res.sendFile(__dirname + '/views/_/js/bootstrap.js');});
 app.get('/_/js/jquery.js', function(req, res){res.sendFile(__dirname + '/views/_/js/jquery.js');});
 app.get('/_/js/myscript.js', function(req, res){res.sendFile(__dirname + '/views/_/js/myscript.js');});
+app.get('/toaster.js', function(req, res){res.sendFile(__dirname + '/views/_/components/js/jquery.toaster.js');});
 
 app.get('/new_question', function(req, res){res.render(__dirname + "/views/new_question.jade");});
 app.get('/about', function(req, res){res.render(__dirname + "/views/about.jade");});
 app.get('/', function(req, res){res.render(__dirname + "/views/index.jade");});
 app.get('/logout', function(req, res) {req.session.reset();res.redirect('/');});
+app.get('/notifications', function(req, res){res.sendFile(__dirname + "/views/_/components/jade/notifications.jade");});
 //-----------------------
 
 //complicated routes----------------
@@ -170,7 +172,7 @@ app.get('/dashboard', dashboard_check, function(req, res){
 
 
 io.on('connection', function(socket){
-
+  console.log("next");
   socket.on('dashboard_connect', function(user_id){
     Chat.getMessages(user_id, function(chat){
       io.emit('chat_log:' + user_id, chat);

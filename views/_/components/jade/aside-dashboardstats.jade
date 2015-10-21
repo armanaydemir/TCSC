@@ -28,7 +28,14 @@ html
               input#m
               button(type='button', autocomplete='off') Send
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<!--[if IE]>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<![endif]-->
+
+<!--[if !IE]>-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<!--<![endif]-->
+
 script.
   var socket = io();
 
@@ -36,6 +43,7 @@ script.
     $('button').click(function(){
       //console.log("comeonnnnn");
       socket.emit('send_message', $('#m').val());
+      //notify('lol', 's', 'success');
       console.log($('#m').val());
       $('#messages').append($('<li>').text($('#m').val()));
       $('#m').val('');
@@ -55,8 +63,9 @@ script.
   socket.on('chat_log:'+ #{config.user.id}, function(chat){
     var pic_requested = [#{config.user.id}];
     for (var i = 0; i < chat.length; i++) {
-      if(pic_requested.includes(parseInt(parseLog(chat[i])))){
-        pic_requested.push(parseInt(parseLog(chat[i])));
+      var log = parseInt(parseLog(chat[i]));
+      if(!pic_requested.includes(log)){
+        pic_requested.push(log);
         //request the pic here
       }
     }
@@ -64,10 +73,6 @@ script.
   });
   
   socket.on('new_message:' + #{config.user.team}, function(usr, msg){
-    console.log('catcatcat');
-    console.log(usr);
-    console.log(msg);
-    console.log('dogdogdog');
     if(usr != #{config.user.id}){$('#messages').append($('<li>').text(msg));}
   });
   socket.emit('dashboard_connect', #{config.user.id});

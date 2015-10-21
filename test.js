@@ -6,13 +6,13 @@ module.exports = function(redis) {
 
 	var test = {
 		setUp: function(){
-			User.createUser("Arman Aydemir", "arman", "17", "16aydemir@da.org", "arman111", function(a_id){
+			User.createUser("Arman", "Aydemir", "arman", "17", "16aydemir@da.org", "arman111", function(a_id){
 				redis.set("user:" + a_id + ":admin", 1);
 				if(a_id === "email"){
 					return;
 				}else{
 					Team.createTeam("Woah", "Durham Academy", a_id, "passwoah", function(w_id){
-						User.createUser("Nick Colvin", "nick", "18", "16colvin@da.org", "nick111", function(n_id){
+						User.createUser("Nick", "Colvin", "nick", "18", "16colvin@da.org", "nick111", function(n_id){
 							redis.set("user:" + n_id + ":admin", 1);
 							User.addToTeam(n_id, w_id, function(v){
 								Team.addMember(w_id, n_id, function(d){

@@ -66,8 +66,9 @@ module.exports = function(redis) {
                         email: results[0],
                         username: results[1],
                         age: results[2],
-                        name: results[3],
-                        team: results[4]
+                        fname: results[3],
+                        lname: results[4],
+                        team: results[5]
                     });
                 });
         },
