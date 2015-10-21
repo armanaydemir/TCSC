@@ -120,20 +120,21 @@ function dashboard_check(req, res, next){
   }else{res.redirect('login');}
 }
 
+//99% sure we don't need these but just incase... 
+//app.get('/_/js/bootstrap.js', function(req, res){res.sendFile(__dirname + '/views/_/js/bootstrap.js');});
+//app.get('/_/js/jquery.js', function(req, res){res.sendFile(__dirname + '/views/_/js/jquery.js');});
+//app.get('/_/js/myscript.js', function(req, res){res.sendFile(__dirname + '/views/_/js/myscript.js');});
+//
+
 
 //simple routes ---------------------
 app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
-app.get('/_/js/bootstrap.js', function(req, res){res.sendFile(__dirname + '/views/_/js/bootstrap.js');});
-app.get('/_/js/jquery.js', function(req, res){res.sendFile(__dirname + '/views/_/js/jquery.js');});
-app.get('/_/js/myscript.js', function(req, res){res.sendFile(__dirname + '/views/_/js/myscript.js');});
-app.get('/toaster.js', function(req, res){res.sendFile(__dirname + '/views/_/components/js/jquery.toaster.js');});
 
 app.get('/new_question', function(req, res){res.render(__dirname + "/views/new_question.jade");});
 app.get('/about', function(req, res){res.render(__dirname + "/views/about.jade");});
 app.get('/', function(req, res){res.render(__dirname + "/views/index.jade");});
 app.get('/logout', function(req, res) {req.session.reset();res.redirect('/');});
-app.get('/notifications', function(req, res){res.sendFile(__dirname + "/views/_/components/jade/notifications.jade");});
 //-----------------------
 
 //complicated routes----------------
@@ -177,7 +178,7 @@ io.on('connection', function(socket){
     Chat.getMessages(user_id, function(chat){
       io.emit('chat_log:' + user_id, chat);
     });
-    //also put question getting in here
+    Team.getQuestions(1, function(){});
   });
 
 

@@ -73,6 +73,6 @@ script.
   });
   
   socket.on('new_message:' + #{config.user.team}, function(usr, msg){
-    if(usr != #{config.user.id}){$('#messages').append($('<li>').text(msg));}
+    if(usr != #{config.user.id}){notify(msg, usr, 'success');$('#messages').append($('<li>').text(msg));}
   });
   socket.emit('dashboard_connect', #{config.user.id});

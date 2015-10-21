@@ -10,6 +10,22 @@ module.exports = function(redis) {
 	var emptyFunction = function() {};
 
 	var question = {
+		getQuestion: function(id, callback){
+			redis
+				.multi()
+				.get("question:" + id + ":name")
+                .get("question:" + id + ":category")
+                .get("question:" + id + ":description")
+                .exec(function (error, results) {
+            		if (error) {
+                		callback(false);
+                		return;
+            		}
+            		callback({name: results[0], category: results[1], description: results[2]});
+            		return;
+        		});
+		},
+
 		answerQuestion: function(user_id, team_id, question_id, answer, callback){
 			callback = callback || emptyFunction;
 			redis.get("team:" + team_id + ":questions", function(error, q){

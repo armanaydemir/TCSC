@@ -16,7 +16,6 @@ module.exports = function(redis) {
 							redis.set("user:" + n_id + ":admin", 1);
 							User.addToTeam(n_id, w_id, function(v){
 								Team.addMember(w_id, n_id, function(d){
-									
 			Question.pushQuestion(n_id, "Test Question 1", "Algorithm", null, "This is a great description for this question", null, "this_is_flag", function(g){
 				Question.pushQuestion(n_id, "Test Question 2", "Cryptography", null, "This is a great description for this question", null, "this_is_flag", function(g){
 					Question.pushQuestion(n_id, "Test Question 3", "Algorithm", null, "This is a great description for this question", null, "this_is_flag", function(g){

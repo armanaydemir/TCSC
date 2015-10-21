@@ -7,6 +7,7 @@ const passwordHashAlgorithm = 'sha1';
 module.exports = function(redis) {
     var computeSHA1 = function(str) { return crypto.createHash(passwordHashAlgorithm).update(str).digest('hex'); };
     var emptyFunction = function() {};
+    const Question = require('./question.js')(redis);
 
     function nextLetter(s){
         return s.replace(/([a-zA-Z])[^a-zA-Z]*$/, function(a){
@@ -207,10 +208,23 @@ module.exports = function(redis) {
         },
 
         getQuestions: function(team_id, callback){
+            //redis.zadd("team:" + team_id + ":question_order", 3, 4);
             redis.zrange("team:" + team_id + ":question_order", 0, -1, function(err, questions){
                 
+                if(!err || !questions || questions.length === 0 ){
+                    redis.get("global:question_id", function(err, val){
+                        for(x = 1; x <= val; x ++){
+                            Question.getQuestion(x, function(v){
+                                console.log(v);
+                            });
+                        }
+                    });
+                }
+                else{
 
+                }
             });
+
         },
 
         answeredQuestions: function (team_id, callback) {
