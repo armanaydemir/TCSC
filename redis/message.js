@@ -1,6 +1,8 @@
 module.exports = function(redis, io) {
 	var emptyFunction = function() {};
+	var url_regex = /^((?:http(?:s)?\:\/\/)?[a-zA-Z0-9_-]+(?:.[a-zA-Z0-9_-]+)*.[a-zA-Z]{2,4}(?:\/[a-zA-Z0-9_]+)*(?:\/[a-zA-Z0-9_]+.[a-zA-Z]{2,4}(?:\?[a-zA-Z0-9_]+\=[a-zA-Z0-9_]+)?)?(?:\&[a-zA-Z0-9_]+\=[a-zA-Z0-9_]+)*)$/;
 	const User = require('./user.js')(redis);
+	
 	var message = {
 		createMessage: function(message, user_id, callback){
 			callback = callback || emptyFunction;

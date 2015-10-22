@@ -178,7 +178,9 @@ io.on('connection', function(socket){
     Chat.getMessages(user_id, function(chat){
       io.emit('chat_log:' + user_id, chat);
     });
-    Team.getQuestions(1, function(){});
+    Team.getQuestions(1, function(q){
+      io.emit('question_log:' + user_id, q)
+    });
   });
 
 

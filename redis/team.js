@@ -7,6 +7,7 @@ const passwordHashAlgorithm = 'sha1';
 module.exports = function(redis) {
     var computeSHA1 = function(str) { return crypto.createHash(passwordHashAlgorithm).update(str).digest('hex'); };
     var emptyFunction = function() {};
+
     const Question = require('./question.js')(redis);
 
     function nextLetter(s){
@@ -215,7 +216,7 @@ module.exports = function(redis) {
                     redis.get("global:question_id", function(err, val){
                         for(x = 1; x <= val; x ++){
                             Question.getQuestion(x, function(v){
-                                console.log(v);
+                                callback(v);
                             });
                         }
                     });
