@@ -166,10 +166,13 @@ app.get('/dashboard', dashboard_check, function(req, res){
   else{
     Team.getTeam(user.team, function(team){
       if(team){
-        app.locals.config = {comp_id: req.session.comp_id, user:user, team:team};
-        res.render(__dirname + "/views/dashboard.jade/");
+        rClient.get("global:question_id", function(total_worst_thing_ever_woahhhhh, top_id){
+          app.locals.config = {comp_id: req.session.comp_id, user:user, team:team, q_tracker:top_id};
+          res.render(__dirname + "/views/dashboard.jade/");
+        })
+        
       } 
-    })
+    });
   }
 });
 //--------------
@@ -188,8 +191,6 @@ io.on('connection', function(socket){
 
 
   socket.on('send_message', function(msg){
-    console.log(msg);
-    console.log("jklolwoah");
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
     var user = session_data['user'];
     if(user.team){
@@ -200,6 +201,7 @@ io.on('connection', function(socket){
   });
 
   socket.on('answer_question', function(answer, question, type){
+    console.log("AAAAA");
     omg_you_got_the_banner_question = false;
     if(question == id_of_banner_question && answer[0] == "-" && answer[answer.length-1] == "-"){
       omg_you_got_the_banner_question = true;

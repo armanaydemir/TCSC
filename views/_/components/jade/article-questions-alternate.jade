@@ -1,17 +1,37 @@
 #questions.container.col-lg-8.col-md-8.col-sm-8.col-xs-12(style='margin-top: 2em; float:right;')
-      .page-header
-        h3 Questions
-      #accordion.panel-group(role='tablist', aria-multiselectable='true', style='overflow:auto;max-height:100vh')
-        
-        
+	.page-header
+		h3 Questions
+		#accordion.panel-group(role='tablist', aria-multiselectable='true', style='overflow:auto;max-height:100vh')
+
+
 script.
-  socket = io();
-  woah = ["One", "Two", "Three"];
-  num = 0;
-  socket.on('question_log:' + #{config.user.id}, function(que){
-    $('#accordion').append('<div class="panel panel-default"><div id="heading' + woah[num]+ '" role="tab" class="panel-heading"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + woah[num]+ '" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;"><h4 class="panel-title"><span class="questionname">' + que.name + '</span> &vert; <span class="points">250</span> &vert; <span class="category">' + que.category+ '</span><!-- change with jQuery on close--><span style="float: right;"><img src="images/useridenticon.png" alt="id" width="20px" height="20px" class="img-rounded"/><img src="images/useridenticon2.png" alt="id" width="20px" height="20px" class="img-rounded"/><img src="images/useridenticon3.png" alt="id" width="20px" height="20px" class="img-rounded"/><span style="color: black;" class="glyphicon glyphicon-chevron-down"></span></span></h4></a></div><div id="collapse' + woah[num]+ '" role="tabpanel" aria-labelledby="heading' + woah[num]+ '" class="panel-collapse collapse in"><div class="panel-body"><span class="description">' + que.description + '</span></div></div></div></div>');
-    num ++;
-  });
-  
-
-
+	socket = io();
+	woah = ["One", "Two", "Three"];
+	num = 0;
+	var active = 0;
+	$(document).ready(function () {
+		$("#accordion").on('shown.bs.collapse', function () {
+			var activia = $("#accordion .in").attr('id');
+			active = activia.slice(8, activia.length);
+			console.log(active);
+		});
+		
+	});
+	$(function(){
+		$('question_button').click(function(){
+			console.log(active);
+			console.log($('#q_' + active).val());
+			if($('#q_' + active).val() != ""){
+				socket.emit('answer_question', woah.indexOf(active) +1, $('#q_' + active).val(), false);
+				return false;
+			}
+		});
+	});
+	
+	socket.on('question_log:' + #{config.user.id}, function(que){
+		$('#accordion').append('<div class="panel panel-default"><div id="heading' + woah[num]+ '" role="tab" class="panel-heading"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + woah[num]+ '" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;"><h4 class="panel-title"><span class="questionname">' + que.name + '</span> &vert; <span class="points">' + que.points+ '</span> &vert; <span class="category">' + que.category+ '</span><!-- change with jQuery on close--><span style="float: right;"><img src="images/useridenticon.png" alt="id" width="20px" height="20px" class="img-rounded"/><img src="images/useridenticon2.png" alt="id" width="20px" height="20px" class="img-rounded"/><img src="images/useridenticon3.png" alt="id" width="20px" height="20px" class="img-rounded"/><span style="color: black;" class="glyphicon glyphicon-chevron-down"></span></span></h4></a></div><div id="collapse' + woah[num]+ '" role="tabpanel" aria-labelledby="heading' + woah[num]+ '" class="panel-collapse collapse in"><div class="panel-body"><span class="description">' + que.description + '</span><form action><input id="q_' + woah[que.id] + '"></input><button id="question_button" type="question" autocomplete="off">Answer</button></form></div></div></div></div>');
+		num ++;
+		if(num === 1){
+			active = woah[que.id];
+		}
+	});

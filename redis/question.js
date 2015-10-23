@@ -16,12 +16,13 @@ module.exports = function(redis) {
 				.get("question:" + id + ":name")
                 .get("question:" + id + ":category")
                 .get("question:" + id + ":description")
+                .get("question:" + id + ":points")
                 .exec(function (error, results) {
             		if (error) {
                 		callback(false);
                 		return;
             		}
-            		callback({name: results[0], category: results[1], description: results[2]});
+            		callback({id:id, name: results[0], category: results[1], description: results[2], points:results[3]});
             		return;
         		});
 		},
@@ -43,7 +44,7 @@ module.exports = function(redis) {
 		},
 
 
-		pushQuestion: function(user_id, name, category, file, description, expire, flag, callback){
+		pushQuestion: function(user_id, name, category, file, description, expire, flag, points, callback){
 			redis.get("user:" + user_id + ":admin", function(error, admin){
 				if(error){callback(0); return;}
 				if(admin == 1){
@@ -60,6 +61,7 @@ module.exports = function(redis) {
                     			.set("question:" + id + ":name", name)
                     			.set("question:" + id + ":category", category)
                     			//.set("question:" + id + ":file", file)
+                                .set("question:" + id + ":points", points)
                     			.set("question:" + id + ":description", description)
                     			.set("question:" + id + ":expire", expire)
                     			.set("question:" + id + ":flag", flag)
