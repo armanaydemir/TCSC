@@ -62,6 +62,24 @@ module.exports = function(redis) {
             });
         },
 
+        getTeam: function(id, callback){
+            callback = callback || emptyFunction;
+
+            redis
+                .multi()
+                .get("team:" + id + ":name")
+                .get("team:" + id + ":points")
+                .exec(function (error, results) {
+                    if (error) {
+                        console.log("mmmsjs");
+                        callback(false);
+                        return;
+                    }
+                    callback({name:results[0], points:results[1]});
+                    return;
+                });
+        },
+
         getTeamMembers: function (team_id, callback) {
             callback = callback || emptyFunction;
             redis.smembers("team:" + team_id + ":members", function (err, mems) {

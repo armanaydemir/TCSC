@@ -6,6 +6,10 @@ module.exports = function(redis){
 			redis.zadd("banner", expire, string);
 		},
 
+		getBanner: function(){
+			//get banner from db here
+		},
+
 		minute_tick: function(){
 
 		}

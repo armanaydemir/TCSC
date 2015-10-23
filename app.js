@@ -126,7 +126,6 @@ function dashboard_check(req, res, next){
 //app.get('/_/js/myscript.js', function(req, res){res.sendFile(__dirname + '/views/_/js/myscript.js');});
 //
 
-
 //simple routes ---------------------
 app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
@@ -165,8 +164,12 @@ app.get('/dashboard', dashboard_check, function(req, res){
     //res.render(__dirname + "/views/dashboard.jade");
   }
   else{
-    app.locals.config = {comp_id: req.session.comp_id, user:user};
-    res.render(__dirname + "/views/dashboard.jade/");
+    Team.getTeam(user.team, function(team){
+      if(team){
+        app.locals.config = {comp_id: req.session.comp_id, user:user, team:team};
+        res.render(__dirname + "/views/dashboard.jade/");
+      } 
+    })
   }
 });
 //--------------

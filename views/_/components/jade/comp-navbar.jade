@@ -9,6 +9,12 @@ nav.navbar.navbar-default.navbar-fixed-top.navbar-inverse(role='navigation')
           // button
         // /.nav-collapse
         #navbar.navbar-collapse.collapse
+          ul.nav.navbar-nav.navbar-left
+            li
+              a(href="#") #{config.team.name}:
+            li
+              a(href="#") #{config.team.points}
+
           ul.nav.navbar-nav.navbar-right
             a.pull-left.logo(href='#', style='padding-right:3em;')
               img#logodiv(style='max-width:40px;max-height: 40px;margin-top: 5px', src='images/emblem.png')
