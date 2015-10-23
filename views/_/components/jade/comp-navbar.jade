@@ -14,8 +14,12 @@ nav.navbar.navbar-default.navbar-fixed-top.navbar-inverse(role='navigation')
               a(href="#") #{config.team.name}:
             li
               a(href="#") #{config.team.points}
+          
 
           ul.nav.navbar-nav.navbar-right
+            li
+              marquee(behavior="scroll" scrollamount="1" direction="left" width="350")
+                a(href='#') WOAHHHHH
             a.pull-left.logo(href='#', style='padding-right:3em;')
               img#logodiv(style='max-width:40px;max-height: 40px;margin-top: 5px', src='images/emblem.png')
             li.active
@@ -48,3 +52,4 @@ nav.navbar.navbar-default.navbar-fixed-top.navbar-inverse(role='navigation')
         // code for collapsable navbar
       // container
     // navbar
+script

@@ -26,7 +26,7 @@ module.exports = function(redis) {
 			// some other teams from Ravenscroft (fuck them)
 			User.createUser("Matt", "Sale", "matt", "17", "16sale@da.org", "matt", function(m_id){
 				Team.createTeam("Gay", "Ravenscroft", m_id, "gay", function(g_id){
-						User.createUser("Stillman", "Hansen", "stillman", "18", "15hansen@da.org", "stillman", function(s_id){
+						User.createUser("Stillman", "Hansen", "stillman", "16", "15hansen@da.org", "stillman", function(s_id){
 							User.addToTeam(s_id, g_id, function(v){
 								Team.addMember(g_id, s_id, function(d){
 			});});});});});
