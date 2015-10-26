@@ -129,6 +129,10 @@ function dashboard_check(req, res, next){
 //simple routes ---------------------
 app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
+app.get('/images/useridenticon3.png', function(req, res){res.sendFile(__dirname + "/views/images/default_user/useridenticon3.png");});
+app.get('/images/useridenticon2.png', function(req, res){res.sendFile(__dirname + "/views/images/default_user/useridenticon2.png");});
+app.get('/images/useridenticon1.png', function(req, res){res.sendFile(__dirname + "/views/images/default_user/useridenticon1.png");});
+
 
 app.get('/new_question', function(req, res){res.render(__dirname + "/views/new_question.jade");});
 app.get('/about', function(req, res){res.render(__dirname + "/views/about.jade");});
