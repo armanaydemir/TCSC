@@ -13,7 +13,7 @@ module.exports = function(redis, io) {
 			});
 		},
 
-		answeredQuestion: function(user_id, question_id, callback){
+		answeredQuestion: function(user_id, question_id){
 			callback = callback || emptyFunction;
 			redis.get("user:" + user_id + ":team", function(err, team_id){
 				if (err) {callback(false);return;}

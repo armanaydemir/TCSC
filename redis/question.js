@@ -35,10 +35,11 @@ module.exports = function(redis) {
 					callback(false);return; //means they already answered the question
 				}else {
 					redis.get("question:" + question_id + ":answer", function(err, ans){
-                        console.log("cooooooool?");
                     	if (err) {callback(false);return;}
                     	redis.incr("question:" + question_id + ":temp_attempts");
-                    	callback(computeSHA1(answer) == ans);
+                        console.log(answer);
+                        console.log(ans);
+                    	callback(answer == ans);
                     });
 				}
 			});
@@ -65,7 +66,7 @@ module.exports = function(redis) {
                                 .set("question:" + id + ":points", points)
                     			.set("question:" + id + ":description", description)
                     			.set("question:" + id + ":expire", expire)
-                    			.set("question:" + id + ":flag", flag)
+                    			.set("question:" + id + ":answer", flag)
                     			.exec(function (error, results) {
                             		if (error) {
                                 		callback(false);

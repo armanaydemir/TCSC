@@ -205,10 +205,12 @@ io.on('connection', function(socket){
     }
   });
   
-  socket.on('answer_question', function(question, answer, type){
+  socket.on('answer_question', function(answer, question, type){
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
     var user = session_data['user'];
     console.log("AAAAA cha cha cha chia");
+    console.log(question);
+    console.log(answer);
     omg_you_got_the_banner_question = false;
     if(answer[0] == "-" && answer[answer.length-1] == "-" && question == id_of_banner_question){
       omg_you_got_the_banner_question = true;
@@ -217,15 +219,17 @@ io.on('connection', function(socket){
       Question.answerQuestion(user.id, user.team, question, answer, function(correct){
         console.log(correct);
         console.log("asdfdddddd");
-        Team.attemptedQuestion(user.team, user.id, question, correct);
-        if (correct){
-          Alert.answerQuestion(user.id, question);
-        }else if(omg_you_got_the_banner_question){
-          Alert.answerQuestion(user.id, id_of_banner_question); //update this variable later
-          Banner.updateBanner(redis.get("team:" + user.team + ":name"), 2);
-        }else{
-          io.emit("incorrect" + user.id, (question));
-        }
+        Team.attemptedQuestion(user.team, user.id, question, correct, function(mess){
+          if (mess) {return;} // what a mess
+          if (correct){
+            Alert.answeredQuestion(user.id, question);
+          }else if(omg_you_got_the_banner_question){
+            Alert.answeredQuestion(user.id, id_of_banner_question); //update this variable later
+            Banner.updateBanner(redis.get("team:" + user.team + ":name"), 2);
+          }else{
+            io.emit("incorrect" + user.id, (question));
+          }
+        }); 
       });
     }
   });

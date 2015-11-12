@@ -282,11 +282,12 @@ module.exports = function(redis) {
                     } //means team already answered question
                 });
                 redis.zadd("team:" + team_id + ":question_order", -1, question_id);
-                redis.get("question:" + question_id + ":score", function(err, score){
+                redis.get("question:" + question_id + ":points", function(err, score){
                     if (err) {
                         callback(false);
                         return;
                     }
+                    console.log(score);
                     redis.incrby("question:" + question_id + ":teams_answered", 1);
                     redis.incrby("team:" + team_id + ":points", score);
                 });
@@ -317,7 +318,7 @@ module.exports = function(redis) {
                     //if member != except
                         //io.emit("notification:" + member, type, data)
             });
-        },
+        }
     };
 
     return team;
