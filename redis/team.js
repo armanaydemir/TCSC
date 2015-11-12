@@ -77,7 +77,7 @@ module.exports = function(redis) {
                         callback(false);
                         return;
                     }
-                    callback({name:results[0], points:results[1]});
+                    callback({name:results[0].slice(results[0].indexOf(':')+1,results[0].length), points:results[1]});
                     return;
                 });
         },
@@ -287,7 +287,6 @@ module.exports = function(redis) {
                         callback(false);
                         return;
                     }
-                    console.log(score);
                     redis.incrby("question:" + question_id + ":teams_answered", 1);
                     redis.incrby("team:" + team_id + ":points", score);
                 });

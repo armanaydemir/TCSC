@@ -39,7 +39,7 @@ module.exports = function(redis) {
                     	redis.incr("question:" + question_id + ":temp_attempts");
                         console.log(answer);
                         console.log(ans);
-                    	callback(answer == ans);
+                    	callback(computeSHA1(answer) == ans);
                     });
 				}
 			});
@@ -66,7 +66,7 @@ module.exports = function(redis) {
                                 .set("question:" + id + ":points", points)
                     			.set("question:" + id + ":description", description)
                     			.set("question:" + id + ":expire", expire)
-                    			.set("question:" + id + ":answer", flag)
+                    			.set("question:" + id + ":answer", computeSHA1(flag))
                     			.exec(function (error, results) {
                             		if (error) {
                                 		callback(false);
@@ -88,12 +88,12 @@ module.exports = function(redis) {
 		statsTick: function(){
             redis.get("global:question_id", function(err, id){
                 if(err){return;}
-                id -= 2;
+                id --;
 
                 var d = new Date();
                 var time = d.getTime();
 
-                for(var x = 0; x <= id; x++){
+                for(var x = 0; x < id; x++){
                     redis.hset("question:" + x + ":stats", time, "numberofteamscorrect:numberofteamsattempted");
                 }
             });

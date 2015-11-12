@@ -27,8 +27,8 @@ module.exports = function(redis) {
         				redis
         					.multi()
                             .set('user:' + id + ':prof_pic', "/images/useridenticon" + (Math.floor(Math.random() * 3) + 1) + ".png")
-        					.set('user:' + id + ':email', email)
-        					.set('user:' + id + ':username', username)
+        					.set('user:' + id + ':email', email.toLowerCase() + ':' + email)
+        					.set('user:' + id + ':username', username.toLowerCase() + ':' + username)
         					.set('user:' + id + ':fname', fname)
                             .set('user:' + id + ':lname', lname)
         					.set('user:' + id + ':age', age)
@@ -65,8 +65,8 @@ module.exports = function(redis) {
                     }
                     callback({
                         id: id,
-                        email: results[0],
-                        username: results[1],
+                        email: results[0].slice(results[0].indexOf(':')+1,results[0].length),
+                        username: results[1].slice(results[1].indexOf(':')+1,results[1].length),
                         age: results[2],
                         fname: results[3],
                         lname: results[4],
