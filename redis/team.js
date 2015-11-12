@@ -12,7 +12,7 @@ module.exports = function(redis) {
 
     function nextLetter(s){
         return s.replace(/([a-zA-Z])[^a-zA-Z]*$/, function(a){
-            var c= a.charCodeAt(0);
+            var c = a.charCodeAt(0);
             switch(c){
                 case 90: return 'A';
                 case 122: return 'a';
@@ -43,8 +43,10 @@ module.exports = function(redis) {
                     redis
                         .multi()
                         .set("user:" + leader_id + ":team", id)
-                        .set("team:" + id + ":name", name)
+                        .set("team:" + id + ":name", name.toLowerCase() + ":" + name)
                         .set("team:" + id + ":points", 0)
+                        .zadd("global:leaderboard_name", 0, name.toLowerCase() + ":" + name)
+                        .zadd("global:leaderboard", 0, id)
                         .set("team:" + id + ":school", school)
                         .sadd("team:" + id + ":members", leader_id)
                         .set("team:" + id + ":leader", leader_id)
@@ -153,11 +155,17 @@ module.exports = function(redis) {
         },
 
         searchTeam: function (input, callback) {
-            //console.log("woaj");
-            redis.zrangebylex("global:leaderboard", "[" + input, "(" + input.substring(0, input.length -1) + nextLetter(input.slice(-1)), function(err, array){
+            input = input.toLowerCase();
+            console.log("[" + input);
+            console.log("(" + input.substring(0, input.length -1) + nextLetter(input.slice(-1)));
+            redis.zrange("global:leaderboard_name", 0, -1, function(err, woah){
+                console.log(woah);
+            });
+            redis.zrangebylex("global:leaderboard_name", "[" + input, "(" + input.substring(0, input.length -1) + nextLetter(input.slice(-1)), function(err, array){
                 console.log(array.toString());
                 callback(array);
             });
+            //include school search ... it gone be cool AF
             //console.log(query.toString());
         },
 

@@ -26,6 +26,7 @@ module.exports = function(redis) {
             			if (set==0) {callback("username");return;} //means username is already taken
         				redis
         					.multi()
+                            .set('user:' + id + ':prof_pic', "/images/useridenticon" + (Math.floor(Math.random() * 3) + 1) + ".png")
         					.set('user:' + id + ':email', email)
         					.set('user:' + id + ':username', username)
         					.set('user:' + id + ':fname', fname)
@@ -56,6 +57,7 @@ module.exports = function(redis) {
                 .get('user:' + id + ':fname')
                 .get('user:' + id + ':lname')
                 .get('user:' + id + ':team')
+                .get('user:' + id + ':prof_pic')
                 .exec(function(error, results) {
                     if (error) {
                         callback(null);
@@ -68,9 +70,16 @@ module.exports = function(redis) {
                         age: results[2],
                         fname: results[3],
                         lname: results[4],
-                        team: results[5]
+                        team: results[5],
+                        prof_pic: results[6]
                     });
                 });
+        },
+
+        editUser: function(id, fname, lname, prof_pic, username, age, new_pass, pass){
+            if(id){
+                redis.set('user:' + id + ':prof_pic', prof_pic);
+            }
         },
 
     	validateUser: function(log, pass, callback){

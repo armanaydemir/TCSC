@@ -31,12 +31,13 @@ module.exports = function(redis) {
 			callback = callback || emptyFunction;
 			redis.get("team:" + team_id + ":questions", function(error, q){
 				if(error){callback(false);return;}
-				if(q.contains(question_id)){
+				if(q && q.contains(question_id)){
 					callback(false);return; //means they already answered the question
 				}else {
 					redis.get("question:" + question_id + ":answer", function(err, ans){
+                        console.log("cooooooool?");
                     	if (err) {callback(false);return;}
-                    	redis.incr("question:" + question_id + ":temp_attempts")
+                    	redis.incr("question:" + question_id + ":temp_attempts");
                     	callback(computeSHA1(answer) == ans);
                     });
 				}

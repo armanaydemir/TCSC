@@ -21,15 +21,14 @@ nav.navbar.navbar-default.navbar-fixed-top.navbar-inverse(role='navigation')
             a.pull-left.logo(href='#', style='padding-right:3em;')
               img#logodiv(style='max-width:40px;max-height: 40px;margin-top: 5px', src='images/emblem.png')
             li.active
-              a(href='#') Dashboard
+              a(href='dashboard') Dashboard
             li
-              a(href='#') Stats
-            li
-              a(href='#') Team
+              a(href='stats') Stats
             // perhaps we should move the rules to the settings
             li.dropdown
               a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
-                img.img-rounded(src='images/useridenticon.png', alt='id', width='20px', height='20px')
+                //img.img-rounded(src="\'" + #{config.user.prof_pic} + "\'", alt='id', width='20px', height='20px')
+                //img.img-rounded(src="images/useridenticon3.png", alt='id', width='20px', height='20px')
                 span.caret
               ul.dropdown-menu
                 li.dropdown-header Signed in as #{config.user.username}

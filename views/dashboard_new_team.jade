@@ -10,17 +10,16 @@ html(lang='en')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1')
     title TCSC - Triangle Computer Science Competition
+    style
+        include _/css/bootstrap.css
+        include _/css/compstyles.css
   body#dashboard(style='overflow:hidden;')
     header
         include _/components/jade/comp-navbar.jade
-        style
-          include _/css/bootstrap.css
-          include _/css/compstyles.css
     content
-        include _/components/jade/aside-dashboardstats.jade
+        include _/components/jade/article-teamSearch.jade
         //include _/components/jade/article-questions.jade
         //include _/components/jade/article-questions-alternate.jade
-        include _/components/jade/article-stats.jade
         include _/components/jade/notifications.html
 
     footer

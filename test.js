@@ -55,7 +55,7 @@ module.exports = function(redis) {
 
 			//team with only one member
 			User.createUser("Lonely", "Man", "lonely", "17", "16man@da.org", "lonely", function(l_id){
-				Team.createTeam("Lonely", "", a_id, "lonely", function(l_team_id){
+				Team.createTeam("Lonely", "", l_id, "lonely", function(l_team_id){
 				});
 			});
 

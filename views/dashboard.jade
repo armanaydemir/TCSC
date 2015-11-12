@@ -24,3 +24,8 @@ html(lang='en')
 
     footer
     // jQuery (necessary for Bootstrap's JavaScript plugins)
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+script.
+  var socket = io();
+
+  socket.emit('dashboard_connect', #{config.user.id})

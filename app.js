@@ -19,22 +19,22 @@ var Files = {};
 
 
 //ayo remember to turn on the redis-server when you run this
-var redis = require('redis');
-var rClient = redis.createClient();
+var redis = require('redis').createClient();
 const Overload = require('jshelpers').Overload;
-const User = require('./redis/user.js')(rClient);
-const Team = require('./redis/team.js')(rClient);
-const Chat = require('./redis/message.js')(rClient,io);
-const Question = require('./redis/question.js')(rClient);
-const Banner = require('./redis/banner.js')(rClient);
+const User = require('./redis/user.js')(redis);
+const Team = require('./redis/team.js')(redis);
+const Chat = require('./redis/message.js')(redis,io);
+const Question = require('./redis/question.js')(redis);
+const Banner = require('./redis/banner.js')(redis);
 
 //this is for debug only ___________________
-const Test = require('./test.js')(rClient);
+const Test = require('./test.js')(redis);
 Test.setUp();
+app.get('/fresh_team', function(req, res){res.render(__dirname + "/views/dashboard_new_team.jade");});
 //____________________
 
 
-var Alert = require('./redis/notification.js')(rClient,io);
+var Alert = require('./redis/notification.js')(redis,io);
 var session_opts = {
   cookieName: 'session',
   secret: 'iWonderIfAnyoneWouldn\'GuessThis...',
@@ -53,14 +53,14 @@ function makeCompID(){
 
 function dashboard_check(req, res, next){
   if(req.session.signup_id) {
-    rClient.get("signup_key:" + req.session.signup_id, function(err, user_id){
+    redis.get("signup_key:" + req.session.signup_id, function(err, user_id){
       if(!err && user_id){
         req.session.user_id = user_id;
         User.getUser(user_id, function(user){
           console.log("sign: " + user);
           if(user){req.session.user = user;}
           var comp_id = req.session.signup_id;
-          rClient.del("signup_key:" + req.session.signup_id);
+          redis.del("signup_key:" + req.session.signup_id);
           delete req.session.signup_id;
           req.session.comp_id = comp_id;
           next();
@@ -81,14 +81,14 @@ function dashboard_check(req, res, next){
   }
 
   else if(req.session.login_id) {
-    rClient.get("login_key:" + req.session.login_id, function(err, user_id){
+    redis.get("login_key:" + req.session.login_id, function(err, user_id){
       if(!err && user_id){
         req.session.user_id = user_id;
         User.getUser(user_id, function(user){
           console.log("used: " + user);
           if(user){req.session.user = user;}
           var comp_id = req.session.login_id;
-          rClient.del("login_key:" + req.session.login_id);
+          redis.del("login_key:" + req.session.login_id);
           delete req.session.login_id
           req.session.comp_id = comp_id;
           next();
@@ -129,9 +129,9 @@ function dashboard_check(req, res, next){
 //simple routes ---------------------
 app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
-app.get('/images/useridenticon3.png', function(req, res){res.sendFile(__dirname + "/views/images/default_user/useridenticon3.png");});
-app.get('/images/useridenticon2.png', function(req, res){res.sendFile(__dirname + "/views/images/default_user/useridenticon2.png");});
-app.get('/images/useridenticon1.png', function(req, res){res.sendFile(__dirname + "/views/images/default_user/useridenticon1.png");});
+app.get('/images/useridenticon3.png', function(req, res){res.sendFile(__dirname + "/prof_pics/useridenticon3.png");});
+app.get('/images/useridenticon2.png', function(req, res){res.sendFile(__dirname + "/prof_pics/useridenticon2.png");});
+app.get('/images/useridenticon1.png', function(req, res){res.sendFile(__dirname + "/prof_pics/useridenticon1.png");});
 
 
 app.get('/new_question', function(req, res){res.render(__dirname + "/views/new_question.jade");});
@@ -142,6 +142,7 @@ app.get('/logout', function(req, res) {req.session.reset();res.redirect('/');});
 
 //complicated routes----------------
 app.get('/settings', dashboard_check, function(req, res){res.render(__dirname + "/views/settings.jade");});
+app.get('/stats', dashboard_check, function(req, res){res.render(__dirname + "/views/stats.jade");});
 
 app.get('/login', function(req, res){
   req.session.login_id = makeCompID(); //change name to log in key
@@ -170,7 +171,7 @@ app.get('/dashboard', dashboard_check, function(req, res){
   else{
     Team.getTeam(user.team, function(team){
       if(team){
-        rClient.get("global:question_id", function(total_worst_thing_ever_woahhhhh, top_id){
+        redis.get("global:question_id", function(total_worst_thing_ever_woahhhhh, top_id){
           app.locals.config = {comp_id: req.session.comp_id, user:user, team:team, q_tracker:top_id};
           res.render(__dirname + "/views/dashboard.jade/");
         })
@@ -203,29 +204,32 @@ io.on('connection', function(socket){
       });
     }
   });
-
-  socket.on('answer_question', function(answer, question, type){
-    console.log("AAAAA");
+  
+  socket.on('answer_question', function(question, answer, type){
+    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+    var user = session_data['user'];
+    console.log("AAAAA cha cha cha chia");
     omg_you_got_the_banner_question = false;
-    if(question == id_of_banner_question && answer[0] == "-" && answer[answer.length-1] == "-"){
+    if(answer[0] == "-" && answer[answer.length-1] == "-" && question == id_of_banner_question){
       omg_you_got_the_banner_question = true;
     }
-    rClient.get("user:" + req.session.user_id + ":team", function(error, team_id){
-      Question.answerQuestion(req.session.user_id, team_id, question, answer, function(correct){
-        Team.attemptedQuestion(team_id, req.session.user_id, question, correct);
+    if(user.team){
+      Question.answerQuestion(user.id, user.team, question, answer, function(correct){
+        console.log(correct);
+        console.log("asdfdddddd");
+        Team.attemptedQuestion(user.team, user.id, question, correct);
         if (correct){
-          Alert.answerQuestion(req.session.user_id, question);
+          Alert.answerQuestion(user.id, question);
         }else if(omg_you_got_the_banner_question){
-          Alert.answerQuestion(req.session.user_id, id_of_banner_question); //update this variable later
-          Banner.updateBanner(redis.get("team:" + team_id + ":name"), 2);
+          Alert.answerQuestion(user.id, id_of_banner_question); //update this variable later
+          Banner.updateBanner(redis.get("team:" + user.team + ":name"), 2);
         }else{
-          io.emit("incorrect" + req.session.user_id, (question));
+          io.emit("incorrect" + user.id, (question));
         }
       });
-    });
+    }
   });
-
-  socket.on('signup', function(name, username, age, email, password){
+socket.on('signup', function(name, username, age, email, password){
     console.log("signup_server_socket");
     User.createUser(name, username, age, email, password, function(v){
 
@@ -251,7 +255,7 @@ io.on('connection', function(socket){
 
       }else{
         //console.log("hey");
-        rClient.setnx("signup_key:" + session_id, v, function(err, set){
+        redis.setnx("signup_key:" + session_id, v, function(err, set){
           if (err) {return;}
           if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
           io.emit(session_id, 'success_sign_up');
@@ -268,10 +272,10 @@ io.on('connection', function(socket){
       console.log("check");
       if(v === "true"){
         console.log('true');
-        rClient.setnx("login_key:" + session_id, user_id, function(err, set){
+        redis.setnx("login_key:" + session_id, user_id, function(err, set){
           if (err) {return;}
           if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
-          //io.emit(session_id, 'success_login');
+          io.emit(session_id, 'success_login');
         });
       }else if(v === "invalid_pass"){
         io.emit(session_id, 'invalid_pass');
@@ -323,7 +327,7 @@ io.on('connection', function(socket){
         io.emit(user.id, "join_pass");
       }
       else{
-        var team_id = rClient.get("team_name:" + team_name + ":id")
+        var team_id = redis.get("team_name:" + team_name + ":id")
         User.addToTeam(user.id, team_id, function (val){
           console.log("we good good man?");
           if(!val){
@@ -347,8 +351,15 @@ io.on('connection', function(socket){
     });
   });
   
-  socket.on('search_team', function (team_id){
-    
+  socket.on('search_team', function (team_str){
+    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+    user = session_data["user"];
+    console.log(user);
+    console.log(team_str);
+    Team.searchTeam(team_str, function(array){
+      console.log(array);
+      socket.emit('complete:' + user.id, array);
+    })
   });
 
   socket.on('register_question', function(name, category, description, flag){
@@ -362,8 +373,11 @@ io.on('connection', function(socket){
       }
     });
   });
-  socket.on('Start', function (data) { //data contains the variables that we passed through in the html file
+  
+  socket.on('prof_pic_upload', function (data) { //data contains the variables that we passed through in the html file
     var Name = data['Name'];
+    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+    user = session_data["user"];
     Files[Name] = {  //Create a new Entry in The Files Variable
         FileSize : data['Size'],
         Data     : "",
@@ -387,17 +401,21 @@ io.on('connection', function(socket){
         else
         {
             Files[Name]['Handler'] = fd; //We store the file handler so we can write to it later
-            io.emit('MoreData', { 'Place' : Place, 'Percent' :  0});
+            io.emit(user.id + ":more_data", { 'Place' : Place, 'Percent' :  0});
         }
     });
   });
         
-  socket.on('Upload', function (data){
+  socket.on('upload_profile_pic', function (data){
+    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+    user = session_data["user"];
     var Name = data['Name'];
     Files[Name]['Downloaded'] += data['Data'].length;
     Files[Name]['Data'] += data['Data'];
     if(Files[Name]['Downloaded'] == Files[Name]['FileSize']) //If File is Fully Uploaded
-    { console.log("some stuff");
+    { 
+      User.editUser(user.id, user.fname, user.lname, Name.slice(Name.lastIndexOf('_'), Name.length),
+        user.username, user.age, null, null);
       fs.write(Files[Name]['Handler'], Files[Name]['Data'], null, 'Binary', function(err, Writen){
           var inp = fs.createReadStream("Temp/" + Name);
           var out = fs.createWriteStream("upload/" + Name);
@@ -413,14 +431,14 @@ io.on('connection', function(socket){
         Files[Name]['Data'] = ""; //Reset The Buffer
         var Place = Files[Name]['Downloaded'] / 524288;
         var Percent = (Files[Name]['Downloaded'] / Files[Name]['FileSize']) * 100;
-        io.emit('MoreData', { 'Place' : Place, 'Percent' :  Percent});
+        io.emit(user.id + ":more_data", { 'Place' : Place, 'Percent' :  Percent});
       });
     }
     else
     {
       var Place = Files[Name]['Downloaded'] / 524288;
       var Percent = (Files[Name]['Downloaded'] / Files[Name]['FileSize']) * 100;
-      io.emit('MoreData', { 'Place' : Place, 'Percent' :  Percent});
+      io.emit(user.id + ":more_data", { 'Place' : Place, 'Percent' :  Percent});
     }
   });
 });
