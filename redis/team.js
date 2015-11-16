@@ -237,7 +237,7 @@ module.exports = function(redis) {
         getQuestions: function(team_id, callback){
             //redis.zadd("team:" + team_id + ":question_order", 3, 4);
             redis.zrange("team:" + team_id + ":question_order", 0, -1, function(err, questions){
-                
+                console.log(questions);
                 if(!err || !questions || questions.length === 0 ){
                     redis.get("global:question_id", function(err, val){
                         for(x = 1; x <= val; x ++){
