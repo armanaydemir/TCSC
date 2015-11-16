@@ -236,7 +236,7 @@ module.exports = function(redis) {
 
         getQuestions: function(team_id, callback){
             //redis.zadd("team:" + team_id + ":question_order", 3, 4);
-            redis.zrange("team:" + team_id + ":question_order", 0, -1, function(err, questions){
+            redis.zrevrange("team:" + team_id + ":question_order", 0, -1, "withscores", function(err, questions){
                 console.log(questions);
                 if(!err || !questions || questions.length === 0 ){
                     redis.get("global:question_id", function(err, val){
@@ -248,7 +248,34 @@ module.exports = function(redis) {
                     });
                 }
                 else{
+                    var c = 0;
+                    var q_id = -1;
+                    var order = -3;
+                    for (var q in questions){
+                        if(c % 2 == 0){
+                            q_id = q;
+                        }
+                        else{
+                            order = q;
 
+                            if(order <= 0){
+                                redis.get("global:question_id", function(err, val){
+                                    for(x = 1; x <= val; x ++){
+                                        if(question.indexOf(x) != -1)
+                                        Question.getQuestion(x, function(v){
+                                            callback(v);
+                                        });
+                                    }
+                                });
+                            }
+
+                            Question.getQuestion(q_id, function(v){
+                                callback(v);
+                            });
+
+                        }
+                        c = (c + 1) % 2
+                    }
                 }
             });
 
