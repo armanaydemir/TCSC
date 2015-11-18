@@ -26,7 +26,7 @@ module.exports = function(redis) {
             			if (set==0) {callback("username");return;} //means username is already taken
         				redis
         					.multi()
-                            .set('user:' + id + ':prof_pic', "/images/useridenticon" + (Math.floor(Math.random() * 3) + 1) + ".png")
+                            .set('user:' + id + ':prof_pic', Math.floor(Math.random() * 3) + 1)
         					.set('user:' + id + ':email', email.toLowerCase() + ':' + email)
         					.set('user:' + id + ':username', username.toLowerCase() + ':' + username)
         					.set('user:' + id + ':fname', fname)

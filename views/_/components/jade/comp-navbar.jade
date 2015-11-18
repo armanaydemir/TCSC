@@ -27,10 +27,6 @@ nav.navbar.navbar-default.navbar-fixed-top.navbar-inverse(role='navigation')
             // perhaps we should move the rules to the settings
             li.dropdown
               a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
-
-                img.img-rounded(src='', alt='id', width='20px', height='20px')
-                //img.img-rounded(src="images/useridenticon3.png", alt='id', width='20px', height='20px')
-                span.caret
               ul.dropdown-menu
                 li.dropdown-header Signed in as #{config.user.username}
                 li.divider(role='separator')
@@ -56,7 +52,13 @@ script.
   $('div.navbar marquee').marquee();
   var socket = io();
 
+  $(document).ready(function () {
+    $('#navbar ul.navbar-right li.dropdown a.dropdown-toggle').append('<img src="images/useridenticon' + #{config.user.prof_pic} + '.png" alt="id" width="20px" height="20px" class="img-rounded"><span class="caret"></span>');
+  });
+
   //oh yeah add the thing to programmatically add the prof image stuff here ... no need to change cookies (other than maybe with the 
   //editable thing)
 
   socket.on()
+
+
