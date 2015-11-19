@@ -4,8 +4,8 @@
 // make an invite to team thing and a you have no team dumbass thing
 // make sure we scrub and clean any input, especially chat lol, cant even do a fucking apostraphe
 
-
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var cookie = require('cookie');
@@ -16,6 +16,7 @@ var util = require('util');
 var exec = require('child_process').exec;
 var async = require("async");
 var Files = {};
+var resumable = require('resumable');
 
 
 //ayo remember to turn on the redis-server when you run this
@@ -159,6 +160,8 @@ app.get('/signup', function(req, res){
   res.render(__dirname + "/views/signup.jade/");
 });
 
+app.use(express.static('/Video'));
+
 app.get('/dashboard', dashboard_check, function(req, res){
   console.log(req.session);
   var user = req.session.user;
@@ -175,13 +178,22 @@ app.get('/dashboard', dashboard_check, function(req, res){
           app.locals.config = {comp_id: req.session.comp_id, user:user, team:team, q_tracker:top_id};
           res.render(__dirname + "/views/dashboard.jade/");
         })
-        
+       resumable.get(req, function(status, filename, original_filename, identifier){
+        console.log('GET', status);
+        res.send((status == 'found' ? 200 : 404), status);
+       }); 
       } 
     });
   }
 });
 //--------------
 
+app.post('/dashboard', function(req, res) {
+  console.log('we uploadin');
+  resumable.post(req, function(status, filename, original_filename, identifier){
+        console.log('POST', status, original_filename, identifier);
+  });
+});
 
 io.on('connection', function(socket){
   console.log("next");

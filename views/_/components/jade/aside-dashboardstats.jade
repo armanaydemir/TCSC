@@ -9,6 +9,9 @@ html
             form(action='')
               input#m
               button(type='button', autocomplete='off') Send
+            form(action='')
+              input(type='file')#browseButton
+              button(type='button', autocomplete='off')#uploadFile Upload
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <!--[if IE]>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -17,8 +20,17 @@ html
 <!--[if !IE]>-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <!--<![endif]-->
-script(src="/node_modules/dropzone/dist/dropzone.js").
-  window.Dropzone;
+script(src="/Users/mbp/Documents/School/Senior Year/TCSC/node_modules/resumable/lib").
+  var r = new Resumable({
+  target:'/Video', 
+  query:{},
+  });
+  r.assignBrowse(document.getElementById('browseButton'));
+  var uploadFile = $('#uploadFile');
+  uploadFile.on('click', function() {
+    r.upload();
+  })
+  
 script.
   var socket = io();
   logTracker = [];
