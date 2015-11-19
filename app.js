@@ -14,7 +14,7 @@ var encode = require('client-sessions').util.encode,
 var fs = require('fs');
 var util = require('util');
 var exec = require('child_process').exec;
-var async = require("async");
+var async = require('async');
 var Files = {};
 var resumable = require('resumable');
 
