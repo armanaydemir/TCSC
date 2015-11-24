@@ -6,6 +6,7 @@
 
 var express = require('express');
 var app = express();
+var multer = require('multer');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var cookie = require('cookie');
@@ -32,6 +33,24 @@ const Banner = require('./redis/banner.js')(redis);
 const Test = require('./test.js')(redis);
 Test.setUp();
 app.get('/fresh_team', function(req, res){res.render(__dirname + "/views/dashboard_new_team.jade");});
+app.get('/test', function(req, res){res.sendFile(__dirname + "/views/testUpload.html");});
+var upload = multer({ dest: './uploads/'});
+
+
+// app.use(multer({ dest: './uploads/',
+//     rename: function (fieldname, filename) {
+//         return filename+Date.now();
+//     },
+//     onFileUploadStart: function (file) {
+//         console.log(file.originalname + ' is starting ...');
+//     },
+//     onFileUploadComplete: function (file) {
+//         console.log(file.fieldname + ' uploaded to  ' + file.path)
+//     }
+// }));
+app.post('/upload.php', upload.single('fileToUpload'), function(req,res,next){
+    console.log(req);
+});
 //____________________
 
 
