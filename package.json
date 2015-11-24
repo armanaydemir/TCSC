@@ -3,8 +3,8 @@
   "version": "0.0.8",
   "dependencies": {
     "async": "^1.4.2",
-    "client-sessions",
-    "cookie",
+    "client-sessions": ">=0.7.0",
+    "cookie": ">=0.2.0",
     "crypto": "0.0.3",
     "express": "^4.10.2",
     "fs": "0.0.2",
