@@ -5,13 +5,6 @@
 // make sure we scrub and clean any input, especially chat lol, cant even do a fucking apostraphe
 
 
-var dnode = require('dnode');
-var server = dnode({
-    zing: function (n, cb) { cb(n * 100) }
-});
-server.listen(7070);
-
-
 var express = require('express');
 var app = express();
 var multer = require('multer');
@@ -27,7 +20,7 @@ var util = require('util');
 var exec = require('child_process').exec;
 var async = require('async');
 var Files = {};
-var resumable = require('resumable');
+
 
 
 //ayo remember to turn on the redis-server when you run this
