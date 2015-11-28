@@ -9,9 +9,10 @@ html
             form(action='')
               input#m
               button(type='button', autocomplete='off') Send
-            form(action='')
-              input(type='file')#browseButton
-              button(type='button', autocomplete='off')#uploadFile Upload
+            form(id="uploadForm" enctype="multipart/form-data" action="/upload" method="post")
+              input(type="file" name="userPhoto")
+              input(type="submit" value="Upload Image" name="submit")
+              span(id = "status")
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <!--[if IE]>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -20,20 +21,29 @@ html
 <!--[if !IE]>-->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <!--<![endif]-->
-script(src="/Users/mbp/Documents/School/Senior Year/TCSC/node_modules/resumable/lib").
-  var r = new Resumable({
-  target:'/Video', 
-  query:{},
-  });
-  r.assignBrowse(document.getElementById('browseButton'));
-  var uploadFile = $('#uploadFile');
-  uploadFile.on('click', function() {
-    r.upload();
-  })
-  
 script.
   var socket = io();
   logTracker = [];
+
+  $(document).ready(function() {
+
+     $('#uploadForm').submit(function() {
+     $("#status").empty().text("File is uploading...");
+        $(this).ajaxSubmit({
+
+            error: function(xhr) {
+                status('Error: ' + xhr.status);
+            },
+
+            success: function(response) {
+          console.log(response)
+          $("#status").empty().text(response);
+            }
+  });
+
+  return false;
+    });    
+  });
 
   $(function(){
     $('#messages').on('click', 'button', function(){

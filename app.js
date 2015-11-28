@@ -8,7 +8,6 @@
 var express = require('express');
 var app = express();
 var multer = require('multer');
-var php = require("node-php")
 var path = require("path");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -37,30 +36,7 @@ const Banner = require('./redis/banner.js')(redis);
 const Test = require('./test.js')(redis);
 Test.setUp();
 app.get('/fresh_team', function(req, res){res.render(__dirname + "/views/dashboard_new_team.jade");});
-app.get('/test', function(req, res){res.sendFile(__dirname + "/views/testUpload.html");});
-var upload      =     multer({ dest: './uploads/'});
-
-app.use(multer({ dest: './uploads/',
-  rename: function (fieldname, filename) {
-    return filename+Date.now();
-  },
-  onFileUploadStart: function (file) {
-    console.log(file.originalname + ' is starting ...');
-  },
-  onFileUploadComplete: function (file) {
-    console.log(file.fieldname + ' uploaded to  ' + file.path)
-  }
-}));
-
-app.post('/api/photo',function(req,res){
-  upload(req,res,function(err) {
-    if(err) {
-      return res.end("Error uploading file.");
-    }
-    res.end("File is uploaded");
-  });
-});
-//____________________
+//__________________________
 
 
 var Alert = require('./redis/notification.js')(redis,io);
@@ -155,6 +131,8 @@ function dashboard_check(req, res, next){
 //app.get('/_/js/myscript.js', function(req, res){res.sendFile(__dirname + '/views/_/js/myscript.js');});
 //
 
+
+//_________________________
 //simple routes ---------------------
 app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
@@ -188,8 +166,6 @@ app.get('/signup', function(req, res){
   res.render(__dirname + "/views/signup.jade/");
 });
 
-app.use(express.static('/Video'));
-
 app.get('/dashboard', dashboard_check, function(req, res){
   console.log(req.session);
   var user = req.session.user;
@@ -205,23 +181,39 @@ app.get('/dashboard', dashboard_check, function(req, res){
         redis.get("global:question_id", function(total_worst_thing_ever_woahhhhh, top_id){
           app.locals.config = {comp_id: req.session.comp_id, user:user, team:team, q_tracker:top_id};
           res.render(__dirname + "/views/dashboard.jade/");
-        })
-       resumable.get(req, function(status, filename, original_filename, identifier){
-        console.log('GET', status);
-        res.send((status == 'found' ? 200 : 404), status);
-       }); 
+        });
       } 
     });
   }
 });
 //--------------
 
-app.post('/dashboard', function(req, res) {
-  console.log('we uploadin');
-  resumable.post(req, function(status, filename, original_filename, identifier){
-        console.log('POST', status, original_filename, identifier);
+//upload testssssss ________________
+app.get('/test', dashboard_check, function(req, res){//console.log(req.session); 
+  app.locals.config = {comp_id: req.session.comp_id, user:user};var user = req.session.user; res.sendFile(__dirname + "/views/testUpload.html");});
+
+var upload = multer({ dest: './uploads/',
+  onFileUploadStart: function (file) {
+    console.log(file);
+    console.log(file.originalname + ' is starting ...');
+  },
+  onFileUploadComplete: function (file) {
+    console.log(file.fieldname + ' uploaded to  ' + file.path)
+  }
+});
+
+app.post('/upload', dashboard_check, function(req,res){
+  console.log(req.session);
+  upload(req,res,function(err) {
+    if(err) {
+      return res.end("Error uploading file.");
+    }
+    res.end("File is uploaded");
+    
   });
 });
+//____________________
+
 
 io.on('connection', function(socket){
   console.log("next");
