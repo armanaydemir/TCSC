@@ -4,9 +4,19 @@
 // make an invite to team thing and a you have no team dumbass thing
 // make sure we scrub and clean any input, especially chat lol, cant even do a fucking apostraphe
 
+
+var dnode = require('dnode');
+var server = dnode({
+    zing: function (n, cb) { cb(n * 100) }
+});
+server.listen(7070);
+
+
 var express = require('express');
 var app = express();
 var multer = require('multer');
+var php = require("node-php")
+var path = require("path");
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var cookie = require('cookie');
@@ -29,27 +39,33 @@ const Chat = require('./redis/message.js')(redis,io);
 const Question = require('./redis/question.js')(redis);
 const Banner = require('./redis/banner.js')(redis);
 
+
 //this is for debug only ___________________
 const Test = require('./test.js')(redis);
 Test.setUp();
 app.get('/fresh_team', function(req, res){res.render(__dirname + "/views/dashboard_new_team.jade");});
 app.get('/test', function(req, res){res.sendFile(__dirname + "/views/testUpload.html");});
-var upload = multer({ dest: './uploads/'});
+var upload      =     multer({ dest: './uploads/'});
 
+app.use(multer({ dest: './uploads/',
+  rename: function (fieldname, filename) {
+    return filename+Date.now();
+  },
+  onFileUploadStart: function (file) {
+    console.log(file.originalname + ' is starting ...');
+  },
+  onFileUploadComplete: function (file) {
+    console.log(file.fieldname + ' uploaded to  ' + file.path)
+  }
+}));
 
-// app.use(multer({ dest: './uploads/',
-//     rename: function (fieldname, filename) {
-//         return filename+Date.now();
-//     },
-//     onFileUploadStart: function (file) {
-//         console.log(file.originalname + ' is starting ...');
-//     },
-//     onFileUploadComplete: function (file) {
-//         console.log(file.fieldname + ' uploaded to  ' + file.path)
-//     }
-// }));
-app.post('/upload.php', upload.single('fileToUpload'), function(req,res,next){
-    console.log(req);
+app.post('/api/photo',function(req,res){
+  upload(req,res,function(err) {
+    if(err) {
+      return res.end("Error uploading file.");
+    }
+    res.end("File is uploaded");
+  });
 });
 //____________________
 
