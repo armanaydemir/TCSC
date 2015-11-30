@@ -21,7 +21,6 @@ var async = require('async');
 var Files = {};
 
 
-
 //ayo remember to turn on the redis-server when you run this
 var redis = require('redis').createClient();
 const Overload = require('jshelpers').Overload;
@@ -192,24 +191,29 @@ app.get('/dashboard', dashboard_check, function(req, res){
 app.get('/test', dashboard_check, function(req, res){//console.log(req.session); 
   app.locals.config = {comp_id: req.session.comp_id, user:user};var user = req.session.user; res.sendFile(__dirname + "/views/testUpload.html");});
 
-var upload = multer({ dest: './uploads/',
-  onFileUploadStart: function (file) {
-    console.log(file);
-    console.log(file.originalname + ' is starting ...');
-  },
-  onFileUploadComplete: function (file) {
-    console.log(file.fieldname + ' uploaded to  ' + file.path)
-  }
-});
+app.use('/prof_pics', express.static( __dirname + '/prof_pics'));
 
 app.post('/upload', dashboard_check, function(req,res){
-  console.log(req.session);
-  upload(req,res,function(err) {
+  var profUpload = multer({ dest: './prof_pics/' + req.session.user.id,
+    rename: function(fieldname, file) {
+      return Date.now();
+    },
+    onFileUploadStart: function (file) {
+      console.log(file.originalname + ' is starting ...');
+    },
+    onFileUploadComplete: function (file) {
+      console.log("file...");
+      console.log(file.name);
+      console.log(".......");
+      console.log(file.fieldname + ' uploaded to  ' + file.path);
+      redis.set("user:" + req.session.user.id + ":prof_pic", file.name, function(err){});
+    }
+  });
+  profUpload(req,res,function(err) {
     if(err) {
       return res.end("Error uploading file.");
     }
     res.end("File is uploaded");
-    
   });
 });
 //____________________
@@ -222,7 +226,12 @@ io.on('connection', function(socket){
       io.emit('chat_log:' + user_id, chat);
     });
     Team.getQuestions(1, function(q){
-      io.emit('question_log:' + user_id, q)
+      io.emit('question_log:' + user_id, q);
+    });
+    ///user.getprof essentially
+
+    redis.get('user:' + user_id + ':prof_pic', function(err, val){
+      io.emit('prof_pic_load:' + user_id, val);
     });
   });
 
@@ -265,7 +274,7 @@ io.on('connection', function(socket){
       });
     }
   });
-socket.on('signup', function(name, username, age, email, password){
+  socket.on('signup', function(name, username, age, email, password){
     console.log("signup_server_socket");
     User.createUser(name, username, age, email, password, function(v){
 
@@ -394,7 +403,7 @@ socket.on('signup', function(name, username, age, email, password){
     console.log(team_str);
     Team.searchTeam(team_str, function(array){
       console.log(array);
-      socket.emit('complete:' + user.id, array);
+      socket.emit('complete_tsearch:' + user.id, array);
     })
   });
 
@@ -408,74 +417,6 @@ socket.on('signup', function(name, username, age, email, password){
         io.emit("woah", "sucess");
       }
     });
-  });
-  
-  socket.on('prof_pic_upload', function (data) { //data contains the variables that we passed through in the html file
-    var Name = data['Name'];
-    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
-    user = session_data["user"];
-    Files[Name] = {  //Create a new Entry in The Files Variable
-        FileSize : data['Size'],
-        Data     : "",
-        Downloaded : 0
-    }
-    var Place = 0;
-    try{
-        var Stat = fs.statSync('Temp/' +  Name);
-        if(Stat.isFile())
-        {
-            Files[Name]['Downloaded'] = Stat.size;
-            Place = Stat.size / 524288;
-        }
-    }
-    catch(er){} //It's a New File
-    fs.open("Temp/" + Name, "a", 0755, function(err, fd){
-        if(err)
-        {
-            console.log(err);
-        }
-        else
-        {
-            Files[Name]['Handler'] = fd; //We store the file handler so we can write to it later
-            io.emit(user.id + ":more_data", { 'Place' : Place, 'Percent' :  0});
-        }
-    });
-  });
-        
-  socket.on('upload_profile_pic', function (data){
-    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
-    user = session_data["user"];
-    var Name = data['Name'];
-    Files[Name]['Downloaded'] += data['Data'].length;
-    Files[Name]['Data'] += data['Data'];
-    if(Files[Name]['Downloaded'] == Files[Name]['FileSize']) //If File is Fully Uploaded
-    { 
-      User.editUser(user.id, user.fname, user.lname, Name.slice(Name.lastIndexOf('_'), Name.length),
-        user.username, user.age, null, null);
-      fs.write(Files[Name]['Handler'], Files[Name]['Data'], null, 'Binary', function(err, Writen){
-          var inp = fs.createReadStream("Temp/" + Name);
-          var out = fs.createWriteStream("upload/" + Name);
-          util.pump(inp, out, function(){
-            fs.unlink("Temp/" + Name, function () { //This Deletes The Temporary File
-          //Moving File Completed
-            });
-          });
-      });
-    }
-    else if(Files[Name]['Data'].length > 10485760){ //If the Data Buffer reaches 10MB
-      fs.write(Files[Name]['Handler'], Files[Name]['Data'], null, 'Binary', function(err, Writen){
-        Files[Name]['Data'] = ""; //Reset The Buffer
-        var Place = Files[Name]['Downloaded'] / 524288;
-        var Percent = (Files[Name]['Downloaded'] / Files[Name]['FileSize']) * 100;
-        io.emit(user.id + ":more_data", { 'Place' : Place, 'Percent' :  Percent});
-      });
-    }
-    else
-    {
-      var Place = Files[Name]['Downloaded'] / 524288;
-      var Percent = (Files[Name]['Downloaded'] / Files[Name]['FileSize']) * 100;
-      io.emit(user.id + ":more_data", { 'Place' : Place, 'Percent' :  Percent});
-    }
   });
 });
 
