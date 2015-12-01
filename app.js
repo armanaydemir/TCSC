@@ -186,7 +186,7 @@ app.get('/dashboard', dashboard_check, function(req, res){
   }
 });
 
-app.post('/dashboard', dashboard_check, function(req,res){
+app.post('/dashUpload', dashboard_check, function(req,res){
   var teamUpload = multer({ dest: './uploads/' + req.session.user.team, onFileUploadStart: function (file) {console.log(file.originalname + ' uploading...');}, onFileUploadComplete: function (file) {console.log('uploaded to ' + file.path);}});
   teamUpload(req,res,function(err) {
     if(err) {

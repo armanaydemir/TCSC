@@ -9,7 +9,7 @@ html
             form(action='')
               input#m
               button(type='button', autocomplete='off') Send
-            form(id="uploadForm" enctype="multipart/form-data" action="/upload" method="post")
+            form(id="uploadForm" enctype="multipart/form-data" action="/dashUpload" method="post")
               input(type="file" name="userPhoto")
               input(type="submit" value="Upload Image" name="submit")
               span(id = "status")
