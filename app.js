@@ -185,16 +185,6 @@ app.get('/dashboard', dashboard_check, function(req, res){
     });
   }
 });
-
-app.post('/dashUpload', dashboard_check, function(req,res){
-  var teamUpload = multer({ dest: './uploads/' + req.session.user.team, onFileUploadStart: function (file) {console.log(file.originalname + ' uploading...');}, onFileUploadComplete: function (file) {console.log('uploaded to ' + file.path);}});
-  teamUpload(req,res,function(err) {
-    if(err) {
-      return res.end("error");
-    }
-    res.render(__dirname + "/views/dashboard.jade/");
-  });
-});
 //--------------
 
 //upload testssssss ________________
@@ -205,25 +195,31 @@ app.use('/prof_pics', express.static( __dirname + '/prof_pics'));
 
 app.post('/upload', dashboard_check, function(req,res){
   var profUpload = multer({ dest: './prof_pics/' + req.session.user.id,
-    rename: function(fieldname, file) {
-      return Date.now();
-    },
-    onFileUploadStart: function (file) {
-      console.log(file.originalname + ' is starting ...');
-    },
-    onFileUploadComplete: function (file) {
-      console.log("file...");
-      console.log(file.name);
-      console.log(".......");
-      console.log(file.fieldname + ' uploaded to  ' + file.path);
-      redis.set("user:" + req.session.user.id + ":prof_pic", file.name, function(err){});
-    }
+    rename: function(fieldname, file) {return Date.now();},
+    onFileUploadStart: function (file) {console.log(file.originalname + ' is starting ...');},
+    onFileUploadComplete: function (file) {console.log(file.fieldname + ' uploaded to  ' + file.path);redis.set("user:" + req.session.user.id + ":prof_pic", file.name, function(err){});}
   });
   profUpload(req,res,function(err) {
     if(err) {
       return res.end("Error uploading file.");
     }
     res.end("File is uploaded");
+  });
+});
+
+app.post('/dashUpload', dashboard_check, function(req,res){
+  var teamUpload = multer({ dest: './uploads/' + req.session.user.team, 
+    rename: function(fieldname, file) {return Date.now();},
+    onFileUploadStart: function (file) {console.log(file.originalname + ' uploading...');}, 
+    onFileUploadComplete: function (file) {console.log('uploaded to ' + file.path);
+      
+    }
+  });
+  teamUpload(req,res,function(err) {
+    if(err) {
+      return res.end("error");
+    }
+    res.end('nice');
   });
 });
 //____________________
