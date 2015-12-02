@@ -135,6 +135,7 @@ function dashboard_check(req, res, next){
 //simple routes ---------------------
 app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
+app.get('/js.cookie.js', function(req, res){res.sendFile(__dirname + "/views/_/js/js.cookie.js");});
 app.get('/images/useridenticon3.png', function(req, res){res.sendFile(__dirname + "/prof_pics/useridenticon3.png");});
 app.get('/images/useridenticon2.png', function(req, res){res.sendFile(__dirname + "/prof_pics/useridenticon2.png");});
 app.get('/images/useridenticon1.png', function(req, res){res.sendFile(__dirname + "/prof_pics/useridenticon1.png");});
@@ -170,6 +171,9 @@ app.get('/dashboard', dashboard_check, function(req, res){
   var user = req.session.user;
   console.log(user.team);
   if(!user.team){
+    console.log("type check bitch");
+    console.log(typeof req.session.comp_id);
+    console.log("type check done biatch");
     app.locals.config = {comp_id: req.session.comp_id, user:user};
     res.render(__dirname + "/views/dashboard_no_team.jade/")
     //res.render(__dirname + "/views/dashboard.jade");
@@ -178,7 +182,12 @@ app.get('/dashboard', dashboard_check, function(req, res){
     Team.getTeam(user.team, function(team){
       if(team){
         redis.get("global:question_id", function(total_worst_thing_ever_woahhhhh, top_id){
-          app.locals.config = {comp_id: req.session.comp_id, user:user, team:team, q_tracker:top_id};
+          console.log("type check bitch");
+          console.log(typeof req.session.comp_id);
+          console.log("type check done biatch");
+          var woahh = String(req.session.comp_id);
+          console.log(typeof woahh);
+          app.locals.config = {comp_id: woahh, user:user, team:team, q_tracker:top_id};
           res.render(__dirname + "/views/dashboard.jade/");
         });
       } 
@@ -192,6 +201,8 @@ app.get('/test', dashboard_check, function(req, res){//console.log(req.session);
   app.locals.config = {comp_id: req.session.comp_id, user:user};var user = req.session.user; res.sendFile(__dirname + "/views/testUpload.html");});
 
 app.use('/prof_pics', express.static( __dirname + '/prof_pics'));
+
+app.use('/upteams', express.static( __dirname + '/upteams'));
 
 app.post('/upload', dashboard_check, function(req,res){
   var profUpload = multer({ dest: './prof_pics/' + req.session.user.id,
@@ -208,18 +219,18 @@ app.post('/upload', dashboard_check, function(req,res){
 });
 
 app.post('/dashUpload', dashboard_check, function(req,res){
-  var teamUpload = multer({ dest: './uploads/' + req.session.user.team, 
+  var teamUpload = multer({ dest: './upteams/' + req.session.user.team, 
     rename: function(fieldname, file) {return Date.now();},
     onFileUploadStart: function (file) {console.log(file.originalname + ' uploading...');}, 
-    onFileUploadComplete: function (file) {console.log('uploaded to ' + file.path);
-      
-    }
+    onFileUploadComplete: function (file) {console.log('uploaded to ' + file.path);}
   });
   teamUpload(req,res,function(err) {
     if(err) {
       return res.end("error");
     }
     res.end('nice');
+    Chat.fileMessage(req.session.user.id, req.files.userPhoto.originalname, function(eror){
+    });
   });
 });
 //____________________

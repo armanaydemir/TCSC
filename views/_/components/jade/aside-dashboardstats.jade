@@ -3,7 +3,7 @@ html
     .container.col-lg-4.col-md-4.col-sm-4(style='margin-top: 10.4em;')
       .panel.panel-default
         .panel-heading
-          h3.panel-title #{config.team.name} Chat 
+          h3.panel-title #{config.team.name}} Chat 
         .panel-body
           ul#messages
             form(action='')
@@ -14,6 +14,7 @@ html
               input(type="submit" value="Upload Image" name="submit")
               span(id = "status")
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+<script src="/js.cookie.js"></script>
 <!--[if IE]>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <![endif]-->
@@ -24,6 +25,18 @@ html
 script.
   var socket = io();
   logTracker = [];
+  console.log(Cookies.get());
+  console.log(typeof #{config.comp_id});
+
+  //THIS LINE IS VERY IMPORTANT
+  console.log(!{JSON.stringify(config.user.fname)});
+  // please remember this line
+
+
+
+  console.log(!{config.user.fname});
+
+
 
   $(document).ready(function() {
 
@@ -61,8 +74,17 @@ script.
   });
 
   function parseLog(log){
-    $('#messages').append($('<li>').text(log.slice(0,log.indexOf(':'))));
-    return log.slice(log.lastIndexOf(':') + 1, log.length);
+    if(log.charAt(log.length-1) === "!"){
+      console.log("ahhhhhhhaaaga");
+      $('#messages').append($('<li>').html('<a href="/upteams/' + #{config.user.team} + '/' + log.slice(0,log.indexOf(':'))
+      + '">' + log.slice(log.indexOf(':') + 1, log.lastIndexOf(':')) + '</a>'));
+
+      return log.slice(log.lastIndexOf(':') + 1, log.length-1);
+    }
+    else{$('#messages').append($('<li>').text(log.slice(0,log.indexOf(':'))));
+      return log.slice(log.lastIndexOf(':') + 1, log.length);
+    }
+    
   };
   function logCheck(log){
     return log.slice(log.indexOf(':') + 1, log.lastIndexOf(':'));
