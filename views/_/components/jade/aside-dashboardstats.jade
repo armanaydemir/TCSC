@@ -33,7 +33,22 @@ script.
   //THIS LINE IS VERY IMPORTANT
   console.log(!{JSON.stringify(config.user.fname)});
   // please remember this line
+  function parseLog(log){
+    if(log.charAt(log.length-1) === "!"){
+      console.log("ahhhhhhhaaaga");
+      $('#messages').append($('<li>').html('<a href="/upteams/' + #{config.user.team} + '/' + log.slice(0,log.indexOf(':'))
+      + '">' + log.slice(log.indexOf(':') + 1, log.lastIndexOf(':')) + '</a>'));
 
+      return log.slice(log.lastIndexOf(':') + 1, log.length-1);
+    }
+    else{$('#messages').append($('<li>').text(log.slice(0,log.indexOf(':'))));
+      return log.slice(log.lastIndexOf(':') + 1, log.length);
+    }
+  };
+
+  function logCheck(log){
+    return log.slice(log.indexOf(':') + 1, log.lastIndexOf(':'));
+  };
 
 
   $(document).ready(function() {
@@ -41,16 +56,16 @@ script.
      $('#uploadForm').submit(function() {
         $("#status").empty().text("File is uploading...");
         $(this).ajaxSubmit({
+          error: function(xhr) {
+              status('Error: ' + xhr.status);
+          },
+          success: function(response) {
+              console.log(response)
+              parseLog(response);
 
-            error: function(xhr) {
-                status('Error: ' + xhr.status);
-            },
-
-            success: function(response) {
-                
-                console.log(response)
-                $("#status").empty().text(response);
-            }
+              $("#status").empty().text(response);
+              $('#uploadForm').empty();
+          }
   });
 
   return false;
@@ -72,25 +87,15 @@ script.
     });
   });
 
-  function parseLog(log){
-    if(log.charAt(log.length-1) === "!"){
-      console.log("ahhhhhhhaaaga");
-      $('#messages').append($('<li>').html('<a href="/upteams/' + #{config.user.team} + '/' + log.slice(0,log.indexOf(':'))
-      + '">' + log.slice(log.indexOf(':') + 1, log.lastIndexOf(':')) + '</a>'));
-
-      return log.slice(log.lastIndexOf(':') + 1, log.length-1);
-    }
-    else{$('#messages').append($('<li>').text(log.slice(0,log.indexOf(':'))));
-      return log.slice(log.lastIndexOf(':') + 1, log.length);
-    }
-    
-  };
-  function logCheck(log){
-    return log.slice(log.indexOf(':') + 1, log.lastIndexOf(':'));
-  };
+  
 
   socket.on('log_pic' + #{config.user.id}, function(usr, pic){
 
+  });
+
+  socket.on('file_message:' + #{config.user.team}, function(usr, file_name, fpath){
+    $('#messages').append($('<li>').html('<a href="/upteams/' + #{config.user.team} + '/' + fpath
+      + '">' + file_name + '</a>'));
   });
   
   socket.on('chat_log:'+ #{config.user.id}, function(chat){
