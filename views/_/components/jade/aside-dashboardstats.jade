@@ -3,30 +3,32 @@ html
     .container.col-lg-4.col-md-4.col-sm-4(style='margin-top: 10.4em;')
       .panel.panel-default
         .panel-heading
-          h3.panel-title #{config.team.name}} Chat 
+          h3.panel-title #{config.team.name} Chat 
         .panel-body
           ul#messages
             form(action='')
               input#m
               button(type='button', autocomplete='off') Send
-            form(id="uploadForm" enctype="multipart/form-data" action="/dashUpload" method="post")
-              input(type="file" name="userPhoto")
-              input(type="submit" value="Upload Image" name="submit")
-              span(id = "status")
+            form#uploadForm(enctype='multipart/form-data', action='/dashUpload', method='post')
+              input(type='file', name='userPhoto')
+              input(type='submit', value='Upload Image', name='submit')
+              span#status
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="/js.cookie.js"></script>
-<!--[if IE]>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<![endif]-->
+//- <!--[if IE]>
+//- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+//- <![endif]-->
 
-<!--[if !IE]>-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-<!--<![endif]-->
+//- <!--[if !IE]>-->
+//- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+//- <!--<![endif]-->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
 script.
   var socket = io();
   logTracker = [];
-  console.log(Cookies.get());
-  console.log(typeof #{config.comp_id});
+  //console.log(Cookies.get());
+  //console.log(typeof #{config.comp_id});
 
   //THIS LINE IS VERY IMPORTANT
   console.log(!{JSON.stringify(config.user.fname)});
@@ -34,14 +36,10 @@ script.
 
 
 
-  console.log(!{config.user.fname});
-
-
-
   $(document).ready(function() {
 
      $('#uploadForm').submit(function() {
-     $("#status").empty().text("File is uploading...");
+        $("#status").empty().text("File is uploading...");
         $(this).ajaxSubmit({
 
             error: function(xhr) {
@@ -49,8 +47,9 @@ script.
             },
 
             success: function(response) {
-          console.log(response)
-          $("#status").empty().text(response);
+                
+                console.log(response)
+                $("#status").empty().text(response);
             }
   });
 

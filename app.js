@@ -206,12 +206,13 @@ app.use('/upteams', express.static( __dirname + '/upteams'));
 
 app.post('/upload', dashboard_check, function(req,res){
   var profUpload = multer({ dest: './prof_pics/' + req.session.user.id,
-    rename: function(fieldname, file) {return Date.now();},
+    rename: function(fieldname, file) {return file.originalname + Date.now();},
     onFileUploadStart: function (file) {console.log(file.originalname + ' is starting ...');},
     onFileUploadComplete: function (file) {console.log(file.fieldname + ' uploaded to  ' + file.path);redis.set("user:" + req.session.user.id + ":prof_pic", file.name, function(err){});}
   });
   profUpload(req,res,function(err) {
     if(err) {
+      console.log(err);
       return res.end("Error uploading file.");
     }
     res.end("File is uploaded");
@@ -225,11 +226,14 @@ app.post('/dashUpload', dashboard_check, function(req,res){
     onFileUploadComplete: function (file) {console.log('uploaded to ' + file.path);}
   });
   teamUpload(req,res,function(err) {
+    console.log("DDDd");
+    console.log(req.files);
+    console.log("double d");
+    Chat.fileMessage(req.session.user.id, req.files.userPhoto.originalname, req.files.userPhoto.name, function(eror){
     if(err) {
       return res.end("error");
     }
-    res.end('nice');
-    Chat.fileMessage(req.session.user.id, req.files.userPhoto.originalname, function(eror){
+    res.end("File is uploaded");
     });
   });
 });
