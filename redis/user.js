@@ -149,6 +149,10 @@ module.exports = function(redis) {
                 if (err) {callback(false);return;}
                 callback(true);
             });
+        },
+
+        confirmUser: function(user){
+            
         }
     };
     return user;

@@ -1,4 +1,4 @@
-// todo
+ // todo
 // add server side stats for us
 // make sure rielle makes shit happen for the shit under this
 // make an invite to team thing and a you have no team dumbass thing
@@ -437,7 +437,7 @@ io.on('connection', function(socket){
     })
   });
 
-  socket.on('register_question', function(name, category, description, flag){
+  socket.on('register_question', function (name, category, description, flag){
     Question.pushQuestion(1, name, category, null,  description, 0, flag, function(success){
       if(!success){
         console.log("uhoh.debug");
@@ -447,6 +447,32 @@ io.on('connection', function(socket){
         io.emit("woah", "sucess");
       }
     });
+  });
+
+  socket.on('inv_team', function (team_id){
+    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+    user = session_data["user"];
+    if(User.confirmUser(user)){
+      User.addToTeam(user.id, team_id, function (val){
+        console.log("we good good man?");
+        if(!val){
+          //err
+        }else if("over_team"){
+          //already part of team
+        }else{
+          Team.addMember(team_id, user.id, function (ill){
+            if(!ill){
+              //still err
+            }else if(ill === "member_overload"){
+              //to many peeeeeps
+              User.leaveFromTeam(user.id, team_id);
+            }else{
+              io.emit(user.id, "success_join");
+            }
+          });
+        }
+      });
+    }
   });
 });
 

@@ -4,6 +4,7 @@ var fs = require('fs');
 
 //todo
 //have thing to keep track of questions stats from team point of view (who has been answering and stuff)
+//change inv_url to something not guessable
 
 module.exports = function(redis) {
     var computeSHA1 = function(str) { return crypto.createHash(passwordHashAlgorithm).update(str).digest('hex'); };
@@ -60,7 +61,19 @@ module.exports = function(redis) {
                                 callback(false);
                                 return;
                             }
-                            fs.writeFile(__dirname + '/inv/' + id.toString() + ".html", "<html><script src=\"https://cdn.socket.io/socket.io-1.2.0.js\"></script><script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js\"></script><script src=\"http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js\"></script><script>var socket = io();socket.emit(\"inv_team\"," + id.toString() + ", #{config.user.id}, function(w){location.href(w);});</script></html>", function(erroror){
+                            fs.writeFile(__dirname + '/inv/' + id.toString() + ".html", "<html><body><form action=\"\" class=\"form-signin signup\"><img src=\"images/tcsclogo.png\"/>" + 
+  "<label for=\"inputName\" class=\"sr-only\">Name</label>" +
+  "<input id=\"inputName\" type=\"name\" placeholder=\"Name\" required=\"\" autofocus=\"\" class=\"form-control\"/>" + 
+  "<label for=\"inputUsername\" class=\"sr-only\">Username</label>" + 
+  "<input id=\"inputUsername\" type=\"username\" placeholder=\"Username\" required=\"\" autofocus=\"\" class=\"form-control\"/>"+
+  "<label for=\"inputAge\" class=\"sr-only\">Age</label><input id=\"inputAge\" type=\"age\" placeholder=\"Age\" required=\"\" autofocus=\"\" class=\"form-control\"/>" + 
+  "<label for=\"inputEmail\" class=\"sr-only\">Email address</label><input id=\"inputEmail\" type=\"email\" placeholder=\"Email address\" required=\"\" autofocus=\"\" class=\"form-control\"/>"+
+  "<label for=\"inputPassword\" class=\"sr-only\">Password</label><input id=\"inputPassword\" type=\"password\" placeholder=\"Password\" required=\"\" class=\"form-control\"/>"+
+  "<div class=\"checkbox\"></div><!----><label><input type=\"checkbox\" value=\"remember-me\"> Remember me</label>" +
+  "<!-- change this into team codes later on-->" +
+  "<!-- when deployed on actual site, include reCAPTCHA-->" + 
+  "<button type=\"button\" autocomplete=\"off\" class=\"btn btn-lg btn-danger btn-block\">Sign Up</button>" + 
+"</form></body><script src=\"https://cdn.socket.io/socket.io-1.2.0.js\"></script><script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js\"></script><script src=\"http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js\"></script><script>var socket = io();socket.emit(\"inv_team\"," + id.toString() + ", #{config.user.id}, function(w){location.href(w);});</script></html>", function(erroror){
                                 if(erroror){
                                     console.log(erroror);
                                     console.log("craaaaaaaazy error brush");
@@ -76,7 +89,6 @@ module.exports = function(redis) {
 
         getTeam: function(id, callback){
             callback = callback || emptyFunction;
-
             redis
                 .multi()
                 .get("team:" + id + ":name")
