@@ -209,7 +209,7 @@ app.use('/prof_pics', express.static( __dirname + '/prof_pics'));
 
 app.use('/upteams', express.static( __dirname + '/upteams'));
 
-app.use('/inv', express.static(__dirname + '/inv'));
+app.use('/inv', express.static(__dirname + '/redis/inv'));
 
 app.post('/upload', dashboard_check, function(req,res){
   var profUpload = multer({ dest: './prof_pics/' + req.session.user.id,
