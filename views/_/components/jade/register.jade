@@ -29,7 +29,7 @@ script.
   });
   
   socket.on(#{config.user.id}, function(data){
-    if(data==='success_register'){
+    if(data[0]==='success_register'){
       //console.log("we good");
       location.href = '/team'; //follow teams and invite people to team
      }

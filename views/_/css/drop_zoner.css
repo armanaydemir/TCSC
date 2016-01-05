@@ -1,0 +1,48 @@
+#panel-body {
+    /*Sort of important*/
+    width: 300px;
+    /*Sort of important*/
+    height: 200px;
+    position:absolute;
+    left:50%;
+    top:100px;
+    margin-left:-150px;
+    color: rgba(0,0,0,.3);
+}
+
+    #panel-body input {
+        /*Important*/
+        position: absolute;
+        /*Important*/
+        cursor: pointer;
+        left: 0px;
+        top: 0px;
+        opacity:0; 
+    }
+
+    /*Important*/
+    
+
+
+/*If you dont want the button*/
+#clickHere {
+    position: absolute;
+    cursor: pointer;
+    left: 50%;
+    top: 50%;
+    margin-left: -50px;
+    margin-top: 20px;
+    line-height: 26px;
+    color: white;
+    font-size: 12px;
+    width: 100px;
+    height: 26px;
+    border-radius: 4px;
+    background-color: #3b85c3;
+
+}
+
+    #clickHere:hover {
+        background-color: #4499DD;
+
+    }

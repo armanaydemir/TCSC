@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const passwordHashAlgorithm = 'sha1';
+var fs = require('fs');
 
 //todo
 //have thing to keep track of questions stats from team point of view (who has been answering and stuff)
@@ -45,6 +46,7 @@ module.exports = function(redis) {
                         .set("user:" + leader_id + ":team", id)
                         .set("team:" + id + ":name", name.toLowerCase() + ":" + name)
                         .set("team:" + id + ":points", 0)
+                        .set("team:" + id + ":inv_url", id)
                         .zadd("global:leaderboard_name", 0, name.toLowerCase() + ":" + name)
                         .zadd("global:leaderboard", 0, id)
                         .set("team:" + id + ":school", school)
@@ -58,7 +60,15 @@ module.exports = function(redis) {
                                 callback(false);
                                 return;
                             }
-                            callback(id);
+                            fs.writeFile(__dirname + '/inv/' + id.toString() + ".html", "<html><script src=\"https://cdn.socket.io/socket.io-1.2.0.js\"></script><script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js\"></script><script src=\"http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js\"></script><script>var socket = io();socket.emit(\"inv_team\", id, usr, function(w){location.href(w);});</script></html>", function(erroror){
+                                if(erroror){
+                                    console.log(erroror);
+                                    console.log("craaaaaaaazy error brush");
+                                }
+                                else{
+                                    callback(id);
+                                }
+                            });
                         });
                 });
             });

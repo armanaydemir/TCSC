@@ -20,6 +20,11 @@ var exec = require('child_process').exec;
 var async = require('async');
 var Files = {};
 
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());       // to support JSON-encoded bodies
+app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+  extended: true
+})); 
 
 //ayo remember to turn on the redis-server when you run this
 var redis = require('redis').createClient();
@@ -204,6 +209,8 @@ app.use('/prof_pics', express.static( __dirname + '/prof_pics'));
 
 app.use('/upteams', express.static( __dirname + '/upteams'));
 
+app.use('/inv', express.static(__dirname + '/inv'));
+
 app.post('/upload', dashboard_check, function(req,res){
   var profUpload = multer({ dest: './prof_pics/' + req.session.user.id,
     rename: function(fieldname, file) {return file.originalname + Date.now();},
@@ -220,21 +227,24 @@ app.post('/upload', dashboard_check, function(req,res){
 });
 
 app.post('/dashUpload', dashboard_check, function(req,res){
-  var teamUpload = multer({ dest: './upteams/' + req.session.user.team, 
-    rename: function(fieldname, file) {return Date.now();},
-    onFileUploadStart: function (file) {console.log(file.originalname + ' uploading...');}, 
-    onFileUploadComplete: function (file) {console.log('uploaded to ' + file.path);}
-  });
-  teamUpload(req,res,function(err) {
-    if(err) {
-      return res.end("error");
-    }
-    Chat.fileMessage(req.session.user.id, req.files.userPhoto.originalname, req.files.userPhoto.name, function(suc){
-      if(suc){
-        res.end(suc);
-      }
+
+    console.log('ehhh?????');
+    var teamUpload = multer({ dest: './upteams/' + req.session.user.team, 
+      rename: function(fieldname, file) {return Date.now();},
+      onFileUploadStart: function (file) {console.log(file.originalname + ' uploading...');}, 
+      onFileUploadComplete: function (file) {console.log('uploaded to ' + file.path);}
     });
-  });
+    teamUpload(req,res,function(err) {
+      if(err) {
+        return res.end("error");
+      }
+      Chat.fileMessage(req.session.user.id, req.files.userPhoto.originalname, req.files.userPhoto.name, function(suc){
+        if(suc){
+          res.end(suc);
+        }
+      });
+    });
+  
 });
 //____________________
 
@@ -259,7 +269,7 @@ io.on('connection', function(socket){
   socket.on('send_message', function(msg){
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
     var user = session_data['user'];
-    if(user.team){
+    if(msg && user.team){
       Chat.createMessage(msg, user.id, function(data){
         io.emit('new_message:' + user.team, user.id, msg);
       });
@@ -365,9 +375,9 @@ io.on('connection', function(socket){
     u = session_data["comp_id"];
     console.log(u);
     Team.createTeam(team_name, school, user.id, pass, function(data){
-      if(!data){
+      if(!data[0]){
         //error
-      }else if(data === "name"){
+      }else if(data[0] === "name"){
         io.emit(user.id, "register_name");
       }
       else{

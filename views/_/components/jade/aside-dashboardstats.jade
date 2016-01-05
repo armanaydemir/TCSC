@@ -6,12 +6,11 @@ html
           h3.panel-title #{config.team.name} Chat 
         .panel-body
           ul#messages
-            form(action='')
-              input#m
-              button(type='button', autocomplete='off') Send
             form#uploadForm(enctype='multipart/form-data', action='/dashUpload', method='post')
-              input(type='file', name='userPhoto')
-              input(type='submit', value='Upload Image', name='submit')
+              input#m
+              input(type='submit', value='submit', name='submit')
+              div#clickHere
+                input#userPhoto(type='file', name='userPhoto')
               span#status
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="/js.cookie.js"></script>
@@ -33,6 +32,60 @@ script.
   //THIS LINE IS VERY IMPORTANT
   console.log(!{JSON.stringify(config.user.fname)});
   // please remember this line
+
+  $(function () {
+    var dropZoneId = "panel-body";
+    var buttonId = "clickHere";
+    var mouseOverClass = "mouse-over";
+
+    var dropZone = $("#" + dropZoneId);
+    var ooleft = dropZone.offset().left;
+    var ooright = dropZone.outerWidth() + ooleft;
+    var ootop = dropZone.offset().top;
+    var oobottom = dropZone.outerHeight() + ootop;
+    var inputFile = dropZone.find("input");
+    document.getElementById(dropZoneId).addEventListener("dragover", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.addClass(mouseOverClass);
+        var x = e.pageX;
+        var y = e.pageY;
+
+        if (!(x < ooleft || x > ooright || y < ootop || y > oobottom)) {
+            inputFile.offset({ top: y - 15, left: x - 100 });
+        } else {
+            inputFile.offset({ top: -400, left: -400 });
+        }
+
+    }, true);
+
+    if (buttonId != "") {
+        var clickZone = $("#" + buttonId);
+
+        var oleft = clickZone.offset().left;
+        var oright = clickZone.outerWidth() + oleft;
+        var otop = clickZone.offset().top;
+        var obottom = clickZone.outerHeight() + otop;
+
+        $("#" + buttonId).mousemove(function (e) {
+            var x = e.pageX;
+            var y = e.pageY;
+            if (!(x < oleft || x > oright || y < otop || y > obottom)) {
+                inputFile.offset({ top: y - 15, left: x - 160 });
+            } else {
+                inputFile.offset({ top: -400, left: -400 });
+            }
+        });
+    }
+
+    document.getElementById(dropZoneId).addEventListener("drop", function (e) {
+        $("#" + dropZoneId).removeClass(mouseOverClass);
+    }, true);
+
+  });
+
+
+
   function parseLog(log){
     if(log.charAt(log.length-1) === "!"){
       console.log("ahhhhhhhaaaga");
@@ -52,42 +105,29 @@ script.
 
 
   $(document).ready(function() {
-
-     $('#uploadForm').submit(function() {
-        $("#status").empty().text("File is uploading...");
-        $(this).ajaxSubmit({
-          error: function(xhr) {
-              status('Error: ' + xhr.status);
-          },
-          success: function(response) {
-              console.log(response)
-              parseLog(response);
-
-              $("#status").empty().text(response);
-              $('#uploadForm').empty();
-          }
-  });
-
-  return false;
-    });    
-  });
-
-  $(function(){
-    $('#messages').on('click', 'button', function(){
-      console.log("comeonnnnn");
-      //socket.emit('dasbhoard_connect', #{config.user.id});
-      if($('#m').val() != ""){
+    $('#uploadForm').submit(function() {
+      console.log(this);
+      if($('#m').val() && $('#m').val() != '' && $('#m').val().length != 0){ 
         socket.emit('send_message', $('#m').val());
-        //notify('lol', 's', 'success');
-        console.log($('#m').val());
         $('#messages').append($('<li>').text($('#m').val()));
         $('#m').val('');
-        return false;
       }
-    });
-  });
+      $(this).ajaxSubmit({
+        error: function(xhr) {
+          console.log(xhr);
+          status('Error: ' + xhr.status);
+        },
+        success: function(response) {
+            console.log(response)
+            parseLog(response);
 
-  
+            $("#status").empty().text(response);
+            $('#uploadForm').empty();
+        }
+      });
+      return false;
+    });    
+  });
 
   socket.on('log_pic' + #{config.user.id}, function(usr, pic){
 
