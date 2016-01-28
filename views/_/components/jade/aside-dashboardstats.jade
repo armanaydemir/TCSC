@@ -1,17 +1,7 @@
-html
+html(lang='en')
   body
-    .container.col-lg-4.col-md-4.col-sm-4(style='margin-top: 10.4em;')
-      .panel.panel-default
-        .panel-heading
-          h3.panel-title #{config.team.name} Chat 
-        .panel-body
-          ul#messages
-            form#uploadForm(enctype='multipart/form-data', action='/dashUpload', method='post')
-              input#m
-              input(type='submit', value='submit', name='submit')
-              div#clickHere
-                input#userPhoto(type='file', name='userPhoto')
-              span#status
+    content
+      include aside-dashboardstats.html
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="/js.cookie.js"></script>
 //- <!--[if IE]>
@@ -137,7 +127,7 @@ script.
     $('#messages').append($('<li>').html('<a href="/upteams/' + #{config.user.team} + '/' + fpath
       + '">' + file_name + '</a>'));
   });
-  
+
   socket.on('chat_log:'+ #{config.user.id}, function(chat){
     $('#messages').removeAttr();
     var pic_requested = [#{config.user.id}];
@@ -150,8 +140,7 @@ script.
     }
     console.log(pic_requested);
   });
-  
+
   socket.on('new_message:' + #{config.user.team}, function(usr, msg){
     if(usr != #{config.user.id}){notify(msg, usr, 'success');$('#messages').append($('<li>').text(msg));}
   });
-  

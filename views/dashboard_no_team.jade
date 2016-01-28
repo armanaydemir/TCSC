@@ -1,28 +1,34 @@
 doctype html
+script
+    include _/js/jquery.js
+    include _/js/bootstrap.js
+    include _/js/myscript.js
+    include _/components/js/jquery.toaster.js
 html(lang='en')
-  head
-    meta(charset='utf-8')
-    meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    title TCSC - Triangle Computer Science Competition
-    style
-        include _/css/bootstrap.css
-        include _/css/compstyles.css
-  body#dashboard(style='overflow:hidden;')
-    header
-        include _/components/jade/comp-navbar.jade
-    content
-        //include _/components/jade/aside-dashboardstats.jade
-        //include _/components/jade/article-questions.jade
-        //include _/components/jade/article-questions-alternate.jade replace this shit with an actual like make a team shit
-        include _/components/jade/register.jade
-        //include _/components/jade/join_team.jade
+    head
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')   
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        title TCSC - Triangle Computer Science Competition
+        style
+            include _/css/bootstrap.css
+            include _/css/compstyles.css
+    body#dashboard(style='overflow:hidden;')
+        header
+            include _/components/jade/comp-navbar.jade
+            include _/components/jade/notifications.html
+        content
+            //include _/components/jade/aside-dashboardstats.jade
+            //include _/components/jade/article-questions.jade
+            //include _/components/jade/article-questions-alternate.jade replace this shit with an actual like make a team shit
+            include _/components/jade/register.jade
+            include _/components/jade/join_team.jade
 
+        footer
+        // jQuery (necessary for Bootstrap's JavaScript plugins)
+    
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+script.
+  var socket = io();
 
-    footer
-    // jQuery (necessary for Bootstrap's JavaScript plugins)
-    script
-        include _/js/jquery.js
-        include _/js/bootstrap.js
-        include _/js/myscript.js
-
+  socket.emit('dashboard_connect', #{config.user.id})

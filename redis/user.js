@@ -108,11 +108,11 @@ module.exports = function(redis) {
                 });
     		}else{
                 redis.get("username:" + log + ":id", function(err, id){
-                    if (err) {
+                    if(err) {
                         callback("false", null, null);
                         return;
                     }
-                    if (id==null ){
+                    if(id == null){
                         callback("invalid_log", null, null);
                         return;
                     }

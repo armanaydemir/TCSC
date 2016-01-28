@@ -1,8 +1,10 @@
 #signup.container(style='position: fixed; margin-top:0.5em')
       form.form-signin.signup(action="")
         img(src='images/tcsclogo.png')
-        label.sr-only(for='inputName') Name
-        input#inputName.form-control(type='name', placeholder='Name', required='', autofocus='')
+        label.sr-only(for='inputFName') First Name
+        input#inputName.form-control(type='name', placeholder='First Name', required='', autofocus='')
+        label.sr-only(for='inputLName') Last Name
+        input#inputName.form-control(type='name', placeholder='Last Name', required='', autofocus='')
         label.sr-only(for='inputUsername') Username
         input#inputUsername.form-control(type='username', placeholder='Username', required='', autofocus='')
         label.sr-only(for='inputAge') Age
@@ -37,7 +39,7 @@ script.
   var socket = io();
   $(function(){
     $('button').click(function(){
-    socket.emit('signup', $('#inputName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
+    socket.emit('signup', $('#inputFName').val(), $('#inputLName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
       $('#inputEmail').val(), $('#inputPassword').val());
     return false;
     });

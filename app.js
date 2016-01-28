@@ -1,4 +1,4 @@
- // todo
+// todo
 // add server side stats for us
 // make sure rielle makes shit happen for the shit under this
 // make an invite to team thing and a you have no team dumbass thing
@@ -304,9 +304,9 @@ io.on('connection', function(socket){
       });
     }
   });
-  socket.on('signup', function(name, username, age, email, password){
+  socket.on('signup', function(fname, lname, username, age, email, password){
     console.log("signup_server_socket");
-    User.createUser(name, username, age, email, password, function(v){
+    User.createUser(fname, lname, username, age, email, password, function(v){
 
       //check to see how the shit here works with multiple connections... its fishy ===============
       var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;

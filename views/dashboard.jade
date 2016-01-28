@@ -1,9 +1,10 @@
-sdoctype html
+doctype html
 script
   include _/js/jquery.js
   include _/js/bootstrap.js
   include _/js/myscript.js
   include _/components/js/jquery.toaster.js
+
 html(lang='en')
   head
     meta(charset='utf-8')
@@ -11,9 +12,9 @@ html(lang='en')
     meta(name='viewport', content='width=device-width, initial-scale=1')
     title TCSC - Triangle Computer Science Competition
     style
-        include _/css/bootstrap.css
-        include _/css/compstyles.css
-        include _/css/drop_zoner.css
+      include _/css/bootstrap.css
+      include _/css/compstyles.css
+      include _/css/drop_zoner.css
   body#dashboard(style='overflow:hidden;')
     header
         include _/components/jade/comp-navbar.jade

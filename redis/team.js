@@ -72,8 +72,11 @@ module.exports = function(redis) {
   "<div class=\"checkbox\"></div><!----><label><input type=\"checkbox\" value=\"remember-me\"> Remember me</label>" +
   "<!-- change this into team codes later on-->" +
   "<!-- when deployed on actual site, include reCAPTCHA-->" + 
-  "<button type=\"button\" autocomplete=\"off\" class=\"btn btn-lg btn-danger btn-block\">Sign Up</button>" + 
-"</form></body><script src=\"https://cdn.socket.io/socket.io-1.2.0.js\"></script><script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js\"></script><script src=\"http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js\"></script><script>var socket = io();socket.emit(\"inv_team\"," + id.toString() + ", #{config.user.id}, function(w){location.href(w);});</script></html>", function(erroror){
+  "<button type=\"button\" autocomplete=\"off\" class=\"btn btn-lg btn-danger btn-block\">Sign Up</button></form>" +
+
+  
+
+  "</body><script src=\"https://cdn.socket.io/socket.io-1.2.0.js\"></script><script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js\"></script><script src=\"http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js\"></script><script>var socket = io();socket.emit(\"inv_team\"," + id.toString() + ", #{config.user.id}, function(w){location.href(w);});</script></html>", function(erroror){
                                 if(erroror){
                                     console.log(erroror);
                                     console.log("craaaaaaaazy error brush");
