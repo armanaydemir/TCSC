@@ -13,7 +13,7 @@ html(lang='en')
 //- <!--<![endif]-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
-script.
+
   var socket = io();
   logTracker = [];
   //console.log(Cookies.get());
@@ -144,3 +144,4 @@ script.
   socket.on('new_message:' + #{config.user.team}, function(usr, msg){
     if(usr != #{config.user.id}){notify(msg, usr, 'success');$('#messages').append($('<li>').text(msg));}
   });
+</script>

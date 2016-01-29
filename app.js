@@ -20,6 +20,8 @@ var exec = require('child_process').exec;
 var async = require('async');
 var Files = {};
 
+
+
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -246,6 +248,8 @@ app.post('/dashUpload', dashboard_check, function(req,res){
     });
   
 });
+
+app.set('view engine', 'jade');
 //____________________
 
 
@@ -449,10 +453,12 @@ io.on('connection', function(socket){
     });
   });
 
-  socket.on('inv_team', function (team_id){
+  socket.on('inv_team', function (shaname){
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
     user = session_data["user"];
+    console.log("jjajaj");
     if(User.confirmUser(user)){
+      redis.get("shaname:" + shaname + ":id", function(team_id){
       User.addToTeam(user.id, team_id, function (val){
         console.log("we good good man?");
         if(!val){
@@ -467,12 +473,19 @@ io.on('connection', function(socket){
               //to many peeeeeps
               User.leaveFromTeam(user.id, team_id);
             }else{
-              io.emit(user.id, "success_join");
+              io.emit(user.id, team_id);
             }
           });
         }
       });
+      });
     }
+  });
+
+  socket.on('inviter', function(email){
+    var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+    user = session_data["user"];
+    
   });
 });
 

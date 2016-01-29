@@ -42,6 +42,7 @@ module.exports = function(redis) {
                         callback("name");
                         return;
                     } //means team name is already taken
+                    shaname = computeSHA1(name);
                     redis
                         .multi()
                         .set("user:" + leader_id + ":team", id)
@@ -52,7 +53,9 @@ module.exports = function(redis) {
                         .zadd("global:leaderboard", 0, id)
                         .set("team:" + id + ":school", school)
                         .sadd("team:" + id + ":members", leader_id)
-                        .set("team:" + id + ":leader", leader_id)
+                        .set("team:" + id + ":leader", leader_id)]
+                        .set("team:" + id + ":shaname", shaname)
+                        .set("shaname:" + shaname+ ":id", id)
                         .set("team:" + id + ":password", computeSHA1(password))
                         .set("team:" + id + ":message_order", 0)
                         .sadd("school:" + school + ":teams", id)
@@ -61,7 +64,7 @@ module.exports = function(redis) {
                                 callback(false);
                                 return;
                             }
-                            fs.writeFile(__dirname + '/inv/' + id.toString() + ".html", "<html><body><form action=\"\" class=\"form-signin signup\"><img src=\"images/tcsclogo.png\"/>" + 
+                            fs.writeFile(__dirname + '/inv/' + shaname + ".jade", "<html><body><form action=\"\" class=\"form-signin signup\"><img src=\"images/tcsclogo.png\"/>" + 
   "<label for=\"inputName\" class=\"sr-only\">Name</label>" +
   "<input id=\"inputName\" type=\"name\" placeholder=\"Name\" required=\"\" autofocus=\"\" class=\"form-control\"/>" + 
   "<label for=\"inputUsername\" class=\"sr-only\">Username</label>" + 
@@ -76,7 +79,9 @@ module.exports = function(redis) {
 
   
 
-  "</body><script src=\"https://cdn.socket.io/socket.io-1.2.0.js\"></script><script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js\"></script><script src=\"http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js\"></script><script>var socket = io();socket.emit(\"inv_team\"," + id.toString() + ", #{config.user.id}, function(w){location.href(w);});</script></html>", function(erroror){
+  "</body><script src=\"https://cdn.socket.io/socket.io-1.2.0.js\"></script><script src=\"http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js\"></script><script src=\"http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js\"></script><script>var socket = io();socket.emit(\"inv_team\", \"" + shaname + "\", #{config.user.id});" +
+  "$(function(){$('button').click(function(){socket.emit('signup', $('#inputFName').val(), $('#inputLName').val(),  $('#inputUsername').val(), $('#inputAge').val(),$('#inputEmail').val(), $('#inputPassword').val());return false;});});" +
+  "socket.on(#{config.user.id}, function(data){if(data==="+id.toString()+"){location.href = '/dashboard';}});</script></html>", function(erroror){
                                 if(erroror){
                                     console.log(erroror);
                                     console.log("craaaaaaaazy error brush");
