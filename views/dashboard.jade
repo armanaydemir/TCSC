@@ -15,14 +15,17 @@ html(lang='en')
       include _/css/bootstrap.css
       include _/css/compstyles.css
       include _/css/drop_zoner.css
+      include _/css/dashstyle.css
   body#dashboard(style='overflow:hidden;')
     header
-        include _/components/jade/comp-navbar.jade
+      include _/components/jade/comp-navbar.jade
     content
-        include _/components/jade/aside-dashboardstats.jade
-        //include _/components/jade/article-questions.jade
-        include _/components/jade/article-questions-alternate.jade
-        include _/components/jade/notifications.html
+      
+      include _/components/jade/aside-dashboardstats.jade
+      include _/components/jade/article-questions-alternate.jade
+      //include _/components/jade/article-questions.jade
+       
+      include _/components/jade/notifications.html
 
     footer
     // jQuery (necessary for Bootstrap's JavaScript plugins)

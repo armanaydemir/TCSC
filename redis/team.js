@@ -53,7 +53,7 @@ module.exports = function(redis) {
                         .zadd("global:leaderboard", 0, id)
                         .set("team:" + id + ":school", school)
                         .sadd("team:" + id + ":members", leader_id)
-                        .set("team:" + id + ":leader", leader_id)]
+                        .set("team:" + id + ":leader", leader_id)
                         .set("team:" + id + ":shaname", shaname)
                         .set("shaname:" + shaname+ ":id", id)
                         .set("team:" + id + ":password", computeSHA1(password))

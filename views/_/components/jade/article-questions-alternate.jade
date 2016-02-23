@@ -1,12 +1,16 @@
-#questions.container.col-lg-8.col-md-8.col-sm-8.col-xs-12(style='margin-top: 5em; float:right;')
-	.page-header
-		h3 Questions
-		#accordion.panel-group(role='tablist', aria-multiselectable='true', style='overflow:auto;max-height:100vh')
+questions(class="panel panel-default")
+	<div class="panel-heading">
+	<h3 class="panel-title" id="panel_chat-title">Questions</h3>
+	</div>
+	<div class="panel-body">
+	#accordion.panel-group(role='tablist', aria-multiselectable='true', style='overflow:auto;max-height:80vh;')
+	</div>
 
 
 script.
 	socket = io();
-	woah = ["One", "Two", "Three"];
+	woah = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", 
+	"Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty"];
 	qTracker = [];
 	num = 0;
 	$(document).ready(function () {
