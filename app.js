@@ -3,6 +3,7 @@
 // make sure rielle makes shit happen for the shit under this
 // make an invite to team thing and a you have no team dumbass thing
 // make sure we scrub and clean any input, especially chat lol, cant even do a fucking apostraphe
+// maybe change dash connect to be like stat connect with callback instead of socket for data.
 
 
 var express = require('express');
@@ -156,7 +157,10 @@ app.get('/logout', function(req, res) {req.session.reset();res.redirect('/');});
 
 //complicated routes----------------
 app.get('/settings', dashboard_check, function(req, res){res.render(__dirname + "/views/settings.jade");});
-app.get('/stats', dashboard_check, function(req, res){res.render(__dirname + "/views/stats.jade");});
+
+app.get('/stats', dashboard_check, function(req, res){
+  res.render(__dirname + "/views/stats.jade");
+});
 
 app.get('/login', function(req, res){
   req.session.login_id = makeCompID(); //change name to log in key
@@ -255,6 +259,7 @@ app.set('view engine', 'jade');
 
 io.on('connection', function(socket){
   console.log("next");
+
   socket.on('dashboard_connect', function(user_id){
     Chat.getMessages(user_id, function(chat){
       io.emit('chat_log:' + user_id, chat);
@@ -263,9 +268,15 @@ io.on('connection', function(socket){
       io.emit('question_log:' + user_id, q);
     });
     ///user.getprof essentially
-
     redis.get('user:' + user_id + ':prof_pic', function(err, val){
       io.emit('prof_pic_load:' + user_id, val);
+    });
+  });
+
+  socket.on('stat_connect', function(callback){
+    console.log("suck my mother fucking dick");
+    Team.getLeaderboard(function(b){
+      callback(b);
     });
   });
 

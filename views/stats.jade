@@ -1,9 +1,10 @@
-sdoctype html
+doctype html
 script
   include _/js/jquery.js
   include _/js/bootstrap.js
   include _/js/myscript.js
   include _/components/js/jquery.toaster.js
+
 html(lang='en')
   head
     meta(charset='utf-8')
@@ -17,7 +18,6 @@ html(lang='en')
           include _/css/bootstrap.css
           include _/css/compstyles.css
     content
-        include _/components/jade/aside-dashboardstats.jade
         //include _/components/jade/article-questions.jade
         //include _/components/jade/article-questions-alternate.jade
         include _/components/jade/article-stats.jade
@@ -25,3 +25,16 @@ html(lang='en')
 
     footer
     // jQuery (necessary for Bootstrap's JavaScript plugins)
+
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+script.
+  var socket = io();
+
+  socket.emit('stat_connect', function(b){
+    //console.log(b);
+    for (i = 0; i < b.length; i++) { 
+      $('#tbody').append("<tr><td>" + b[0].points + "</td><td>" +
+       b[0].name + "</td><td>" + b[0].name + "</td><td>" + b[0].name + "</td><td>" + b[0].name);
+    }
+    
+  });

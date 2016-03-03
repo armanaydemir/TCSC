@@ -18,3 +18,9 @@ questions {
 #accordian{
 	overflow: auto;
 }
+
+#panel-options li {
+	display: inline;
+	list-style-type: none;
+}
+
