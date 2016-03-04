@@ -31,10 +31,10 @@ script.
   var socket = io();
 
   socket.emit('stat_connect', function(b){
-    //console.log(b);
+    console.log(b);
     for (i = 0; i < b.length; i++) { 
-      $('#tbody').append("<tr><td>" + b[0].points + "</td><td>" +
-       b[0].name + "</td><td>" + b[0].name + "</td><td>" + b[0].name + "</td><td>" + b[0].name);
+
+      $('tbody').append("<tr><td>" + b[i].points + "</td><td>" +
+       b[i].name + "</td><td>" + b[i].name + "</td><td>" + b[i].name + "</td><td>" + b[i].name + "</td></tr>");
     }
-    
   });

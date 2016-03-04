@@ -257,6 +257,7 @@ app.set('view engine', 'jade');
 //____________________
 
 
+
 io.on('connection', function(socket){
   console.log("next");
 
@@ -276,7 +277,18 @@ io.on('connection', function(socket){
   socket.on('stat_connect', function(callback){
     console.log("suck my mother fucking dick");
     Team.getLeaderboard(function(b){
-      callback(b);
+      var lb = [];
+      for (i = 0; i < b.length; i++) { 
+        Team.getTeam(b[i], function(team){
+          console.log(team);
+          lb.push(team);
+          console.log('');
+          if(team.id == b[b.length-1]){
+            console.log(lb);
+            callback(lb);
+          }
+        });
+      }
     });
   });
 

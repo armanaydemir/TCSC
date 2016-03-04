@@ -107,7 +107,7 @@ module.exports = function(redis) {
                         callback(false);
                         return;
                     }
-                    callback({name:results[0].slice(results[0].indexOf(':')+1,results[0].length), points:results[1]});
+                    callback({name:results[0].slice(results[0].indexOf(':')+1,results[0].length), points:results[1], id:id});
                     return;
                 });
         },
