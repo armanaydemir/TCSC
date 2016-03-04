@@ -263,52 +263,62 @@ module.exports = function(redis) {
                 callback(board);
             });
         },
-
         getQuestions: function(team_id, callback){
             //redis.zadd("team:" + team_id + ":question_order", 3, 4);
             redis.zrevrange("team:" + team_id + ":question_order", 0, -1, "withscores", function(err, questions){
                 console.log(questions);
-                if(!err || !questions || questions.length === 0 ){
-                    redis.get("global:question_id", function(err, val){
+                //if(err || !questions || questions.length === 0 ){
+                    redis.get("global:question_id", function(errr, val){
+                        //console.log("im here");
                         for(x = 1; x <= val; x ++){
                             Question.getQuestion(x, function(v){
                                 callback(v);
                             });
                         }
                     });
-                }
-                else{
-                    var c = 0;
-                    var q_id = -1;
-                    var order = -3;
-                    for (var q in questions){
-                        if(c % 2 == 0){
-                            q_id = q;
-                        }
-                        else{
-                            order = q;
+                //}
+                // else{
+                //     var c = 0;
+                //     var q_id = -1;
+                //     var order = -3;
+                //     console.log("or here");
+                //     for (var q in questions){
+                //         if(c % 2 == 0){
+                //             q_id = q;
+                //         }
+                //         else{
+                //             order = q;
+                //             if(order <= 0){
+                //                 redis.get("global:question_id", function(err, val){
+                //                     for(x = 1; x <= val; x ++){
+                //                         if(question.indexOf(x) != -1){
+                //                         Question.getQuestion(x, function(v){
+                //                             callback(v);
+                //                         });
+                //                         }
+                //                     }
+                //                 });
+                //             }
 
-                            if(order <= 0){
-                                redis.get("global:question_id", function(err, val){
-                                    for(x = 1; x <= val; x ++){
-                                        if(question.indexOf(x) != -1)
-                                        Question.getQuestion(x, function(v){
-                                            callback(v);
-                                        });
-                                    }
-                                });
-                            }
+                //             Question.getQuestion(q_id, function(v){
+                //                 callback(v);
+                //             });
 
-                            Question.getQuestion(q_id, function(v){
-                                callback(v);
-                            });
+                //         }
+                //         c = (c + 1) % 2
+                //     }
+                // }
+            });
+        },
 
-                        }
-                        c = (c + 1) % 2
-                    }
+        getQuestionsWithStats: function(team_id, callback, cb2){
+            //redis.zadd("team:" + team_id + ":question_order", 3, 4);
+            this.getQuestions(team_id, cb2);
+            redis.get("global:question_id", function(err, val){
+                for(x = 0; x <= val; x ++){
+                    Question.getQuestionStats(x, callback);
                 }
             });
-
         },
 
         answeredQuestions: function (team_id, callback) {

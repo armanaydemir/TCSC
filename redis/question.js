@@ -27,6 +27,12 @@ module.exports = function(redis) {
         		});
 		},
 
+        getQuestionStats: function(q_id, callback){
+            redis.get("question:" + q_id + ":temp_attempts", function(err, t){
+                if(!err)    callback(q_id, t);
+            });
+        },
+
 		answerQuestion: function(user_id, team_id, question_id, answer, callback){
 			callback = callback || emptyFunction;
 			redis.get("team:" + team_id + ":questions", function(error, q){

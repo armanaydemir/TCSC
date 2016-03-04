@@ -19,6 +19,7 @@ script.
 	num = 0;
 	$(document).ready(function () {
 		$('#accordion').on('click', 'button', function() {
+			console.log("my dick is thiiiiiiiiiiiiiiiis long");
 			quest_id = $(this).attr("id").slice(0,$(this).attr("id").indexOf('_'));
 			if($('#q_' + quest_id ).val() != ""){
 				console.log("ASDFASDFASDFASDFASDFASDFADFFASD cha cha cha chai");
@@ -33,11 +34,21 @@ script.
 			console.log("notagainnnnnnn");
 		}
 		else{
-		$('#accordion').append('<div class="panel panel-default"><div id="heading' + woah[num]+ '" role="tab" class="panel-heading"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + woah[num]+ '" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;"><h4 class="panel-title" style="text-decoration: none;" ><span class="questionname">' + que.name + '</span> &vert; <span class="points">' + que.points+ '</span> &vert; <span class="category">' + que.category+ '</span><!-- change with jQuery on close--><span style="float: right;"><span style="color: black;" class="glyphicon glyphicon-chevron-down"></span></h4></a></div><div id="collapse' + woah[num]+ '" role="tabpanel" aria-labelledby="heading' + woah[num]+ '" class="panel-collapse collapse in"><div class="panel-body"><span class="description">' + que.description + '</span><form action><input id="q_' + que.id + '" type="text" autocomplete="off" name="userAnswer" value="userAnswer"></input><button id="' + que.id + '_button" type="button" autocomplete="off">Answer</button></form></div></div></div></div>');
+		$('#accordion').append('<div id="'+ que.id + '" class="panel panel-default"><div id="heading' + woah[num]+ '" role="tab" class="panel-heading"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + woah[num]+ '" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;"><h4 class="panel-title" style="text-decoration: none;" ><span class="questionname">' + que.name + '</span> &vert; <span class="points">' + que.points+ '</span> &vert; <span class="category">' + que.category+ '</span><!-- change with jQuery on close--><span style="float: right;"><span style="color: black;" class="glyphicon glyphicon-chevron-down"></span></h4></a></div><div id="collapse' + woah[num]+ '" role="tabpanel" aria-labelledby="heading' + woah[num]+ '" class="panel-collapse collapse in"><div class="panel-body"><span class="description">' + que.description + '</span><form action><input id="q_' + que.id + '" type="text" autocomplete="off" name="userAnswer" value="userAnswer"></input><button id="' + que.id + '_button" type="button" autocomplete="off">Answer</button></form></div></div></div></div>');
 		num ++;
 		if(num === 1){
 			active = woah[que.id];
 		}
 		qTracker.push(que.id);
 		}
+
 	});
+
+	socket.on('question_stats:' + #{config.user.id}, function(q, a){
+		console.log(q);
+		console.log(a);
+		console.log("aboveme");
+		//$(q).append(a);
+	});
+
+

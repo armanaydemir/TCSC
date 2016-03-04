@@ -265,8 +265,13 @@ io.on('connection', function(socket){
     Chat.getMessages(user_id, function(chat){
       io.emit('chat_log:' + user_id, chat);
     });
-    Team.getQuestions(1, function(q){
-      io.emit('question_log:' + user_id, q);
+    Team.getQuestionsWithStats(1, function(q, a){
+        console.log(q);
+        console.log(a);
+        console.log("avo");
+        io.emit('question_stats:' + user_id, q, a);
+      },function(q){
+        io.emit('question_log:' + user_id, q);
     });
     ///user.getprof essentially
     redis.get('user:' + user_id + ':prof_pic', function(err, val){
@@ -351,10 +356,8 @@ io.on('connection', function(socket){
       //make sure rielle makes shit happen for the shit under this
       }else if(v === "email"){
         io.emit(session_id, 'sign_up_error[email]'); //means email is taken 
-
       }else if(v === "username"){
         io.emit(session_id, 'sign_up_error[username]'); //means username is taken ... get the pattern with this ish yet?
-
       }else{
         //console.log("hey");
         redis.setnx("signup_key:" + session_id, v, function(err, set){
