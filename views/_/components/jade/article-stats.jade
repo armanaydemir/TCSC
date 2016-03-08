@@ -19,18 +19,19 @@
           img.img-responsive(data-src='holder.js/200x200/auto/vine', alt='Generic placeholder thumbnail')
           h4 Label
           span.text-muted Something else
-      h2.sub-header Section title
+      h2.sub-header Global Leaderboard
       .table-responsive
         table.table.table-striped
           thead
             tr
               th #
-              th Header
-              th Header
+              th Points
               th Header
               th Header
           tbody
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 script.
   var socket = io();
+
+  socket.emit('inviter', '');
   

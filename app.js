@@ -19,6 +19,7 @@ var fs = require('fs');
 var util = require('util');
 var exec = require('child_process').exec;
 var async = require('async');
+var nodemailer = require('nodemailer');
 var Files = {};
 
 
@@ -159,7 +160,12 @@ app.get('/logout', function(req, res) {req.session.reset();res.redirect('/');});
 app.get('/settings', dashboard_check, function(req, res){res.render(__dirname + "/views/settings.jade");});
 
 app.get('/stats', dashboard_check, function(req, res){
-  res.render(__dirname + "/views/stats.jade");
+  Team.getTeam(req.session.user.team, function(team){
+      if(team){
+        app.locals.config = {comp_id: req.session.comp_id, user:req.session.user, team:team};
+      }
+      res.render(__dirname + "/views/stats.jade");
+  });
 });
 
 app.get('/login', function(req, res){
@@ -182,9 +188,6 @@ app.get('/dashboard', dashboard_check, function(req, res){
   var user = req.session.user;
   console.log(user.team);
   if(!user.team){
-    console.log("type check bitch");
-    console.log(typeof req.session.comp_id);
-    console.log("type check done biatch");
     app.locals.config = {comp_id: req.session.comp_id, user:user};
     res.render(__dirname + "/views/dashboard_no_team.jade/")
     //res.render(__dirname + "/views/dashboard.jade");
@@ -192,12 +195,9 @@ app.get('/dashboard', dashboard_check, function(req, res){
   else{
     Team.getTeam(user.team, function(team){
       if(team){
+        req.session.team = team;
         redis.get("global:question_id", function(total_worst_thing_ever_woahhhhh, top_id){
-          console.log("type check bitch");
-          console.log(typeof req.session.comp_id);
-          console.log("type check done biatch");
           var woahh = String(req.session.comp_id);
-          console.log(typeof woahh);
           app.locals.config = {comp_id: woahh, user:user, team:team, q_tracker:top_id};
           res.render(__dirname + "/views/dashboard.jade/");
         });
@@ -266,9 +266,6 @@ io.on('connection', function(socket){
       io.emit('chat_log:' + user_id, chat);
     });
     Team.getQuestionsWithStats(1, function(q, a){
-        console.log(q);
-        console.log(a);
-        console.log("avo");
         io.emit('question_stats:' + user_id, q, a);
       },function(q){
         io.emit('question_log:' + user_id, q);
@@ -285,9 +282,9 @@ io.on('connection', function(socket){
       var lb = [];
       for (i = 0; i < b.length; i++) { 
         Team.getTeam(b[i], function(team){
-          console.log(team);
+          //console.log(team);
           lb.push(team);
-          console.log('');
+          //console.log('');
           if(team.id == b[b.length-1]){
             console.log(lb);
             callback(lb);
@@ -296,7 +293,6 @@ io.on('connection', function(socket){
       }
     });
   });
-
 
   socket.on('send_message', function(msg){
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
@@ -384,12 +380,12 @@ io.on('connection', function(socket){
         });
       }else if(v === "invalid_pass"){
         io.emit(session_id, 'invalid_pass');
-        console.log("invalid_pass");
+        console.log("invalid_pass: " + log);
       }else if(v === "invalid_log"){
         io.emit(session_id, 'invalid_log');
-        console.log("invalid_log");
+        console.log("invalid_log: " + log);
       }else{
-        console.log("jjj");
+        console.log("login_error: " + log);
         io.emit(session_id, 'error');
       }
     });
@@ -511,7 +507,37 @@ io.on('connection', function(socket){
   socket.on('inviter', function(email){
     var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
     user = session_data["user"];
-    
+    //if(User.confirmUser(user)){
+      redis.get("team:" + user.team + ":shaname", function(err, sha){
+        console.log('woahhhhhhhhhhhjjklkhhhh');
+        //write the email here
+        var transporter = nodemailer.createTransport({
+          service: 'Gmail',
+          auth: {
+            user: 'armana22@gmail.com', // Your email id
+            pass: 'arman1111'
+          }
+        });
+        console.log(transporter);
+        var text = 'Hello world from \n\n';
+        var mailOptions = {
+          from: 'armana22@gmail.com>', // sender address
+          to: '16aydemir@da.org', // list of receivers
+          subject: 'Email Example', // Subject line
+          text: text //, // plaintext body
+          //html: '<b>Hello world ✔</b>' // You can choose to send an HTML body instead
+        };
+        transporter.sendMail(mailOptions, function(error, info){console.log('we trsnajsdf');
+          if(error){
+            console.log(error);
+            //res.json({yo: 'error'});
+          }else{
+            console.log('Message sent: ' + info.response);
+            //res.json({yo: info.response});
+          };
+        });
+      });
+    //}
   });
 });
 

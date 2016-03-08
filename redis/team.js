@@ -163,9 +163,9 @@ module.exports = function(redis) {
                     callback(false);
                     return;
                 }
-                console.log(team_name);
-                console.log(error);
-                console.log(team_id);
+                //console.log(team_name);
+                //console.log(error);
+                //console.log(team_id);
                 redis.get("team:" + team_id + ":password", function (err, password) {
                     if (err) {
                         callback(false);
