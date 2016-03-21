@@ -23,7 +23,6 @@ var nodemailer = require('nodemailer');
 var Files = {};
 
 
-
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
@@ -217,7 +216,7 @@ app.use('/upteams', express.static( __dirname + '/upteams'));
 
 app.use('/inv', express.static(__dirname + '/redis/inv'));
 
-app.post('/upload', dashboard_check, function(req,res){
+app.post('/upload', dashboard_check, function(req, res){
   var profUpload = multer({ dest: './prof_pics/' + req.session.user.id,
     rename: function(fieldname, file) {return file.originalname + Date.now();},
     onFileUploadStart: function (file) {console.log(file.originalname + ' is starting ...');},
@@ -232,23 +231,27 @@ app.post('/upload', dashboard_check, function(req,res){
   });
 });
 
-app.post('/dashUpload', dashboard_check, function(req,res){
-
+app.post('/dashUpload', dashboard_check, function(req, res){
     console.log('ehhh?????');
+    //console.log(req);
+
     var teamUpload = multer({ dest: './upteams/' + req.session.user.team, 
       rename: function(fieldname, file) {return Date.now();},
       onFileUploadStart: function (file) {console.log(file.originalname + ' uploading...');}, 
-      onFileUploadComplete: function (file) {console.log('uploaded to ' + file.path);}
+      onFileUploadComplete: function (file) {console.log('uploaded to ' + file.path); 
+        Chat.fileMessage(req.session.user.id, file.originalname, file.name, function(suc){
+          if(suc){
+            io.emit('new_file:' + req.session.user.team, suc);
+          }          
+        });
+      }
     });
     teamUpload(req,res,function(err) {
       if(err) {
         return res.end("error");
+      }else{
+        res.end('success')
       }
-      Chat.fileMessage(req.session.user.id, req.files.userPhoto.originalname, req.files.userPhoto.name, function(suc){
-        if(suc){
-          res.end(suc);
-        }
-      });
     });
   
 });

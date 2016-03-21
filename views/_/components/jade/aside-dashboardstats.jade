@@ -1,4 +1,17 @@
-include aside-dashboardstats.html
+#dash_stat.panel.panel-default
+  .dropzone-overlay
+    | "Drop to upload file FUCKING REMEMBER THIS SHIT, THIS IS THE SHIT (RIGHT HERE like IN hte overlay divv, that you can use as the little fill in thing like facebook. please dont forget becasue if you do like so much work will be lost2"
+  .panel-heading
+    h3#panel_chat-title.panel-title Team Chat
+  form#uploadForm(enctype='multipart/form-data', class="dropzone", action='/dashUpload', method='post')
+    .panel-body
+      #chat
+      input#m
+      input(type='submit', value='submit', name='submit')
+      .dz-message
+      ul#messages
+      span#status
+    <div class="dz-preview dz-file-preview dz-processing dz-success dz-complete"></div>
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="/js.cookie.js"></script>
 //- <!--[if IE]>
@@ -11,6 +24,7 @@ include aside-dashboardstats.html
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
 script.
+  
   var socket = io();
   logTracker = [];
   //console.log(Cookies.get());
@@ -45,20 +59,18 @@ script.
         socket.emit('send_message', $('#m').val());
         $('#messages').append($('<li>').text($('#m').val()));
         $('#m').val('');
-      }
-      $(this).ajaxSubmit({
-        error: function(xhr) {
-          console.log(xhr);
-          status('Error: ' + xhr.status);
-        },
-        success: function(response) {
-            console.log(response)
-            parseLog(response);
-
+      }else{
+        $(this).ajaxSubmit({
+          error: function(xhr) {
+            console.log(xhr);
+            status('Error: ' + xhr.status);
+          },
+          success: function(response) {
             $("#status").empty().text(response);
             $('#uploadForm').empty();
-        }
-      });
+          }
+        });
+      }
       return false;
     });    
   });
@@ -67,9 +79,9 @@ script.
 
   });
 
-  socket.on('file_message:' + #{config.user.team}, function(usr, file_name, fpath){
-    $('#messages').append($('<li>').html('<a href="/upteams/' + #{config.user.team} + '/' + fpath
-      + '">' + file_name + '</a>'));
+  socket.on('new_file:' + #{config.user.team}, function(log){
+    $('#messages').append($('<li>').html('<a href="/upteams/' + #{config.user.team} + '/' + log.slice(0,log.indexOf(':'))
+      + '">' + log.slice(log.indexOf(':') + 1, log.lastIndexOf(':')) + '</a>'));
   });
 
   socket.on('chat_log:'+ #{config.user.id}, function(chat){

@@ -4,6 +4,7 @@ script
   include _/js/bootstrap.js
   include _/js/myscript.js
   include _/components/js/jquery.toaster.js
+  include _/js/dropzone.js
 
 html(lang='en')
   head
@@ -16,6 +17,7 @@ html(lang='en')
       include _/css/compstyles.css
       include _/css/drop_zoner.css
       include _/css/dashstyle.css
+      include _/css/dropzone.css
   body#dashboard(style='overflow:hidden;')
     header
       include _/components/jade/comp-navbar.jade
@@ -32,5 +34,6 @@ html(lang='en')
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 script.
   var socket = io();
+
 
   socket.emit('dashboard_connect', #{config.user.id})
