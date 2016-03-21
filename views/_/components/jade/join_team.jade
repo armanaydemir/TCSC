@@ -1,16 +1,13 @@
-#questions.container(style='position: fixed; margin-top:0.5em')
-      form.form-signin.join(action="")
-        br
-        br 
-        br
-        br
-        label.sr-only(for='inputName') Team Name
-        input#inputName.form-control(type='name', placeholder='Team Name', required='', autofocus='')
-        
-        label.sr-only(for='inputPassword') Password
-        input#inputPassword.form-control(type='password', placeholder='Password', required='')
-        button.btn.btn-lg.btn-danger.btn-block(type='button' autocomplete='off') Join
-        br
+join(class="panel panel-default")
+  <div class="panel-heading">
+  <h3 class="panel-title" id="panel_chat-title">Join Team</h3></div>
+  form.form-signin.join(action="")
+    label.sr-only(for='inputName') Team Name
+    input#inputName.form-control(type='name', placeholder='Team Name', required='', autofocus='')
+    
+    label.sr-only(for='inputPassword') Password
+    input#inputPassword.form-control(type='password', placeholder='Password', required='')
+    button.btn.btn-lg.btn-danger.btn-block(type='button' autocomplete='off') Join
         
     // /container
 script.
@@ -24,8 +21,8 @@ script.
   });
   
   socket.on(#{config.user.id}, function(data){
-    if(data==='success_joing_team'){
+    if(data==='success_join'){
       //console.log("we good");
       location.href = '/team'; //follow teams and invite people to team
-     }
+    }
   });

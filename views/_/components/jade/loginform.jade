@@ -27,12 +27,18 @@ script.
   var socket = io();
   $(function(){
     $('button').click(function(){
-    console.log("butttttttt");
-    socket.emit('login', $('#inputEmail').val(), $('#inputPassword').val());
-    return false;
+      console.log("butttttttt");
+      socket.emit('login', $('#inputEmail').val(), $('#inputPassword').val());
+      return false;
+    });
+    $('form').keypress(function (e) {
+      if (e.which == 13) {
+        console.log("butttttttt enttttts");
+        socket.emit('login', $('#inputEmail').val(), $('#inputPassword').val());
+        return false;
+      }
     });
   });
-  
   socket.on(#{config.login_id}, function(data){
     if(data==='success_login'){
       console.log("we good");

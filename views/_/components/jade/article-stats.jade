@@ -5,19 +5,19 @@
       .row.placeholders
         .col-xs-6.col-sm-3.placeholder
           img.img-responsive(data-src='holder.js/200x200/auto/sky', alt='Generic placeholder thumbnail')
-          h4 Label
+          h4 # of Questions Answered
           span.text-muted Something else
         .col-xs-6.col-sm-3.placeholder
           img.img-responsive(data-src='holder.js/200x200/auto/vine', alt='Generic placeholder thumbnail')
-          h4 Label
+          h4 Rank
           span.text-muted Something else
         .col-xs-6.col-sm-3.placeholder
           img.img-responsive(data-src='holder.js/200x200/auto/sky', alt='Generic placeholder thumbnail')
-          h4 Label
+          h4 Average Question Value
           span.text-muted Something else
         .col-xs-6.col-sm-3.placeholder
           img.img-responsive(data-src='holder.js/200x200/auto/vine', alt='Generic placeholder thumbnail')
-          h4 Label
+          h4 Question Attempted Most
           span.text-muted Something else
       h2.sub-header Global Leaderboard
       .table-responsive
@@ -33,5 +33,5 @@
 script.
   var socket = io();
 
-  socket.emit('inviter', '');
+  //socket.emit('inviter', '');
   

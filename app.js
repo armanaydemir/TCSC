@@ -276,15 +276,17 @@ io.on('connection', function(socket){
     });
   });
 
-  socket.on('stat_connect', function(callback){
+  socket.on('stat_connect', function(user_id, callback){
     console.log("suck my mother fucking dick");
+    //add user id as a param
+    redis.get('user:' + user_id + ':prof_pic', function(err, val){
+      io.emit('prof_pic_load:' + user_id, val);
+    });
     Team.getLeaderboard(function(b){
       var lb = [];
       for (i = 0; i < b.length; i++) { 
         Team.getTeam(b[i], function(team){
-          //console.log(team);
           lb.push(team);
-          //console.log('');
           if(team.id == b[b.length-1]){
             console.log(lb);
             callback(lb);

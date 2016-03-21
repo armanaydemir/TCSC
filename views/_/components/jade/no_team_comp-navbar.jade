@@ -1,0 +1,68 @@
+nav.navbar.navbar-default.navbar-fixed-top.navbar-inverse(role='navigation')
+      .container
+        .navbar-header
+          button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          // button
+        // /.nav-collapse
+        #navbar.navbar-collapse.collapse
+          ul.nav.navbar-nav.navbar-left
+          
+          marquee.nav.navbar-nav.navbar-center(behavior="scroll" scrollamount="1.6" direction="left")
+              a(href='#') WOAHHHHH
+          ul.nav.navbar-nav.navbar-right             
+            a.pull-left.logo(href='#', style='padding-right:3em;')
+              img#logodiv(style='max-width:40px;max-height: 40px;margin-top: 5px', src='images/emblem.png')
+            li.active
+              a(href='dashboard') Dashboard
+            li
+              a(href='stats') Stats
+            // perhaps we should move the rules to the settings
+            li.dropdown
+              a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
+              ul.dropdown-menu
+                li.dropdown-header Signed in as #{config.user.username}
+                li.divider(role='separator')
+                li
+                  a(href='#') Your Profile
+                li
+                  a(href='#') Help
+                li.divider(role='separator')
+                li
+                  a(href='#') Settings
+                li.divider(role='separator')
+                li
+                  a(href='/logout') Sign Out
+              // dropdown-menu
+            // dropdown
+          // navbar links
+        // code for collapsable navbar
+      // container
+    // navbar
+script(src='https://gist.githubusercontent.com/remy/2484402/raw/50eb9541d959c842b7ad4f3d7f7346a2f49ff8cb/gistfile1.js')
+script(src="https://cdn.socket.io/socket.io-1.2.0.js")
+script.
+  $('div.navbar marquee').marquee();
+  var socket = io();
+
+  $(document).ready(function () {
+    
+  });
+
+  //oh yeah add the thing to programmatically add the prof image stuff here ... no need to change cookies (other than maybe with the 
+  //editable thing)
+
+  socket.on('prof_pic_load:' + #{config.user.id}, function(v){
+
+    if (v != '1.png' && v != '2.png' && v != '3.png'){
+      $('#navbar ul.navbar-right li.dropdown a.dropdown-toggle').append('<img src="prof_pics/' + #{config.user.id} + '/' + v + '" alt="id" width="20px" height="20px" class="img-rounded"><span class="caret"></span>');
+    }
+    else{
+      $('#navbar ul.navbar-right li.dropdown a.dropdown-toggle').append('<img src="prof_pics/' + v + '" alt="id" width="20px" height="20px" class="img-rounded"><span class="caret"></span>');
+    }
+  });
+
+

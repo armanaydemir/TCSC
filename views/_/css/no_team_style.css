@@ -1,0 +1,16 @@
+join {
+	padding-top:50px;
+	display:inline-block;
+	width:50%;
+	background:#F2F2F2;
+}
+
+regis {
+	padding-top:50px;
+	display:inline-block;
+	float:right;
+	width:50%;
+	border-left-style: solid;
+	border-left-color:#000000;
+	border-left-radius:10px;
+}

@@ -39,9 +39,16 @@ script.
   var socket = io();
   $(function(){
     $('button').click(function(){
-    socket.emit('signup', $('#inputFName').val(), $('#inputLName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
+      socket.emit('signup', $('#inputFName').val(), $('#inputLName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
       $('#inputEmail').val(), $('#inputPassword').val());
-    return false;
+      return false;
+    });
+    $('form').keypress(function (e) {
+      if (e.which == 13) {
+      socket.emit('signup', $('#inputFName').val(), $('#inputLName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
+      $('#inputEmail').val(), $('#inputPassword').val());
+      return false;
+      }
     });
   });
   
@@ -49,7 +56,7 @@ script.
     if(data==='success_sign_up'){
       console.log("we good");
       location.href = '/dashboard';
-     }
+    }
   });
       
 

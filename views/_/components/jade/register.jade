@@ -1,18 +1,15 @@
-#signup.container(style='position: fixed; margin-top:0.5em')
-      form.form-signin.signup(action="")
-        br
-        br 
-        br
-        br
-        label.sr-only(for='inputName') Team Name
-        input#inputName.form-control(type='name', placeholder='Team Name', required='', autofocus='')
-        label.sr-only(for='inputSchool') School (Optional)
-        input#inputSchool.form-control(type='school', placeholder='School (Optional', required='', autofocus='')
-        
-        label.sr-only(for='inputPassword') Password
-        input#inputPassword.form-control(type='password', placeholder='Password', required='')
-        button.btn.btn-lg.btn-danger.btn-block(type='button' autocomplete='off') Register
-        br
+regis(class="panel panel-default")
+  <div class="panel-heading">
+  <h3 class="panel-title" id="panel_chat-title">Make New Team</h3></div>
+  form.form-signin.signup(action="")
+    label.sr-only(for='inputName') Team Name
+    input#inputName.form-control(type='name', placeholder='Team Name', required='', autofocus='')
+    label.sr-only(for='inputSchool') School (Optional)
+    input#inputSchool.form-control(type='school', placeholder='School (Optional', required='', autofocus='')
+    
+    label.sr-only(for='inputPassword') Password
+    input#inputPassword.form-control(type='password', placeholder='Password', required='')
+    button.btn.btn-lg.btn-danger.btn-block(type='button' autocomplete='off') Register
         
     // /container
 
@@ -22,7 +19,7 @@ script.
   var socket = io();
   $(function(){
     $('button').click(function(){
-    socket.emit('send_message', $('#inputName').val(),  $('#inputSchool').val(),$('#inputPassword').val());
+    socket.emit('register_team', $('#inputName').val(),  $('#inputSchool').val(),$('#inputPassword').val());
     return false;
     });
   });

@@ -30,7 +30,7 @@ html(lang='en')
 script.
   var socket = io();
 
-  socket.emit('stat_connect', function(b){
+  socket.emit('stat_connect', #{config.user.id}, function(b){
     console.log(b);
     for (i = 0; i < b.length; i++) { 
 
