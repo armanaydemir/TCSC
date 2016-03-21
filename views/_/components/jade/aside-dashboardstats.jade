@@ -1,8 +1,6 @@
 #dash_stat.panel.panel-default
-  .dropzone-overlay
-    | "Drop to upload file FUCKING REMEMBER THIS SHIT, THIS IS THE SHIT (RIGHT HERE like IN hte overlay divv, that you can use as the little fill in thing like facebook. please dont forget becasue if you do like so much work will be lost2"
   .panel-heading
-    h3#panel_chat-title.panel-title Team Chat
+    h3#panel_chat-title.panel-title #{config.team.name} Chat
   form#uploadForm(enctype='multipart/form-data', class="dropzone", action='/dashUpload', method='post')
     .panel-body
       #chat
@@ -11,7 +9,6 @@
       .dz-message
       ul#messages
       span#status
-    <div class="dz-preview dz-file-preview dz-processing dz-success dz-complete"></div>
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="/js.cookie.js"></script>
 //- <!--[if IE]>
@@ -24,7 +21,13 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
 script.
-  
+  window.Dropzone.options.uploadForm = {
+    init: function() {
+      this.on("complete", function(file) {console.log("ohheyyy"); console.log(file.previewElement);
+      file.previewElement.remove()});
+    }
+  };
+
   var socket = io();
   logTracker = [];
   //console.log(Cookies.get());
