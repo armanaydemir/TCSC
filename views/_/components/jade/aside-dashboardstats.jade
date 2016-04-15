@@ -2,15 +2,23 @@
   .panel-heading
     h3#panel_chat-title.panel-title #{config.team.name} Chat
   form#uploadForm(enctype='multipart/form-data', class="dropzone", action='/dashUpload', method='post')
-    .panel-body
-      #chat
-      input#m
-      input(type='submit', value='submit', name='submit')
-      .dz-message
+    .panel-body(style='overflow:auto;max-height:40vh;')
       ul#messages
       span#status
+    div.fallback
+      input(name="file" type="file" multiple)
+    .in_container
+      i#upload_button(class="dropzone", class="fa fa-upload", action='/dashUpload')
+        .dz-message
+      #chat_input
+        input#m
+        input(type='submit', value='submit', name='submit')
+    .dz-message
+
+    
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="/js.cookie.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 //- <!--[if IE]>
 //- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 //- <![endif]-->
@@ -21,10 +29,23 @@
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
 script.
+  //window.Dropzone.options.uploadForm.clickable = false;
   window.Dropzone.options.uploadForm = {
+    clickable: false,
     init: function() {
-      this.on("complete", function(file) {console.log("ohheyyy"); console.log(file.previewElement);
-      file.previewElement.remove()});
+      this.on("complete", function(file) {
+        //console.log("hubbabubba");
+        file.previewElement.remove();
+      });
+    }
+  };
+
+  window.Dropzone.options.uploadButton = {
+    init: function() {
+      this.on("complete", function(file) {
+        //console.log("hubbabubba");
+        file.previewElement.remove();
+      });
     }
   };
 
@@ -38,8 +59,9 @@ script.
   // please remember this line
 
   function parseLog(log){
+    console.log(log);
     if(log.charAt(log.length-1) === "!"){
-      console.log("ahhhhhhhaaaga");
+      //console.log("ahhhhhhhaaaga");
       $('#messages').append($('<li>').html('<a href="/upteams/' + #{config.user.team} + '/' + log.slice(0,log.indexOf(':'))
       + '">' + log.slice(log.indexOf(':') + 1, log.lastIndexOf(':')) + '</a>'));
 
@@ -54,10 +76,11 @@ script.
     return log.slice(log.indexOf(':') + 1, log.lastIndexOf(':'));
   };
 
+  
 
   $(document).ready(function() {
     $('#uploadForm').submit(function() {
-      console.log(this);
+      //console.log(this);
       if($('#m').val() && $('#m').val() != '' && $('#m').val().length != 0){ 
         socket.emit('send_message', $('#m').val());
         $('#messages').append($('<li>').text($('#m').val()));
@@ -68,18 +91,12 @@ script.
             console.log(xhr);
             status('Error: ' + xhr.status);
           },
-          success: function(response) {
-            $("#status").empty().text(response);
-            $('#uploadForm').empty();
+          success: function(response) { 
           }
         });
       }
       return false;
     });    
-  });
-
-  socket.on('log_pic' + #{config.user.id}, function(usr, pic){
-
   });
 
   socket.on('new_file:' + #{config.user.team}, function(log){
@@ -89,15 +106,9 @@ script.
 
   socket.on('chat_log:'+ #{config.user.id}, function(chat){
     $('#messages').removeAttr();
-    var pic_requested = [#{config.user.id}];
-    for (var i = 0; i < chat.length; i++) {
-      var log = parseInt(parseLog(chat[i]));
-      if(!pic_requested.includes(log)){
-        pic_requested.push(log);
-        //request the pic here
-      }
+    for (var i = chat.length -1 ; i >= 0; i--) {
+      parseLog(chat[i]);
     }
-    console.log(pic_requested);
   });
 
   socket.on('new_message:' + #{config.user.team}, function(usr, msg){

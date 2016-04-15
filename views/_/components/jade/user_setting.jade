@@ -1,17 +1,17 @@
-#signup.container(style='position: fixed; margin-top:0.5em')
+#edit.container(style='position: fixed; margin-top:0.5em')
       form.form-signin.signup(action="")
-        img(src='images/tcsclogo.png')
         label.sr-only(for='inputFName') First Name
-        input#inputName.form-control(type='name', placeholder='First Name', required='', autofocus='')
+        input#inputName.form-control(type='name', placeholder='#{config.user.fname}', required='', autofocus='')
         label.sr-only(for='inputLName') Last Name
-        input#inputName.form-control(type='name', placeholder='Last Name', required='', autofocus='')
+        input#inputName.form-control(type='name', placeholder='#{config.user.lname}', required='', autofocus='')
         label.sr-only(for='inputUsername') Username
-        input#inputUsername.form-control(type='username', placeholder='Username', required='', autofocus='')
+        input#inputUsername.form-control(type='username', placeholder='#{config.user.username}', required='', autofocus='')
         label.sr-only(for='inputAge') Age
-        input#inputAge.form-control(type='age', placeholder='Age', required='', autofocus='')
+        input#inputAge.form-control(type='age', placeholder='#{config.user.age}', required='', autofocus='')
         
         label.sr-only(for='inputEmail') Email address
-        input#inputEmail.form-control(type='email', placeholder='Email address', required='', autofocus='')
+        input#inputEmail.form-control(type='email', placeholder='#{config.user.email}', required='', autofocus='')
+
         
         label.sr-only(for='inputPassword') Password
         input#inputPassword.form-control(type='password', placeholder='Password', required='')
@@ -22,38 +22,31 @@
             </label>
           // change this into team codes later on
           // when deployed on actual site, include reCAPTCHA
-        button.btn.btn-lg.btn-danger.btn-block(type='button' autocomplete='off') Sign Up
-        br
-        p(style='text-align:center')
-          | Know your account info? 
-          a(href='login')
-            b Log in here.
-        // modify a modal for a forgotten password
-
+        button.btn.btn-lg.btn-danger.btn-block(type='button' autocomplete='off') Edit User      
+       // modify a modal for a forgotten password
     // /container
 
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
 script.
-  console.log(#{config.signup_id})
   var socket = io();
   $(function(){
     $('button').click(function(){
-      socket.emit('signup', $('#inputFName').val(), $('#inputLName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
+      socket.emit('edit', $('#inputFName').val(), $('#inputLName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
       $('#inputEmail').val(), $('#inputPassword').val());
       return false;
     });
     $('form').keypress(function (e) {
       if (e.which == 13) {
-      socket.emit('signup', $('#inputFName').val(), $('#inputLName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
+      socket.emit('edit', $('#inputFName').val(), $('#inputLName').val(),  $('#inputUsername').val(), $('#inputAge').val(),
       $('#inputEmail').val(), $('#inputPassword').val());
       return false;
       }
     });
   });
   
-  socket.on(#{config.signup_id}, function(data){
-    if(data==='success_sign_up'){
+  socket.on(#{config.user.id}, function(data){
+    if(data==='success_edit'){
       console.log("we good");
       location.href = '/dashboard';
     }

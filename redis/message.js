@@ -13,7 +13,7 @@ module.exports = function(redis, io) {
 	                var d = new Date();
 	                var time = d.getTime();
 	                //remember to parse messages backwards
-					redis.zadd("team:" + team_id + ":messages", time, message + ":" + time + ":" + user_id, function(err, set){ 
+					redis.zadd("team:" + team_id + ":messages", -time, message + ":" + time + ":" + user_id, function(err, set){ 
 						if (error) {callback(false);return;}
 						if (set == 0) {callback(false); console.log("red_alert... get to yo laptop now");} //if this goes off, some fucked up shit is going on
 						callback(true); return;
@@ -31,7 +31,7 @@ module.exports = function(redis, io) {
 	                var d = new Date();
 	                var time = d.getTime();
 	                //remember to parse messages backwards
-					redis.zadd("team:" + team_id + ":messages", time,  file_time + ":" + file_name + ":" + user_id + "!", function(err, set){ 
+					redis.zadd("team:" + team_id + ":messages", -time,  file_time + ":" + file_name + ":" + user_id + "!", function(err, set){ 
 						if (error) {callback(false);return;}
 						if (set == 0) {callback(false); console.log("red_alert... get to yo laptop now");} //if this goes off, some fucked up shit is going on
 						callback(file_time + ":" + file_name + ":" + user_id + "!"); 
@@ -45,7 +45,7 @@ module.exports = function(redis, io) {
 			User.getUser(user_id, function(user){
 				if(user.team){
 					// change this so it only gets the last 10
-					redis.zrange("team:" + user.team + ":messages", 0, -1, function(err, tool){
+					redis.zrange("team:" + user.team + ":messages", 0, 20, function(err, tool){
 						if(!err && tool){
 							callback(tool);return;
 						}
@@ -58,7 +58,21 @@ module.exports = function(redis, io) {
 		},
 
 		getMessagesPage:function(user_id, num, callback){
-			//fill this so it gets the next 10 or so
+			callback = callback || emptyFunction;
+			num = num*20;
+			User.getUser(user_id, function(user){
+				if(user.team){
+					// change this so it only gets the last 10
+					redis.zrange("team:" + user.team + ":messages", num, num+20, function(err, tool){
+						if(!err && tool){
+							callback(tool);return;
+						}
+						callback(false);return;
+					});
+				}else{
+					callback(false);return;
+				}
+			});
 		}
 	};
 	return message;

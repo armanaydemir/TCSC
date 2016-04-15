@@ -138,8 +138,6 @@ function dashboard_check(req, res, next){
 //app.get('/_/js/myscript.js', function(req, res){res.sendFile(__dirname + '/views/_/js/myscript.js');});
 //
 
-
-//_________________________
 //simple routes ---------------------
 app.get('/images/emblem.png', function(req, res){res.sendFile(__dirname + "/views/images/emblem.png");});
 app.get('/images/tcsclogo.png', function(req, res){res.sendFile(__dirname + "/views/images/tcsclogo.png");});
@@ -157,6 +155,7 @@ app.get('/logout', function(req, res) {req.session.reset();res.redirect('/');});
 
 //complicated routes----------------
 app.get('/settings', dashboard_check, function(req, res){res.render(__dirname + "/views/settings.jade");});
+app.get('/user_settings', dashboard_check, function(req, res){res.render(__dirname + "/views/user_settings.jade");});
 
 app.get('/stats', dashboard_check, function(req, res){
   Team.getTeam(req.session.user.team, function(team){
@@ -260,7 +259,6 @@ app.set('view engine', 'jade');
 //____________________
 
 
-
 io.on('connection', function(socket){
   console.log("next");
 
@@ -358,6 +356,38 @@ io.on('connection', function(socket){
       }else if(v === "email"){
         io.emit(session_id, 'sign_up_error[email]'); //means email is taken 
       }else if(v === "username"){
+        io.emit(session_id, 'sign_up_error[username]'); //means username is taken ... get the pattern with this ish yet?
+      }else{
+        //console.log("hey");
+        redis.setnx("signup_key:" + session_id, v, function(err, set){
+          if (err) {return;}
+          if (set==0) {return;} //means session_id was already taken is already taken ... some fucked up shit
+          io.emit(session_id, 'success_sign_up');
+        });
+      }
+    });
+  });
+
+  socket.on('edit', function(id, fname, lname, username, age, email, new_pass, password){
+    User.editUser(id, fname, lname, username, age, email, new_pass, password, function(v){
+
+      //check to see how the shit here works with multiple connections... its fishy ===============
+      var session_data = decode(session_opts, cookie.parse(socket.handshake.headers.cookie).session).content;
+      session_id = session_data["signup_id"];
+      console.log(session_id);
+      console.log();
+      console.log(v);
+      console.log();
+      //===================
+      if(!v){
+        console.log("woah");
+        //we got some fucked up error shit, check it out biatch 
+        //(put some debug prints in here so we can attempts to fix it if it ever actually comes up)
+
+      //make sure rielle makes shit happen for the shit under this
+      }else if(v === "invalid_email"){
+        io.emit(session_id, 'sign_up_error[email]'); //means email is taken 
+      }else if(v === "invalid_username"){
         io.emit(session_id, 'sign_up_error[username]'); //means username is taken ... get the pattern with this ish yet?
       }else{
         //console.log("hey");
@@ -542,8 +572,7 @@ io.on('connection', function(socket){
           };
         });
       });
-    //}
-  });
+  	});
 });
 
 http.listen(3000, function(){

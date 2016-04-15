@@ -2,6 +2,7 @@
 	padding-top:50px;
 	display:inline-block;
 	width:40%;
+	height:100%;
 	background:#F2F2F2;
 }
 
@@ -19,8 +20,35 @@ questions {
 	overflow: auto;
 }
 
+#panel-options {
+	padding-left: 90px;
+}
+
+#panel_chat-title {
+	display:inline-block;
+}
+
 #panel-options li {
 	display: inline;
 	list-style-type: none;
 }
+
+#messages {
+	list-style: none;
+}
+
+#chat_input {
+	float:right;
+	padding-right:50px;
+}
+
+#upload_button {
+	width: 10px;
+	min-with:10px;
+	min-height: 10px;
+	float: left;
+    height: 10px;
+}
+
+
 

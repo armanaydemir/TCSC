@@ -60,24 +60,26 @@ module.exports = function(redis) {
 			});
 
 			//questions
-			Question.pushQuestion("1", "Test Question 1", "Algorithm", null, "This is a great description for this question", null, "this_is_flag", 100, function(g){
-				Question.pushQuestion("1", "Test Question 2", "Cryptography", null, "This is a great description for this question", null, "this_is_flag", 200,function(g){
-					Question.pushQuestion("1", "Test Question 3", "Algorithm", null, "This is a great description for this question", null, "this_is_flag", 300,function(g){	
+			Question.pushQuestion("1", "Test Question 1", "Algorithm", "text", "This is a great description for this question", null, "this_is_flag", 100, function(g){
+				Question.pushQuestion("1", "Test Question 2", "Cryptography", "text", "This is a great description for this question", null, "this_is_flag", 200,function(g){
+					Question.pushQuestion("1", "Test Question 3", "Algorithm", "text", "This is a great description for this question", null, "this_is_flag", 300,function(g){
+					Question.pushQuestion("1", "Test Question 4", "Algorithm", "file", "This is a great description for this question", null, "this_is_flag", 100, function(g){
+				Question.pushQuestion("1", "Test Question 5", "Cryptography", "file", "This is a great description for this question", null, "this_is_flag", 200,function(g){
+					Question.pushQuestion("1", "Test Question 6", "Algorithm", "file", "This is a great description for this question", null, "this_is_flag", 300,function(g){
+						Question.pushQuestion("1", "Test Question 7", "Algorithm", "text", "This is a great description for this question", null, "this_is_flag", 100, function(g){
+				Question.pushQuestion("1", "Test Question 8", "Cryptography", "text", "This is a great description for this question", null, "this_is_flag", 200,function(g){
+					Question.pushQuestion("1", "Test Question 9", "Algorithm", "text", "This is a great description for this question", null, "this_is_flag", 300,function(g){	
+					});
+				});
+			});	
+					});
+				});
+			});	
 					});
 				});
 			});
-			Question.pushQuestion("1", "Test Question 4", "Algorithm", null, "This is a great description for this question", null, "this_is_flag", 100, function(g){
-				Question.pushQuestion("1", "Test Question 5", "Cryptography", null, "This is a great description for this question", null, "this_is_flag", 200,function(g){
-					Question.pushQuestion("1", "Test Question 6", "Algorithm", null, "This is a great description for this question", null, "this_is_flag", 300,function(g){	
-					});
-				});
-			});
-			Question.pushQuestion("1", "Test Question 7", "Algorithm", null, "This is a great description for this question", null, "this_is_flag", 100, function(g){
-				Question.pushQuestion("1", "Test Question 8", "Cryptography", null, "This is a great description for this question", null, "this_is_flag", 200,function(g){
-					Question.pushQuestion("1", "Test Question 9", "Algorithm", null, "This is a great description for this question", null, "this_is_flag", 300,function(g){	
-					});
-				});
-			});
+			
+			
 									
 						
 			}});

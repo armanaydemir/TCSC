@@ -76,10 +76,38 @@ module.exports = function(redis) {
                 });
         },
 
-        editUser: function(id, fname, lname, prof_pic, username, age, new_pass, pass){
-            if(id){
+        editUser: function(id, fname, lname, prof_pic, username, email, age, new_pass, pass, callback){
+            if(prof_pic){
                 redis.set('user:' + id + ':prof_pic', prof_pic);
             }
+            if(fname){
+                redis.set('user:' + id + ':fname', fname);
+            }
+            if(lname){
+                redis.set('user:' + id + ':lname', lname);
+            }
+            if(username){
+                redis.setnx('username:' + username + ":id", id, function(err, set){
+                    if (err) {callback(false);return;}
+                    if (set==0) {callback("invalid_username");return;}
+                    redis.set('user:' + id + ':username', username);
+                });
+            }
+            if(age){
+                redis.set('user:' + id + ':age', age);
+            }
+            if(email){
+                redis.setnx('email:' + email + ":id", id, function(err, set){
+                    if (err) {callback(false);return;}
+                    if (set==0) {callback("invalid_email");return;}
+                    redis.set('user:' + id + ':email', email);
+                });
+            }
+            if(new_pass){
+                redis.set('user:' + id + ':fname', fname);
+            }
+            callback(true);
+
         },
 
     	validateUser: function(log, pass, callback){

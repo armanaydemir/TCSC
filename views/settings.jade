@@ -1,37 +1,30 @@
-<html>
-  <head>
-    <title>File upload Node.</title>
-  </head>
-  <body>
-    <form id="uploadForm"
-          enctype="multipart/form-data"
-          action="/upload"
-          method="post">
-      <input type="file" name="userPhoto" />
-      <input type="submit" value="Upload Image" name="submit">
-      <span id = "status"></span>
-    </form>
-  </body>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"></script>
-  <script>
-    $(document).ready(function() {
+doctype html
+script
+    include _/js/jquery.js
+    include _/js/bootstrap.js
+    include _/js/myscript.js
+    include _/components/js/jquery.toaster.js
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        meta(http-equiv='X-UA-Compatible', content='IE=edge')   
+        meta(name='viewport', content='width=device-width, initial-scale=1')
+        title TCSC - Triangle Computer Science Competition
+        style
+            include _/css/bootstrap.css
+            include _/css/compstyles.css
+    body#dashboard(style='overflow:hidden;')
+        header
+            include _/components/jade/comp-navbar.jade
+            include _/components/jade/notifications.html
+        content
+            include _/components/jade/user_setting.jade
 
-      $('#uploadForm').submit(function() {
-        $("#status").empty().text("File is uploading...");
-          $(this).ajaxSubmit({
+        footer
+        // jQuery (necessary for Bootstrap's JavaScript plugins)
+    
+<script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+script.
+  var socket = io();
 
-            error: function(xhr) {
-              status('Error: ' + xhr.status);
-            },
-
-            success: function(response) {
-              console.log(response)
-              $("#status").empty().text(response);
-            }
-        });
-        return false;
-      });    
-    });
-  </script>
-</html>
+  socket.emit('dashboard_connect', #{config.user.id});

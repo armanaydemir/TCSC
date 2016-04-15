@@ -1,9 +1,9 @@
 questions(class="panel panel-default")
-	<div class="panel-heading">
+	<div class="panel-heading" id="panel-heading">
 	<h3 class="panel-title" id="panel_chat-title">Questions</h3>
 	<ul id="panel-options">
-	<li>Points</li>
-	<li>Name</li>
+	<li id="points">Points</li>
+	<li id="name">Name</li>
 	</ul>
 	</div>
 	<div class="panel-body">
@@ -15,33 +15,54 @@ script.
 	socket = io();
 	woah = ["One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", 
 	"Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty"];
-	qTracker = [];
+	var qTracker = [];
+	var q = [];
 	num = 0;
 	$(document).ready(function () {
 		$('#accordion').on('click', 'button', function() {
+			//console.log(this);
 			console.log("my dick is thiiiiiiiiiiiiiiiis long");
-			quest_id = $(this).attr("id").slice(0,$(this).attr("id").indexOf('_'));
+			quest_id = parseInt($(this).attr("id").slice(0,$(this).attr("id").indexOf('_')));
+			//console.log(qTracker[quest_id-1]);
 			if($('#q_' + quest_id ).val() != ""){
 				console.log("ASDFASDFASDFASDFASDFASDFADFFASD cha cha cha chai");
-				socket.emit('answer_question', $('#q_' + quest_id).val(), quest_id, false);
+				socket.emit('answer_question', $('#q_' + quest_id).val(), qTracker[quest_id-1], false);
 				return false;
 			}
+		});
+		$('#panel-options li').on('click', function() {
+			var n = 0;
+			var s = "";
+			if(this.id == 'points'){
+				q.sort(function(a,b){
+					return a.points-b.points;
+				});
+			}else{
+				q.sort(function(a,b){
+					return a.name.localeCompare(b.name);
+				});
+			}
+			for(var i = 0; i < q.length; i++){
+				s += '<div id="'+ q[i].id + '" class="panel panel-default"><div id="heading' + woah[n]+ '" role="tab" class="panel-heading"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + woah[n]+ '" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;"><h4 class="panel-title" style="text-decoration: none;" ><span class="questionname">' + q[i].name + '</span> &vert; <span class="points">' + q[i].points+ '</span> &vert; <span class="category">' + q[i].category+ '</span><!-- change with jQuery on close--><span style="float: right;"><span style="color: black;" class="glyphicon glyphicon-chevron-down"></span></h4></a></div><div id="collapse' + woah[n]+ '" role="tabpanel" aria-labelledby="heading' + woah[n]+ '" class="panel-collapse collapse in"><div class="panel-body"><span class="description">' + q[i].description + '</span><form action><input id="q_' + q[i].id + '" type="' + q[i].type + '" autocomplete="off" name="userAnswer" value=""></input><button id="' + q[i].id + '_button" type="button" autocomplete="off">Answer</button></form></div></div></div></div>';
+				n++;
+			}
+			$('#accordion').empty();
+			$('#accordion').append(s);
 		});
 	});
 
 	socket.on('question_log:' + #{config.user.id}, function(que){
+		
 		if(qTracker.indexOf(que.id) != -1){
 			console.log("notagainnnnnnn");
 		}
 		else{
-		$('#accordion').append('<div id="'+ que.id + '" class="panel panel-default"><div id="heading' + woah[num]+ '" role="tab" class="panel-heading"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + woah[num]+ '" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;"><h4 class="panel-title" style="text-decoration: none;" ><span class="questionname">' + que.name + '</span> &vert; <span class="points">' + que.points+ '</span> &vert; <span class="category">' + que.category+ '</span><!-- change with jQuery on close--><span style="float: right;"><span style="color: black;" class="glyphicon glyphicon-chevron-down"></span></h4></a></div><div id="collapse' + woah[num]+ '" role="tabpanel" aria-labelledby="heading' + woah[num]+ '" class="panel-collapse collapse in"><div class="panel-body"><span class="description">' + que.description + '</span><form action><input id="q_' + que.id + '" type="text" autocomplete="off" name="userAnswer" value="userAnswer"></input><button id="' + que.id + '_button" type="button" autocomplete="off">Answer</button></form></div></div></div></div>');
+		q.push(que);
+		$('#accordion').append('<div id="'+ que.id + '" class="panel panel-default"><div id="heading' + woah[num]+ '" role="tab" class="panel-heading"><a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse' + woah[num]+ '" aria-expanded="true" aria-controls="collapseOne" style="text-decoration: none;"><h4 class="panel-title" style="text-decoration: none;" ><span class="questionname">' + que.name + '</span> &vert; <span class="points">' + que.points+ '</span> &vert; <span class="category">' + que.category+ '</span><!-- change with jQuery on close--><span style="float: right;"><span style="color: black;" class="glyphicon glyphicon-chevron-down"></span></h4></a></div><div id="collapse' + woah[num]+ '" role="tabpanel" aria-labelledby="heading' + woah[num]+ '" class="panel-collapse collapse in"><div class="panel-body"><span class="description">' + que.description + '</span><form action><input id="q_' + que.id + '" type="' + que.type + 
+		'" autocomplete="off" name="userAnswer" value=""></input><button id="' + que.id + '_button" type="button" autocomplete="off">Answer</button></form></div></div></div></div>');
 		num ++;
-		if(num === 1){
-			active = woah[que.id];
-		}
 		qTracker.push(que.id);
 		}
-
 	});
 
 	socket.on('question_stats:' + #{config.user.id}, function(q, a){

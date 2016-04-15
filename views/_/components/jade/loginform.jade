@@ -1,28 +1,28 @@
 #login.container(style='position: fixed; margin-top:0.5em')
-      form.form-signin.signup(action="")
-        img(src='images/tcsclogo.png')
-        label.sr-only(for='inputEmail') Email Address or Username
-        input#inputEmail.form-control(type='email', placeholder='Email address or Username', required='', autofocus='')
-        label.sr-only(for='inputPassword') Password
-        input#inputPassword.form-control(type='password', placeholder='Password', required='')
-        .checkbox
-          label
-            input(type='checkbox', value='remember-me')
-            |  Remember me
-        button.btn.btn-lg.btn-primary.btn-block(type='button' autocomplete='off') Sign In
-        br
-        p(style='text-align:center')
-          | Don't have an account? 
-          a(href='signup', style='color: #3CB371')
-            b Sign up here.
-        p(style='text-align:center')
-          | Forgot your password? 
-          a(href='#', style='color: #3CB371')
-            b Click here.
-        // modify a modal for a forgotten password
-    // /container
+  form.form-signin.signup(action="")
+    img(src='images/tcsclogo.png')
+    div#status(style='margin: auto; max-width: 200px; text-align:center; background-color: #ff4400; ')
+    div#email
+      label(class="control-label", for='inputEmail') Email Address or Username
+      input#inputEmail.form-control(type='email', placeholder='Email address or Username', required='', autofocus='')
+    div#password
+      label(class="control-label", for='inputPassword') Password
+      input#inputPassword.form-control(type='password', placeholder='Password', required='', aria-describedby="inputPasswordStatus")
+    .checkbox
+      label
+        input(type='checkbox', value='remember-me')
+        |  Remember me
+    button.btn.btn-lg.btn-primary.btn-block(type='button' autocomplete='off') Sign In
+    br
+    p(style='text-align:center')
+      | Don't have an account? 
+      a(href='signup', style='color: #3CB371')
+        b Sign up here.
+
+
 <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 script.
   var socket = io();
   $(function(){
@@ -39,9 +39,24 @@ script.
       }
     });
   });
+
+  updateAnimate = function(data){
+    $("#password").addClass('has-error');
+    if(data === "invalid_pass"){
+      $("#status").append('<i class="fa fa-times"> Invalid Password</i>');
+    }else if(data === "invalid_log"){
+      $("#status").append('<i class="fa fa-times"> User Not Found</i>');
+    }else{
+      $("#status").append('<i class="fa fa-times"> Error</i>');
+    }
+  }
+
   socket.on(#{config.login_id}, function(data){
+    $("#status").empty();
     if(data==='success_login'){
       console.log("we good");
       location.href = '/dashboard';
-     }
+    }else{ 
+      updateAnimate(data);
+    }
   });

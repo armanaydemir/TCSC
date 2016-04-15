@@ -17,12 +17,13 @@ module.exports = function(redis) {
                 .get("question:" + id + ":category")
                 .get("question:" + id + ":description")
                 .get("question:" + id + ":points")
+                .get("question:" + id + ":type")
                 .exec(function (error, results) {
             		if (error) {
                 		callback(false);
                 		return;
             		}
-            		callback({id:id, name: results[0], category: results[1], description: results[2], points:results[3]});
+            		callback({id:id, name: results[0], category: results[1], description: results[2], points:results[3], type:results[4]});
             		return;
         		});
 		},
@@ -35,9 +36,9 @@ module.exports = function(redis) {
 
 		answerQuestion: function(user_id, team_id, question_id, answer, callback){
 			callback = callback || emptyFunction;
-			redis.get("team:" + team_id + ":questions", function(error, q){
-				if(error){callback(false);return;}
-				if(q && q.contains(question_id)){
+			redis.zrange("team:" + team_id + ":questions", 0, -1, function(error, q){
+				if(error){console.log('error');console.log(error);callback(false);return;}
+				if(q && q.indexOf(question_id) != -1){
 					callback(false);return; //means they already answered the question
 				}else {
 					redis.get("question:" + question_id + ":answer", function(err, ans){
@@ -52,7 +53,7 @@ module.exports = function(redis) {
 		},
 
 
-		pushQuestion: function(user_id, name, category, file, description, expire, flag, points, callback){
+		pushQuestion: function(user_id, name, category, type, description, expire, flag, points, callback){
 			redis.get("user:" + user_id + ":admin", function(error, admin){
 				if(error){callback(0); return;}
 				if(admin == 1){
@@ -68,7 +69,7 @@ module.exports = function(redis) {
                     			.multi()
                     			.set("question:" + id + ":name", name)
                     			.set("question:" + id + ":category", category)
-                    			//.set("question:" + id + ":file", file)
+                    			.set("question:" + id + ":type", type)
                                 .set("question:" + id + ":points", points)
                     			.set("question:" + id + ":description", description)
                     			.set("question:" + id + ":expire", expire)
